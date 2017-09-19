@@ -243,7 +243,7 @@ class CommissionPayment(osv.Model):
         mod_obj = self.pool.get('ir.model.data')
         act_obj = self.pool.get('ir.actions.act_window')
 
-        result = mod_obj.get_object_reference(cr, uid, 'commission_payment',
+        result = mod_obj.get_object_reference(cr, uid, 'ims',
                                               'comm_line_fix_act')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]

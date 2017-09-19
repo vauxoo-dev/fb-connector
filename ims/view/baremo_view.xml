@@ -2,7 +2,7 @@
 <openerp>
     <data>
 
-    <menuitem id="commission" name="Commission Settings" parent="base.menu_base_config" groups="commission_payment.group_baremo_manager" sequence="10"/>
+    <menuitem id="commission" name="Commission Settings" parent="base.menu_base_config" groups="ims.group_baremo_manager" sequence="10"/>
 
     <record model="ir.ui.view" id="view_baremo_book_form">
         <field name="name">baremo.book.form</field>
@@ -73,7 +73,7 @@
         </record>
 
 
-    <menuitem name="Baremes" parent="commission" id="menu_baremes_tree" action="commission_baremo_act" groups="commission_payment.group_baremo_manager"/>
+    <menuitem name="Baremes" parent="commission" id="menu_baremes_tree" action="commission_baremo_act" groups="ims.group_baremo_manager"/>
 
 
     <record model="ir.ui.view" id="view_baremo_form">
@@ -280,7 +280,7 @@
         parent="commission"
         id="menu_bareme_matrix_tree"
         action="commission_baremo_matrix_act"
-        groups="commission_payment.group_baremo_manager"
+        groups="ims.group_baremo_manager"
         />
 
 

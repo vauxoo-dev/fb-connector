@@ -181,7 +181,7 @@
         </record>
         <record id="aml_rec_debit" model="account.move.line">
             <field name="name">Receivable - Debit</field>
-            <field name="move_id" ref="commission_payment.account_move_00"/>
+            <field name="move_id" ref="ims.account_move_00"/>
             <field name="journal_id" ref="account.sales_journal"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_recv"/>
@@ -190,7 +190,7 @@
         </record>
         <record id="aml_sale_credit" model="account.move.line">
             <field name="name">Sale</field>
-            <field name="move_id" ref="commission_payment.account_move_00"/>
+            <field name="move_id" ref="ims.account_move_00"/>
             <field name="journal_id" ref="account.sales_journal"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_sale"/>
@@ -204,7 +204,7 @@
         </record>
         <record id="aml_bnk_debit" model="account.move.line">
             <field name="name">Bank</field>
-            <field name="move_id" ref="commission_payment.account_move_01"/>
+            <field name="move_id" ref="ims.account_move_01"/>
             <field name="journal_id" ref="account.bank_journal"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.bnk"/>
@@ -213,7 +213,7 @@
         </record>
         <record id="aml_rec_credit" model="account.move.line">
             <field name="name">Receivable - Credit</field>
-            <field name="move_id" ref="commission_payment.account_move_01"/>
+            <field name="move_id" ref="ims.account_move_01"/>
             <field name="journal_id" ref="account.bank_journal"/>
             <field name="period_id" ref="account.period_1"/>
             <field name="account_id" ref="account.a_recv"/>
