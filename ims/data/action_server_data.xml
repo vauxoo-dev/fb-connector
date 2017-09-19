@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<openerp>
+<odoo>
     <data noupdate="1">
 
            <record model="ir.actions.server" id="update_prices_action">
@@ -39,4 +39,4 @@ else:
 
 
     </data>
-</openerp>
+</odoo>

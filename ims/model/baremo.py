@@ -19,12 +19,12 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from openerp.osv import fields, osv
-from openerp.addons.decimal_precision import decimal_precision as dp
+from odoo import fields, models
+from odoo.addons.decimal_precision import decimal_precision as dp
 from openerp import SUPERUSER_ID
 
 
-class BaremoMatrix(osv.Model):
+class BaremoMatrix(models.Model):
 
     """
     OpenERP Model : baremo matrix
@@ -47,7 +47,7 @@ class BaremoMatrix(osv.Model):
          'Same Salesman & Product can be assigned to only one Baremo')]
 
 
-class BaremoBook(osv.Model):
+class BaremoBook(models.Model):
     _name = 'baremo.book'
 
     _columns = {
@@ -68,7 +68,7 @@ class BaremoBook(osv.Model):
     }
 
 
-class Baremo(osv.Model):
+class Baremo(models.Model):
 
     """OpenERP Model : baremo
     """
@@ -94,7 +94,7 @@ class Baremo(osv.Model):
     }
 
 
-class BaremoDiscount(osv.Model):
+class BaremoDiscount(models.Model):
 
     """OpenERP Model : baremo_discount
     """
@@ -113,14 +113,14 @@ class BaremoDiscount(osv.Model):
     }
 
 
-class ResParter(osv.Model):
+class ResParter(models.Model):
     _inherit = "res.partner"
     _columns = {
         'baremo_id': fields.many2one('baremo.book', 'Baremo', required=False),
     }
 
 
-class ResUsers(osv.Model):
+class ResUsers(models.Model):
     _inherit = "res.users"
     _columns = {
         'matrix_ids': fields.one2many(
@@ -131,7 +131,7 @@ class ResUsers(osv.Model):
     }
 
 
-class ProductProduct(osv.Model):
+class ProductProduct(models.Model):
     _inherit = "product.product"
     _columns = {
         'matrix_ids': fields.one2many(
@@ -142,7 +142,7 @@ class ProductProduct(osv.Model):
     }
 
 
-class ResCompany(osv.Model):
+class ResCompany(models.Model):
     _inherit = "res.company"
     _description = 'Companies'
 

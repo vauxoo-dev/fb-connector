@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='UTF-8'?>
-<openerp>
+<odoo>
     <data noupdate="1">
          <record id="product_price_decimal_precision" model="decimal.precision">
             <field name="name">Historical List Price</field>
@@ -18,4 +18,4 @@
             <field name="digits">2</field>
         </record>
     </data>
-</openerp>
+</odoo>

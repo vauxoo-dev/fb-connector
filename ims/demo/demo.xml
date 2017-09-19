@@ -1,5 +1,5 @@
 <?xml version="1.0" ?>
-<openerp>
+<odoo>
     <data noupdate="1">
         <record id="baremo_book_01" model="baremo.book">
             <field name="name">10% Commission No Discounts 30 days</field>
@@ -41,4 +41,4 @@
             <field name="disc_id" ref="baremo_03"/>
         </record>
     </data>
-</openerp>
+</odoo>

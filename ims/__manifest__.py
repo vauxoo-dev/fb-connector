@@ -29,7 +29,7 @@
 ##############################################################################
 {
     "name": "Salespeople Commission based on Payments",
-    "version": "8.0.0.0.7",
+    "version": "10.0.0.0.8",
     "author": "Vauxoo",
     "category": "Generic Modules/Others",
     "website": "http://www.vauxoo.com",
@@ -43,7 +43,6 @@
         "base_action_rule",
         # Commission Payment
         "account",
-        "product_historical_price",
         "mail",
         "message_post_model",
         "report",

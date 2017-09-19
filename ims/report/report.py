@@ -2,8 +2,8 @@
 
 import time
 
-from openerp.osv import osv
-from openerp.report import report_sxw
+from odoo import models
+from odoo.report import report_sxw
 
 
 class CommParser(report_sxw.rml_parse):
@@ -24,7 +24,7 @@ class CommParser(report_sxw.rml_parse):
                                                    report_type=report_type)
 
 
-class IfrsPortraitPdfReport(osv.AbstractModel):
+class IfrsPortraitPdfReport(models.AbstractModel):
 
     # _name = `report.` + `report_name`
     # report_name="ims.comm_salespeople_template"

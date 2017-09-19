@@ -1,4 +1,4 @@
- <openerp>
+ <odoo>
      <data noupdate="1">
 
          <!-- Added Track on commission.payment object -->
@@ -7,5 +7,5 @@
          </function>
 
      </data>
- </openerp>
+ </odoo>
 

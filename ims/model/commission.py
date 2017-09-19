@@ -4,9 +4,8 @@ from __future__ import division
 import datetime
 import logging
 
-from openerp.osv import osv, fields
-from openerp.addons.decimal_precision import decimal_precision as dp
-from openerp.tools.translate import _
+from odoo import _, fields, models
+from odoo.addons.decimal_precision import decimal_precision as dp
 
 _logger = logging.getLogger(__name__)
 
@@ -69,7 +68,7 @@ def t_time(date):
     return date.strftime("%Y-%m-%d")
 
 
-class CommissionPayment(osv.Model):
+class CommissionPayment(models.Model):
 
     """OpenERP Model : commission_payment
     """
@@ -82,7 +81,7 @@ class CommissionPayment(osv.Model):
         company_id = self.pool.get('res.users')._get_company(cr, uid,
                                                              context=context)
         if not company_id:
-            raise osv.except_osv(
+            raise models.except_osv(
                 _('Error!'),
                 _('There is no default company for the current user!'))
         return company_id
@@ -1138,7 +1137,7 @@ class CommissionPayment(osv.Model):
         comm_brw = self.browse(cr, uid, ids[0], context=context)
         if comm_brw.commission_baremo_policy == 'onMatrix' and \
                 comm_brw.commission_scope != 'product_invoiced':
-            raise osv.except_osv(
+            raise models.except_osv(
                 _('Error!'),
                 _('Baremo on Matrix only applies on Invoiced Products'))
         # Desvincular lineas existentes, si las hubiere
@@ -1215,7 +1214,7 @@ class CommissionPayment(osv.Model):
         # first if any of the line has being paid arise a warning
         for comm_brw in self.browse(cr, user, ids, context=context):
             if comm_brw.comm_fix:
-                raise osv.except_osv(_('Error!'), _('There are items to fix'))
+                raise models.except_osv(_('Error!'), _('There are items to fix'))
 
             aml_obj.write(cr, user,
                           [line.aml_id.id for line in comm_brw.comm_line_ids],
@@ -1227,7 +1226,7 @@ class CommissionPayment(osv.Model):
         return True
 
 
-class CommissionSaleNoid(osv.Model):
+class CommissionSaleNoid(models.Model):
 
     """Commission Payment : commission_sale_noid
     """
@@ -1245,7 +1244,7 @@ class CommissionSaleNoid(osv.Model):
     }
 
 
-class CommissionNoprice(osv.Model):
+class CommissionNoprice(models.Model):
 
     """Commission Payment : commission_sale_noid
     """
@@ -1265,7 +1264,7 @@ class CommissionNoprice(osv.Model):
     }
 
 
-class CommissionLines(osv.Model):
+class CommissionLines(models.Model):
 
     """Commission Payment : commission_lines
     """
@@ -1439,7 +1438,7 @@ class CommissionLines(osv.Model):
         return True
 
 
-class CommissionSalesman(osv.Model):
+class CommissionSalesman(models.Model):
 
     """Commission Payment : commission_salesman
     """
@@ -1481,7 +1480,7 @@ class CommissionSalesman(osv.Model):
     }
 
 
-class CommissionVoucher(osv.Model):
+class CommissionVoucher(models.Model):
 
     """Commission Payment : commission_voucher
     """
@@ -1516,7 +1515,7 @@ class CommissionVoucher(osv.Model):
     }
 
 
-class CommissionInvoice(osv.Model):
+class CommissionInvoice(models.Model):
 
     """Commission Payment : commission_invoice
     """
@@ -1554,7 +1553,7 @@ class CommissionInvoice(osv.Model):
     }
 
 
-class CommissionLines2(osv.Model):
+class CommissionLines2(models.Model):
 
     """Commission Payment : commission_lines_2
     """
@@ -1567,7 +1566,7 @@ class CommissionLines2(osv.Model):
     }
 
 
-class ResCompany(osv.Model):
+class ResCompany(models.Model):
     _inherit = "res.company"
     _description = 'Companies'
 

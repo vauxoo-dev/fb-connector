@@ -1,8 +1,8 @@
 # coding: utf-8
-from openerp.osv import osv, fields
+from odoo import api, fields, models
 
 
-class AccountInvoice(osv.Model):
+class AccountInvoice(models.Model):
 
     def _date_last_payment(self, cr, uid, ids, fieldname, arg, context=None):
         res = {}.fromkeys(ids, None)

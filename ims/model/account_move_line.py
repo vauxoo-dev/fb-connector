@@ -1,5 +1,5 @@
 # coding: utf-8
-from openerp.osv import osv, fields
+from odoo import fields, models
 
 QUERY_REC_AML = '''
 SELECT aml_id, id
@@ -77,7 +77,7 @@ WHERE
 '''
 
 
-class AccountMoveLine(osv.Model):
+class AccountMoveLine(models.Model):
 
     def _get_reconciling_aml(self, cr, uid, ids, fieldname, arg, context=None):
         res = {}.fromkeys(ids, None)

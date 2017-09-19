@@ -28,7 +28,7 @@
 ###############################################################################
 import time
 from datetime import date
-from openerp.tests.common import TransactionCase
+from odoo.tests.common import TransactionCase
 
 
 class TestCommission(TransactionCase):

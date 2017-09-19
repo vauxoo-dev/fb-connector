@@ -21,13 +21,13 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##########################################################################
-from openerp.osv import fields, osv
+from odoo import fields, models
 
-from openerp.addons.decimal_precision import decimal_precision as dp
+from odoo.addons.decimal_precision import decimal_precision as dp
 import time
 
 
-class ProductHistorical(osv.Model):
+class ProductHistorical(models.Model):
 
     """product_historical
     """
@@ -78,7 +78,7 @@ class ProductHistorical(osv.Model):
     }
 
 
-class ProductHistoricPrice(osv.Model):
+class ProductHistoricPrice(models.Model):
     _order = "name desc"
     _name = "product.historic.price"
     _description = "Historical Price List"
