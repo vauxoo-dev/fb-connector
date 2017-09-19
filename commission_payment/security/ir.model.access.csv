@@ -1,5 +1,6 @@
 id,name,model_id:id,group_id:id,perm_read,perm_write,perm_create,perm_unlink
-/* baremo */,,,,,,,
+"access_product_historical","product_historical_price","model_product_historic_price","base.group_user",1,0,0,0
+"access_product_historical_partner_manager","product_historical_price_partner_manager","model_product_historic_price","base.group_partner_manager",1,1,1,1
 access_baremo_user,baremo,model_baremo,commission_payment.group_baremo_user,1,0,0,0
 access_baremo_discount_user,baremo.discount,model_baremo_discount,commission_payment.group_baremo_user,1,0,0,0
 access_baremo_book_user,baremo.book,model_baremo_book,commission_payment.group_baremo_user,1,0,0,0
@@ -8,7 +9,6 @@ access_baremo_discount_manager,baremo.discount,model_baremo_discount,commission_
 access_baremo_manager,baremo,model_baremo,commission_payment.group_baremo_manager,1,1,1,1
 access_baremo_book_manager,baremo.book,model_baremo_book,commission_payment.group_baremo_manager,1,1,1,1
 access_baremo_matrix_manager,baremo.matrix,model_baremo_matrix,commission_payment.group_baremo_manager,1,1,1,1
-/* commission_payment */,,,,,,,
 access_commission_payment_user,commission.payment.user,model_commission_payment,commission_payment.group_comm_payment_user,1,0,0,0
 access_commission_payment_manager,commission.payment.manager,model_commission_payment,commission_payment.group_comm_payment_manager,1,1,1,1
 access_commission_sale_noid_user,commission.sale.noid.user,model_commission_sale_noid,commission_payment.group_comm_payment_user,1,0,0,0

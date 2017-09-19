@@ -36,9 +36,11 @@
     "license": "",
     "depends": [
         "base",
-        # Baremo
-        "decimal_precision",
+        # Product historical price
         "product",
+        "decimal_precision",
+        "sale",
+        "base_action_rule",
         # Commission Payment
         "account",
         "product_historical_price",
@@ -53,6 +55,10 @@
         "demo/account_invoice_demo.xml",
     ],
     "data": [
+        # product_historical_price
+        "view/product_view.xml",
+        "data/product_data.xml",
+        "data/action_server_data.xml",
         # Baremo
         "view/baremo_view.xml",
         # Commission Payment

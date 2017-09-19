@@ -19,6 +19,122 @@ msgstr ""
 "X-Generator: Weblate 2.2-dev\n"
 
 #. module: commission_payment
+#: field:product.product,cost_historical:0
+msgid " Latest Cost"
+msgstr " Último Costo"
+
+#. module: commission_payment
+#: field:product.historic.cost,product_uom:0
+#: field:product.historic.price,product_uom:0
+msgid "Supplier UoM"
+msgstr "Proveedor UoM"
+
+#. module: commission_payment
+#: model:ir.model,name:product_historical_price.model_product_product
+msgid "Product"
+msgstr "Producto"
+
+#. module: commission_payment
+#: help:product.product,list_price_historical:0
+msgid ""
+"Latest Recorded Historical\n"
+"                                             Value"
+msgstr ""
+"Último Valor Histórico\n"
+"                                             Guardado"
+
+#. module: commission_payment
+#: model:ir.model,name:product_historical_price.model_product_historic_cost
+#: model:ir.model,name:product_historical_price.model_product_historic_price
+msgid "Historical Price List"
+msgstr "Lista de precio Historico"
+
+#. module: commission_payment
+#: help:product.historic.cost,product_uom:0
+#: help:product.historic.price,product_uom:0
+msgid ""
+"Choose here the Unit of Measure\n"
+"                                               in which the "
+"prices and\n"
+"                                               quantities are "
+"expressed\n"
+"                                               below."
+msgstr ""
+"Escoja la Unidad de Medida\n"
+"                                               en la cual los "
+"precios y \n"
+"                                               cantidades se "
+"expresan\n"
+"                                               abajo."
+
+#. module: commission_payment
+#: field:product.historic.cost,product_id:0
+msgid "Product related to this Cost"
+msgstr "Producto relacionado con este costo"
+
+#. module: commission_payment
+#: field:product.historic.price,price:0
+msgid "Price"
+msgstr "Precio"
+
+#. module: commission_payment
+#: view:product.product:0
+#: field:product.product,cost_historical_ids:0
+#: field:product.product,list_price_historical_ids:0
+msgid "Historical Prices"
+msgstr "Precio Histórico"
+
+#. module: commission_payment
+#: view:product.product:0
+msgid "Historical Cost Price"
+msgstr "Precio de costo histórico"
+
+#. module: commission_payment
+#: view:product.product:0
+msgid "Historical Costs"
+msgstr "Costos Historicos"
+
+#. module: commission_payment
+#: field:product.historic.cost,price:0
+msgid "Cost"
+msgstr "Costo"
+
+#. module: commission_payment
+#: view:product.historic.cost:0
+msgid "Historical Cost"
+msgstr "Costo Historico"
+
+#. module: commission_payment
+#: help:product.product,cost_historical:0
+msgid ""
+"Latest Recorded\n"
+"                                               Historical Cost"
+msgstr ""
+"Último Costo\n"
+"                                               Historico Guardado"
+
+#. module: commission_payment
+#: view:product.historic.price:0
+msgid "Historical List Price"
+msgstr "Lista de precios históricos"
+
+#. module: commission_payment
+#: field:product.historic.price,product_id:0
+msgid "Product related to this Price"
+msgstr "Producto relacionado con este precio"
+
+#. module: commission_payment
+#: field:product.historic.cost,name:0
+#: field:product.historic.price,name:0
+msgid "Date"
+msgstr "Fecha"
+
+#. module: commission_payment
+#: field:product.product,list_price_historical:0
+msgid "Latest Price"
+msgstr "Último Precio"
+
+#. module: commission_payment
 #: field:baremo.discount,porc_com:0
 msgid "% Com."
 msgstr "% Com."

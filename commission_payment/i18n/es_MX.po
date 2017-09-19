@@ -17,6 +17,108 @@ msgstr ""
 "Plural-Forms: \n"
 
 #. module: commission_payment
+#: field:product.product,cost_historical:0
+msgid " Latest Cost"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.cost,product_uom:0
+#: field:product.historic.price,product_uom:0
+msgid "Supplier UoM"
+msgstr ""
+
+#. module: commission_payment
+#: model:ir.model,name:product_historical_price.model_product_product
+msgid "Product"
+msgstr ""
+
+#. module: commission_payment
+#: help:product.product,list_price_historical:0
+msgid ""
+"Latest Recorded Historical\n"
+"                                             Value"
+msgstr ""
+
+#. module: commission_payment
+#: model:ir.model,name:product_historical_price.model_product_historic_cost
+#: model:ir.model,name:product_historical_price.model_product_historic_price
+msgid "Historical Price List"
+msgstr ""
+
+#. module: commission_payment
+#: help:product.historic.cost,product_uom:0
+#: help:product.historic.price,product_uom:0
+msgid ""
+"Choose here the Unit of Measure\n"
+"                                               in which the prices and\n"
+"                                               quantities are expressed\n"
+"                                               below."
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.cost,product_id:0
+msgid "Product related to this Cost"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.price,price:0
+msgid "Price"
+msgstr ""
+
+#. module: commission_payment
+#: view:product.product:0 field:product.product,cost_historical_ids:0
+#: field:product.product,list_price_historical_ids:0
+msgid "Historical Prices"
+msgstr ""
+
+#. module: commission_payment
+#: view:product.product:0
+msgid "Historical Cost Price"
+msgstr ""
+
+#. module: commission_payment
+#: view:product.product:0
+msgid "Historical Costs"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.cost,price:0
+msgid "Cost"
+msgstr ""
+
+#. module: commission_payment
+#: view:product.historic.cost:0
+msgid "Historical Cost"
+msgstr ""
+
+#. module: commission_payment
+#: help:product.product,cost_historical:0
+msgid ""
+"Latest Recorded\n"
+"                                               Historical Cost"
+msgstr ""
+
+#. module: commission_payment
+#: view:product.historic.price:0
+msgid "Historical List Price"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.price,product_id:0
+msgid "Product related to this Price"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.historic.cost,name:0 field:product.historic.price,name:0
+msgid "Date"
+msgstr ""
+
+#. module: commission_payment
+#: field:product.product,list_price_historical:0
+msgid "Latest Price"
+msgstr ""
+
+#. module: commission_payment
 #: field:baremo.discount,porc_com:0
 msgid "% Com."
 msgstr "% Com."
