@@ -34,7 +34,7 @@ else:
             <field name="sequence">0</field>
             <field name="active">True</field>
             <field name="kind">on_create_or_write</field>
-            <field name="server_action_ids" eval="[(6, 0, [ref('product_historical_price.update_prices_action')])]"/>
+            <field name="server_action_ids" eval="[(6, 0, [ref('commission_payment.update_prices_action')])]"/>
         </record>
 
 

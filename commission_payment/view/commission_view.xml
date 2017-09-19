@@ -652,7 +652,7 @@
 
         <record id="res_company_view_comm_tax" model="ir.ui.view">
             <field name="name">res.company.view.comm_tax</field>
-            <field name="inherit_id" ref="baremo.res_company_view_baremo"/>
+            <field name="inherit_id" ref="commission_payment.res_company_view_baremo"/>
             <field name="model">res.company</field>
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='baremo_grp']" position="inside">

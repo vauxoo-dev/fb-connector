@@ -21,7 +21,7 @@
 
     <record id="group_baremo_manager" model="res.groups">
         <field name="name">Baremo / Manager</field>
-        <field name="implied_ids" eval="[(4, ref('baremo.group_baremo_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('commission_payment.group_baremo_user'))]"/>
     </record>
 
     <!-- commission_payment -->
