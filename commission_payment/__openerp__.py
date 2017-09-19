@@ -36,17 +36,26 @@
     "license": "",
     "depends": [
         "base",
+        # Baremo
+        "decimal_precision",
+        "product",
+        # Commission Payment
         "account",
         "product_historical_price",
         "mail",
-        "baremo",
         "message_post_model",
         "report",
     ],
     "demo": [
+        # Baremo
+        "demo/demo.xml",
+        # Commission Payment
         "demo/account_invoice_demo.xml",
     ],
     "data": [
+        # Baremo
+        "view/baremo_view.xml",
+        # Commission Payment
         "security/commission_payment_security.xml",
         "security/ir.model.access.csv",
         "report/layouts.xml",
