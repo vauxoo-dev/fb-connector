@@ -1,17 +1,17 @@
 <?xml version="1.0" ?>
 <odoo>
     <data noupdate="1">
-        <record id="base.res_partner_23" model="res.partner">
+        <record id="base.res_partner_12" model="res.partner">
             <field name="user_id" ref="base.user_demo"/>
         </record>
         <record id="invoice_1" model="account.invoice">
             <field name="currency_id" ref="base.EUR"/>
             <field name="company_id" ref="base.main_company"/>
-            <field name="journal_id" ref="account.sales_journal"/>
+            <field name="journal_id" ref="ims.sales_journal"/>
             <field name="state">draft</field>
             <field name="type">out_invoice</field>
-            <field name="account_id" ref="account.a_recv"/>
-            <field name="partner_id" ref="base.res_partner_23"/>
+            <field name="account_id" ref="ims.a_recv"/>
+            <field name="partner_id" ref="base.res_partner_12"/>
             <field eval="time.strftime('%Y-%m') + '-01'" name="date_invoice"/>
         </record>
         <record id="invoice_1_line_1" model="account.invoice.line">
@@ -19,8 +19,7 @@
             <field name="invoice_id" ref="invoice_1"/>
             <field name="price_unit">2000</field>
             <field name="quantity">5</field>
-            <field name="account_id" ref="account.a_sale"/>
-            <field name="uos_id" ref="product.product_uom_unit"/>
+            <field name="account_id" ref="ims.a_sale"/>
             <field name="product_id" ref="product.product_product_4"/>
         </record>
         <record id="invoice_1_line_2" model="account.invoice.line">
@@ -28,21 +27,21 @@
             <field name="invoice_id" ref="invoice_1"/>
             <field name="price_unit">4000</field>
             <field name="quantity">3</field>
-            <field name="account_id" ref="account.a_sale"/>
+            <field name="account_id" ref="ims.a_sale"/>
         </record>
-        <workflow action="invoice_open" model="account.invoice" ref="invoice_1"/>
-        <function model="account.invoice" name="pay_and_reconcile">
-            <!-- ids = -->                    <value eval="[ref('invoice_1')]"/>
-            <!-- pay_amount = -->            <value eval="22000"/>
-            <!-- pay_account_id = -->        <value eval="ref('account.cash')"/>
-            <!-- period_id = -->            <value eval="ref('account.period_' + str(int(time.strftime('%m'))))"/>
-            <!-- pay_journal_id = -->        <value eval="ref('account.bank_journal')"/>
-            <!-- writeoff_acc_id = -->        <value eval="ref('account.cash')"/>
-            <!-- writeoff_period_id = -->    <value eval="ref('account.period_' + str(int(time.strftime('%m'))))"/>
-            <!-- writeoff_journal_id = -->    <value eval="ref('account.bank_journal')"/>
-            <!-- context = -->              <value eval="{'date_p': time.strftime('%Y-%m-%d')}"/>
-            <!-- name = -->                 <value eval="str('Payment from Vauxoo')"/>
-        </function>
+
+        <!-- TODO migrate to test -->
+        <!-- <workflow action="invoice_open" model="account.invoice" ref="invoice_1"/> -->
+        <!-- <function model="account.invoice" name="pay_and_reconcile"> -->
+        <!--     <value eval="[ref('invoice_1')]"/> -->
+        <!--     <value eval="22000"/> -->
+        <!--     <value eval="ref('ims.cash')"/> -->
+        <!--     <value eval="ref('ims.bank_journal')"/> -->
+        <!--     <value eval="ref('ims.cash')"/> -->
+        <!--     <value eval="ref('ims.bank_journal')"/> -->
+        <!--     <value eval="{'date_p': time.strftime('%Y-%m-%d')}"/> -->
+        <!--     <value eval="str('Payment from Vauxoo')"/> -->
+        <!-- </function> -->
 
         <record id="baremo_book_01" model="baremo.book">
             <field name="name">3% Commission No Discounts 30 days</field>
@@ -170,55 +169,51 @@
             <field name="user_ids" eval="[(4, 1)]"/>
         </record>
 
-        <function model="commission.payment" name="prepare">
-            <!-- ids = -->                    <value eval="[ref('commission_1')]"/>
-        </function>
+        <!-- TODO migrate to test -->
+        <!-- <function model="commission.payment" name="prepare"> -->
+        <!--          <value eval="[ref('commission_1')]"/> -->
+        <!-- </function> -->
 
         <record id="account_move_00" model="account.move">
-            <field name="journal_id" ref="account.sales_journal"/>
-            <field name="period_id" ref="account.period_1"/>
+            <field name="journal_id" ref="ims.sales_journal"/>
             <field name="date" eval="time.strftime('%Y')+'-'+str((int(time.strftime('%m'))%12)+1)+'-01'"/>
         </record>
-        <record id="aml_rec_debit" model="account.move.line">
-            <field name="name">Receivable - Debit</field>
-            <field name="move_id" ref="ims.account_move_00"/>
-            <field name="journal_id" ref="account.sales_journal"/>
-            <field name="period_id" ref="account.period_1"/>
-            <field name="account_id" ref="account.a_recv"/>
-            <field name="debit">1000.0</field>
-            <field name="credit">0.0</field>
-        </record>
-        <record id="aml_sale_credit" model="account.move.line">
-            <field name="name">Sale</field>
-            <field name="move_id" ref="ims.account_move_00"/>
-            <field name="journal_id" ref="account.sales_journal"/>
-            <field name="period_id" ref="account.period_1"/>
-            <field name="account_id" ref="account.a_sale"/>
-            <field name="debit">0.0</field>
-            <field name="credit">1000.0</field>
-        </record>
-        <record id="account_move_01" model="account.move">
-            <field name="journal_id" ref="account.bank_journal"/>
-            <field name="period_id" ref="account.period_1"/>
-            <field name="date" eval="time.strftime('%Y')+'-'+str((int(time.strftime('%m'))%12)+1)+'-27'"/>
-        </record>
-        <record id="aml_bnk_debit" model="account.move.line">
-            <field name="name">Bank</field>
-            <field name="move_id" ref="ims.account_move_01"/>
-            <field name="journal_id" ref="account.bank_journal"/>
-            <field name="period_id" ref="account.period_1"/>
-            <field name="account_id" ref="account.bnk"/>
-            <field name="debit">1000.0</field>
-            <field name="credit">0.0</field>
-        </record>
-        <record id="aml_rec_credit" model="account.move.line">
-            <field name="name">Receivable - Credit</field>
-            <field name="move_id" ref="ims.account_move_01"/>
-            <field name="journal_id" ref="account.bank_journal"/>
-            <field name="period_id" ref="account.period_1"/>
-            <field name="account_id" ref="account.a_recv"/>
-            <field name="debit">0.0</field>
-            <field name="credit">1000.0</field>
-        </record>
+        <!-- TODO migrate to test -->
+        <!-- <record id="aml_rec_debit" model="account.move.line"> -->
+        <!--     <field name="name">Receivable - Debit</field> -->
+        <!--     <field name="move_id" ref="ims.account_move_00"/> -->
+        <!--     <field name="journal_id" ref="ims.sales_journal"/> -->
+        <!--     <field name="account_id" ref="ims.a_recv"/> -->
+        <!--     <field name="debit">1000.0</field> -->
+        <!--     <field name="credit">0.0</field> -->
+        <!-- </record> -->
+        <!-- <record id="aml_sale_credit" model="account.move.line"> -->
+        <!--     <field name="name">Sale</field> -->
+        <!--     <field name="move_id" ref="ims.account_move_00"/> -->
+        <!--     <field name="journal_id" ref="ims.sales_journal"/> -->
+        <!--     <field name="account_id" ref="ims.a_sale"/> -->
+        <!--     <field name="debit">0.0</field> -->
+        <!--     <field name="credit">1000.0</field> -->
+        <!-- </record> -->
+        <!-- <record id="account_move_01" model="account.move"> -->
+        <!--     <field name="journal_id" ref="ims.bank_journal"/> -->
+        <!--     <field name="date" eval="time.strftime('%Y')+'-'+str((int(time.strftime('%m'))%12)+1)+'-27'"/> -->
+        <!-- </record> -->
+        <!-- <record id="aml_bnk_debit" model="account.move.line"> -->
+        <!--     <field name="name">Bank</field> -->
+        <!--     <field name="move_id" ref="ims.account_move_01"/> -->
+        <!--     <field name="journal_id" ref="ims.bank_journal"/> -->
+        <!--     <field name="account_id" ref="ims.bnk"/> -->
+        <!--     <field name="debit">1000.0</field> -->
+        <!--     <field name="credit">0.0</field> -->
+        <!-- </record> -->
+        <!-- <record id="aml_rec_credit" model="account.move.line"> -->
+        <!--     <field name="name">Receivable - Credit</field> -->
+        <!--     <field name="move_id" ref="ims.account_move_01"/> -->
+        <!--     <field name="journal_id" ref="ims.bank_journal"/> -->
+        <!--     <field name="account_id" ref="ims.a_recv"/> -->
+        <!--     <field name="debit">0.0</field> -->
+        <!--     <field name="credit">1000.0</field> -->
+        <!-- </record> -->
     </data>
 </odoo>

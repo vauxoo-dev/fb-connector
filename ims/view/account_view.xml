@@ -10,7 +10,7 @@
                     <field name="rec_invoice"/>
                     <field name="rec_aml"/>
                 </xpath>
-                <xpath expr="//field[@name='date_created']" position="after">
+                <xpath expr="//field[@name='date_maturity']" position="after">
                     <field name="date_last_payment"/>
                 </xpath>
                 <xpath expr="//field[@name='blocked']" position="after">

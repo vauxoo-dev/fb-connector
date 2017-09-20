@@ -4,13 +4,14 @@
 
     <!-- product historial price -->
 
-    <record id="product_historical_user" model="res.groups">
-        <field name="field">Product Historical User</field>
-    </record>
+    <!-- DELETE? TODO -->
+    <!-- <record id="product_historical_user" model="res.groups"> -->
+    <!--     <field name="field">Product Historical User</field> -->
+    <!-- </record> -->
 
-     <record id="product_historical_manager" model="res.groups">
-        <field name="field">Product Historical Manager</field>
-    </record>
+    <!--  <record id="product_historical_manager" model="res.groups"> -->
+    <!--     <field name="field">Product Historical Manager</field> -->
+    <!-- </record> -->
 
     <!-- baremo -->
 

@@ -15,7 +15,8 @@
         </style>
     </xpath>
     <!-- Remove conflicting style -->
-    <xpath expr="//head/link[@href='/web/static/src/css/full.css']" position="replace"></xpath>
+    <!-- TODO DELETE? -->
+    <!-- <xpath expr="//head/link[@href='/web/static/src/css/full.css']" position="replace"></xpath> -->
 </template>
 
 <template id="ims.html_container">

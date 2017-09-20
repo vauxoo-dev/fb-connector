@@ -28,4 +28,12 @@
     <menuitem name="Baremes" parent="commission" id="menu_baremes_tree"
         action="commission_baremo_act" groups="ims.group_baremo_manager"/>
 
+    <menuitem
+        name="Bareme Matrix"
+        parent="commission"
+        id="menu_bareme_matrix_tree"
+        action="commission_baremo_matrix_act"
+        groups="ims.group_baremo_manager"
+        />
+
 </odoo>

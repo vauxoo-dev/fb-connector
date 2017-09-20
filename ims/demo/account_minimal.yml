@@ -1,0 +1,9 @@
+-
+  In order to test the PDF reports defined on an invoice, we will print an Invoice Report
+-
+  !python {model: account.account, id: False}: |
+    from odoo import tools
+    from odoo.modules.module import get_module_resource
+    tools.convert_file(self.env.cr, 'ims',
+                       get_module_resource('account', 'test', 'account_minimal_test.xml'),
+                       {}, 'init', False, 'test')
