@@ -48,7 +48,7 @@
         "report",
     ],
     "demo": [
-        "demo/account_minimal.yml",
+        "../account/test/account_minimal_test.xml",
         # Baremo
         "demo/demo.xml",
         # Commission Payment
