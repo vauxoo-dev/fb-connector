@@ -222,18 +222,14 @@ class CommissionPayment(models.Model):
         track_visibility='onchange',
     )
 
-    company_id = fields.Many2one('res.company', 'Company',
-                                    readonly='1')
-    currency_id = fields.Related(
-        'company_id', 'currency_id',
-        string='Currency',
-        relation='res.currency',
-        type='many2one',
-        store=True,
-        readonly=True,
+    company_id = fields.Many2one('res.company', 'Company', readonly=True)
+    currency_id = fields.Many2one(
+        related='company_id.currency_id',
+        store=True, string='Currency', readonly=True,
         help=('Currency at which this report will be \
                 expressed. If not selected will be used the \
                 one set in the company'))
+
     exchange_date = fields.Date('Exchange Date', help=('Date of change\
                                                         that will be\
                                                         printed in the\
@@ -1295,15 +1291,13 @@ class CommissionLines(models.Model):
 
     aml_id = fields.Many2one('account.move.line', 'Entry Line')
     am_rec = fields.Many2one('account.move', 'Reconciling Entry')
-    am_id = fields.Related(
-        'aml_id', 'move_id',
-        string='Journal Entry', relation='account.move',
-        type='many2one', store=True, readonly=True)
+    am_id = fields.Many2one(
+        related='aml_id.move_id', store=True, readonly=True,
+        string='Journal Entry')
 
-    invoice_id = fields.Related(
-        'aml_id', 'rec_invoice',
-        string='Reconciling Invoice', relation='account.invoice',
-        type='many2one', store=True, readonly=True)
+    invoice_id = fields.Many2one(
+        related='aml_id.rec_invoice', store=True, readonly=True,
+        string='Reconciling Invoice')
     partner_id = fields.Many2one('res.partner', 'Partner')
     salesman_id = fields.Many2one('res.users', 'Salesman',
                                     required=False)
@@ -1476,13 +1470,9 @@ class CommissionSalesman(models.Model):
     comm_total_currency = fields.Float(
         'Currency Amount',
         digits_compute=dp.get_precision('Commission'), readonly=True)
-    company_id = fields.Related(
-        'commission_id', 'company_id',
+    company_id = fields.Many2one(
+        related='commission_id.company_id', store=True, readonly=True,
         string='Company',
-        relation='res.company',
-        type='many2one',
-        store=True,
-        readonly=True,
         help=('Currency at which this report will be \
                 expressed. If not selected will be used the \
                 one set in the company'))
@@ -1510,8 +1500,8 @@ class CommissionVoucher(models.Model):
         'commission.invoice',
         'comm_voucher_id', 'Facturas afectadas en esta comision',
         required=False)
-    date = fields.Related('am_id', 'date', string='Date', type='date',
-                            store=True, readonly=True)
+    date = fields.Date(
+        related='am_id.date', store=True, readonly=True, string='Date')
     commission = fields.Float(
         compute='_get_commission',
         string='Commission Amount',
