@@ -19,7 +19,7 @@
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 #
 ##############################################################################
-from odoo import fields, models
+from odoo import fields, models, api
 from odoo.addons import decimal_precision as dp
 from openerp import SUPERUSER_ID
 
