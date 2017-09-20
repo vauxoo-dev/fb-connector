@@ -20,7 +20,7 @@
 #
 ##############################################################################
 from odoo import fields, models
-from odoo.addons.decimal_precision import decimal_precision as dp
+from odoo.addons import decimal_precision as dp
 from openerp import SUPERUSER_ID
 
 
