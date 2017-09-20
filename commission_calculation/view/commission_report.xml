@@ -5,8 +5,8 @@
             auto="False"
             id="comm_salespeople_report"
             model="commission.salesman"
-            name="ims.comm_salespeople_template"
-            file="ims.comm_salespeople_template"
+            name="commission_calculation.comm_salespeople_template"
+            file="commission_calculation.comm_salespeople_template"
             string="Salespeople Commission Payment"
             report_type="qweb-pdf"
             multi="True"
@@ -14,7 +14,7 @@
             menu="True"/>
 
         <record id="comm_salespeople_report" model="ir.actions.report.xml">
-            <field name="paperformat_id" ref="ims.paperformat_us_double_letter"/>
+            <field name="paperformat_id" ref="commission_calculation.paperformat_us_double_letter"/>
             <field name="attachment_use" eval="False"/>
         </record>
     </data>

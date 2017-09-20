@@ -7,49 +7,45 @@ msgstr ""
 "Project-Id-Version: Odoo Server 8.0\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2016-05-02 03:21+0000\n"
-"PO-Revision-Date: 2016-05-02 04:06+0000\n"
-"Last-Translator: Humberto Arocha <hbto@vauxoo.com>\n"
-"Language-Team: Spanish <http://example.com/projects/addons-"
-"vauxoo/commission_payment/es/>\n"
-"Language: es\n"
+"PO-Revision-Date: 2016-05-02 03:21+0000\n"
+"Last-Translator: <>\n"
+"Language-Team: \n"
+"Language: es_VE\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
-"Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 2.2-dev\n"
+"Plural-Forms: \n"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.product,cost_historical:0
 msgid " Latest Cost"
 msgstr " Último Costo"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.cost,product_uom:0
 #: field:product.historic.price,product_uom:0
 msgid "Supplier UoM"
 msgstr "Proveedor UoM"
 
-#. module: ims
-#: model:ir.model,name:ims.model_product_product
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_product_product
 msgid "Product"
 msgstr "Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: help:product.product,list_price_historical:0
 msgid ""
 "Latest Recorded Historical\n"
 "                                             Value"
 msgstr ""
-"Último Valor Histórico\n"
-"                                             Guardado"
 
-#. module: ims
-#: model:ir.model,name:ims.model_product_historic_cost
-#: model:ir.model,name:ims.model_product_historic_price
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_product_historic_cost
+#: model:ir.model,name:commission_calculation.model_product_historic_price
 msgid "Historical Price List"
 msgstr "Lista de precio Historico"
 
-#. module: ims
+#. module: commission_calculation
 #: help:product.historic.cost,product_uom:0
 #: help:product.historic.price,product_uom:0
 msgid ""
@@ -60,199 +56,191 @@ msgid ""
 "expressed\n"
 "                                               below."
 msgstr ""
-"Escoja la Unidad de Medida\n"
-"                                               en la cual los "
-"precios y \n"
-"                                               cantidades se "
-"expresan\n"
-"                                               abajo."
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.cost,product_id:0
 msgid "Product related to this Cost"
 msgstr "Producto relacionado con este costo"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.price,price:0
 msgid "Price"
 msgstr "Precio"
 
-#. module: ims
+#. module: commission_calculation
 #: view:product.product:0
 #: field:product.product,cost_historical_ids:0
 #: field:product.product,list_price_historical_ids:0
 msgid "Historical Prices"
 msgstr "Precio Histórico"
 
-#. module: ims
+#. module: commission_calculation
 #: view:product.product:0
 msgid "Historical Cost Price"
 msgstr "Precio de costo histórico"
 
-#. module: ims
+#. module: commission_calculation
 #: view:product.product:0
 msgid "Historical Costs"
 msgstr "Costos Historicos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.cost,price:0
 msgid "Cost"
 msgstr "Costo"
 
-#. module: ims
+#. module: commission_calculation
 #: view:product.historic.cost:0
 msgid "Historical Cost"
 msgstr "Costo Historico"
 
-#. module: ims
+#. module: commission_calculation
 #: help:product.product,cost_historical:0
 msgid ""
 "Latest Recorded\n"
 "                                               Historical Cost"
 msgstr ""
-"Último Costo\n"
-"                                               Historico Guardado"
 
-#. module: ims
+#. module: commission_calculation
 #: view:product.historic.price:0
 msgid "Historical List Price"
 msgstr "Lista de precios históricos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.price,product_id:0
 msgid "Product related to this Price"
 msgstr "Producto relacionado con este precio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.historic.cost,name:0
 #: field:product.historic.price,name:0
 msgid "Date"
 msgstr "Fecha"
 
-#. module: ims
+#. module: commission_calculation
 #: field:product.product,list_price_historical:0
 msgid "Latest Price"
 msgstr "Último Precio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.discount,porc_com:0
 msgid "% Com."
 msgstr "% Com."
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.discount,porc_disc:0
 msgid "% Dcto"
 msgstr "% Dcto"
 
-#. module: ims
+#. module: commission_calculation
 #: help:baremo.discount,porc_com:0
 msgid "% de Comision @ porcentaje Descuento"
 msgstr "% de Comision @ porcentaje Descuento"
 
-#. module: ims
+#. module: commission_calculation
 #: help:baremo.discount,porc_disc:0
 msgid "% de Descuento por producto"
 msgstr "% de Descuento por producto"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_form
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_form
 msgid "3% Commission at 30 days w/o Disc."
 msgstr "3% Comisión a 30 días sin Desc."
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.matrix,baremo_id:0
 msgid "Bareme"
 msgstr "Baremo"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_form
-#: view:baremo.matrix:ims.view_baremo_matrix_form
-#: view:baremo.matrix:ims.view_baremo_matrix_tree
-#: model:ir.actions.act_window,name:ims.commission_baremo_matrix_act
-#: model:ir.ui.menu,name:ims.menu_bareme_matrix_tree
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_form
+#: view:baremo.matrix:commission_calculation.view_baremo_matrix_form
+#: view:baremo.matrix:commission_calculation.view_baremo_matrix_tree
+#: model:ir.actions.act_window,name:commission_calculation.commission_baremo_matrix_act
+#: model:ir.ui.menu,name:commission_calculation.menu_bareme_matrix_tree
 msgid "Bareme Matrix"
 msgstr "Matriz de Baremos"
 
-#. module: ims
-#: view:res.users:ims.res_users_view_baremo
+#. module: commission_calculation
+#: view:res.users:commission_calculation.res_users_view_baremo
 msgid "Bareme to be used when selected Bareme from Salesman on Commission Payment"
 msgstr ""
 "Baremo a ser usado cuando se seleccione Baremo en el Vendedor en el Pago de "
 "Comisiones"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_tree
-#: model:ir.actions.act_window,name:ims.commission_baremo_act
-#: model:ir.ui.menu,name:ims.menu_baremes_tree
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_tree
+#: model:ir.actions.act_window,name:commission_calculation.commission_baremo_act
+#: model:ir.ui.menu,name:commission_calculation.menu_baremes_tree
 msgid "Baremes"
 msgstr "Baremos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.discount,disc_id:0
-#: view:product.product:ims.view_product_baremo_tree
-#: view:res.company:ims.res_company_view_baremo
+#: view:product.product:commission_calculation.view_product_baremo_tree
+#: view:res.company:commission_calculation.res_company_view_baremo
 #: field:res.company,baremo_id:0
 #: field:res.partner,baremo_id:0
-#: view:res.users:ims.res_users_view_baremo
+#: view:res.users:commission_calculation.res_users_view_baremo
 msgid "Baremo"
 msgstr "Baremo"
 
-#. module: ims
-#: model:res.groups,name:ims.group_baremo_manager
+#. module: commission_calculation
+#: model:res.groups,name:commission_calculation.group_baremo_manager
 msgid "Baremo / Manager"
 msgstr "Baremo / Administrador"
 
-#. module: ims
-#: model:res.groups,name:ims.group_baremo_user
+#. module: commission_calculation
+#: model:res.groups,name:commission_calculation.group_baremo_user
 msgid "Baremo / User"
 msgstr "Baremo / Usuario"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.book,name:0
 msgid "Baremo Description"
 msgstr "Descripción de Baremo"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.book,matrix_ids:0
 #: field:product.product,matrix_ids:0
 #: field:res.users,matrix_ids:0
 msgid "Baremo Matrix"
 msgstr "Matriz de Baremo"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_form
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_form
 msgid "Baremos"
 msgstr "Baremos"
 
-#. module: ims
-#: view:ims.ims.view_baremo_form
-#: view:ims.ims.view_baremo_tree
+#. module: commission_calculation
+#: view:commission_calculation.commission_calculation.view_baremo_form
+#: view:commission_calculation.commission_calculation.view_baremo_tree
 msgid "Commission Days & Discounts"
 msgstr "Días de Comisión & Descuentos"
 
-#. module: ims
+#. module: commission_calculation
 #: model:ir.ui.menu,name:baremo.commission
 msgid "Commission Settings"
 msgstr "Configuraciones de Comisiones"
 
-#. module: ims
-#: view:ims.ims.view_baremo_form
-#: view:baremo.discount:ims.view_baremo_discount_form
+#. module: commission_calculation
+#: view:commission_calculation.commission_calculation.view_baremo_form
+#: view:baremo.discount:commission_calculation.view_baremo_discount_form
 msgid "Commission by Discount"
 msgstr "Comisión por Descuento"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,disc_ids:0
 #: help:baremo,disc_ids:0
 msgid "Commission per Discount @ Due Days"
 msgstr "Comisión por Descuento @ Días Vencidos"
 
-#. module: ims
-#: model:ir.model,name:ims.model_res_company
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_res_company
 msgid "Companies"
 msgstr "Compañías"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,create_uid:0
 #: field:baremo.book,create_uid:0
 #: field:baremo.discount,create_uid:0
@@ -260,7 +248,7 @@ msgstr "Compañías"
 msgid "Created by"
 msgstr "Creado por"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,create_date:0
 #: field:baremo.book,create_date:0
 #: field:baremo.discount,create_date:0
@@ -268,37 +256,37 @@ msgstr "Creado por"
 msgid "Created on"
 msgstr "Creado el"
 
-#. module: ims
+#. module: commission_calculation
 #: help:baremo,number:0
 msgid "Days since Emission/Due Date"
 msgstr "Días desde la Fecha de Emisión/Vencimiento"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,number:0
 msgid "Due Days"
 msgstr "Días Vencidos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,name:0
 msgid "Due Days Description"
 msgstr "Descripción Días Vencidos"
 
-#. module: ims
+#. module: commission_calculation
 #: help:baremo,name:0
 msgid "Due days Description"
 msgstr "Descripción Días Vencidos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.book,bar_ids:0
 msgid "Emission Days"
 msgstr "Días de Emisión"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_form
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_form
 msgid "For these Partners & Products this Bareme will be used"
 msgstr "Para estos Partners & Productos se usará este Baremo"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,id:0
 #: field:baremo.book,id:0
 #: field:baremo.discount,id:0
@@ -306,7 +294,7 @@ msgstr "Para estos Partners & Productos se usará este Baremo"
 msgid "ID"
 msgstr "ID"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,write_uid:0
 #: field:baremo.book,write_uid:0
 #: field:baremo.discount,write_uid:0
@@ -314,7 +302,7 @@ msgstr "ID"
 msgid "Last Updated by"
 msgstr "Última Actualización por"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,write_date:0
 #: field:baremo.book,write_date:0
 #: field:baremo.discount,write_date:0
@@ -322,92 +310,92 @@ msgstr "Última Actualización por"
 msgid "Last Updated on"
 msgstr "Última Actualización el"
 
-#. module: ims
-#: view:baremo.book:ims.view_baremo_book_form
+#. module: commission_calculation
+#: view:baremo.book:commission_calculation.view_baremo_book_form
 msgid "On Commission Payment this Bareme can be used with other options"
 msgstr "En el Pago de Comisiones se usará este Baremo con otras opciones"
 
-#. module: ims
-#: view:product.product:ims.view_product_baremo_tree
+#. module: commission_calculation
+#: view:product.product:commission_calculation.view_product_baremo_tree
 msgid "On this Product these Baremes will be used when Commission Payment on these Salesmen are computed on Invoiced Products and option Matrix Bareme is selected"
 msgstr ""
 "En este Producto, estos Baremos se usarán cuando el Pago de Comisiones con "
 "estos Vendedores se calcule basado en Productos Facturados y la opción "
 "Matriz de Baremo se seleccione"
 
-#. module: ims
-#: view:res.users:ims.res_users_view_baremo
+#. module: commission_calculation
+#: view:res.users:commission_calculation.res_users_view_baremo
 msgid "On this Salesman these Baremes will be used when these products are present on Invoices and option Matrix Bareme on Commission Payment is selected"
 msgstr ""
 "En este Vendedor estos Baremos se usarán cuando estos productos estén "
 "presente en las Facturas y la opción Matriz de Baremo en Pago de Comisión "
 "esté seleccionada"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo,baremo_id:0
 msgid "Padre"
 msgstr "Padre"
 
-#. module: ims
-#: model:ir.model,name:ims.model_res_partner
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_res_partner
 msgid "Partner"
 msgstr "Partner"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.matrix,product_id:0
-#: model:ir.model,name:ims.model_product_product
+#: model:ir.model,name:commission_calculation.model_product_product
 msgid "Product"
 msgstr "Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: field:baremo.matrix,user_id:0
 msgid "Salesman"
 msgstr "Vendedor"
 
-#. module: ims
+#. module: commission_calculation
 #: sql_constraint:baremo.matrix:0
 msgid "Same Salesman & Product can be assigned to only one Baremo"
 msgstr "El mismo Vendedor & Producto se puede asignar aun sólo Baremo"
 
-#. module: ims
-#: view:baremo.matrix:ims.view_baremo_matrix_form
+#. module: commission_calculation
+#: view:baremo.matrix:commission_calculation.view_baremo_matrix_form
 msgid "Select a Baremo"
 msgstr "Seleccione un Baremo"
 
-#. module: ims
-#: view:ims.ims.view_baremo_form
+#. module: commission_calculation
+#: view:commission_calculation.commission_calculation.view_baremo_form
 msgid "Up to 30 days"
 msgstr "Hasta 30 días"
 
-#. module: ims
-#: model:ir.model,name:ims.model_res_users
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_res_users
 msgid "Users"
 msgstr "Usuarios"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "% COMMISSION"
 msgstr "% COMISION"
 
-#. module: ims
-#: view:website:ims.external_layout_footer
+#. module: commission_calculation
+#: view:website:commission_calculation.external_layout_footer
 msgid "&bull;"
 msgstr "&bull;"
 
-#. module: ims
-#: view:website:ims.external_layout_footer
+#. module: commission_calculation
+#: view:website:commission_calculation.external_layout_footer
 msgid "(Draft Document)"
 msgstr "(Documento Borrador)"
 
-#. module: ims
-#: view:website:ims.minimal_layout
+#. module: commission_calculation
+#: view:website:commission_calculation.minimal_layout
 msgid "<!DOCTYPE html>"
 msgstr "<!DOCTYPE html>"
 
-#. module: ims
-#: model:ir.actions.act_window,help:ims.comm_line_fix_act
-#: model:ir.actions.act_window,help:ims.comm_line_invoice_ids_all_act
-#: model:ir.actions.act_window,help:ims.comm_line_product_ids_all_act
+#. module: commission_calculation
+#: model:ir.actions.act_window,help:commission_calculation.comm_line_fix_act
+#: model:ir.actions.act_window,help:commission_calculation.comm_line_invoice_ids_all_act
+#: model:ir.actions.act_window,help:commission_calculation.comm_line_product_ids_all_act
 msgid "<p class=\"oe_view_nocontent_create\">\n"
 "                No commissions for Products have been computed\n"
 "              </p><p>\n"
@@ -424,8 +412,8 @@ msgstr ""
 "              </p>\n"
 "            "
 
-#. module: ims
-#: model:ir.actions.act_window,help:ims.commission_salesman_all_act
+#. module: commission_calculation
+#: model:ir.actions.act_window,help:commission_calculation.commission_salesman_all_act
 msgid "<p class=\"oe_view_nocontent_create\">\n"
 "                No commissions for Salespeople have been computed\n"
 "              </p><p>\n"
@@ -442,157 +430,157 @@ msgstr ""
 "              </p>\n"
 "            "
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "AMOUNT"
 msgstr "CANTIDAD"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,pay_inv:0
 msgid "Abono Fact."
 msgstr "Abono Fact."
 
-#. module: ims
-#: model:ir.ui.menu,name:ims.commission_all_mi
+#. module: commission_calculation
+#: model:ir.ui.menu,name:commission_calculation.commission_all_mi
 msgid "All Commissions"
 msgstr "Todas las Comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,unknown_salespeople:0
 msgid "Allow Unknown Salespeople?"
 msgstr "Permitir Vendedor Desconocido"
 
-#. module: ims
-#: view:commission.lines:ims.commission_lines_tree
+#. module: commission_calculation
+#: view:commission.lines:commission_calculation.commission_lines_tree
 msgid "Aqui se muestran todos los productos y sus respectivas comisiones"
 msgstr "Aqui se muestran todos los productos y sus respectivas comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,sale_noids:0
 msgid "Articulos sin asociacion"
 msgstr "Artículos sin asociación"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Asesor"
 msgstr "Vendedor"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,baremo_comm:0
 msgid "B./%Comm."
 msgstr "%Com. B."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,timespan:0
 msgid "B./Days"
 msgstr "Días/B."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,rate_number:0
 msgid "B./Rate (%)"
 msgstr "Tasa/B. (%)"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "BAREME COMMISSION %"
 msgstr "COMISION DE BAREMO %"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "BAREME DAYS"
 msgstr "DÍAS DE BAREMO"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "BAREME DISCOUNT"
 msgstr "DESCUENTO EN BAREMO"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,baremo_id:0
 msgid "Baremo"
 msgstr "Baremo"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_baremo_policy:0
 msgid "Baremo Matrix"
 msgstr "Matriz Baremo"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_baremo_policy:0
 msgid "Baremo Policy"
 msgstr "Política de Baremo"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Baremo from"
 msgstr "Baremo en"
 
-#. module: ims
+#. module: commission_calculation
 #: code:addons/commission_payment/model/commission.py:1145
 #, python-format
 msgid "Baremo on Matrix only applies on Invoiced Products"
 msgstr "Baremo en Matriz solo aplica a Productos Facturados"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Baremo to be used if not Baremo set on Commercial Entity:"
 msgstr "Baremo a usar si no está configurado uno en la Entidad Comercial:"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Baremo to be used if not Baremo set on Company:"
 msgstr "Baremo a usar si no está configurado uno en la Compañía:"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Baremo to be used if not Baremo set on Partner:"
 msgstr "Baremo a usar si no está configurado uno en el Contacto:"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Baremo to be used if not policy set on Salespeople:"
 msgstr "Baremo a usar si no está configurado uno en el Vendedor:"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Based on"
 msgstr "Basado en"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_type:0
 msgid "Basis"
 msgstr "Base"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "COMMISSION"
 msgstr "COMISIÓN"
 
-#. module: ims
-#: view:website:ims.external_layout_header
+#. module: commission_calculation
+#: view:website:commission_calculation.external_layout_header
 msgid "COMMISSION PAYMENT FROM"
 msgstr "PAGO DE COMISIÓN DESDE"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,state:0
 msgid "Cancelled"
 msgstr "Cancelado"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,name:0
 #: field:commission.noprice,name:0
 #: field:commission.sale.noid,name:0
 msgid "Comentario"
 msgstr "Comentario"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,commission_id:0
 #: field:commission.noprice,commission_id:0
 #: field:commission.sale.noid,commission_id:0
 msgid "Comision"
 msgstr "Comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,comm_line_ids:0
 #: field:commission.payment,comm_line_ids:0
 #: field:commission.payment,comm_line_invoice_ids:0
@@ -600,119 +588,119 @@ msgstr "Comisión"
 msgid "Comision por productos"
 msgstr "Comisión por productos"
 
-#. module: ims
-#: model:ir.actions.act_window,name:ims.commission_payment_all_act
+#. module: commission_calculation
+#: model:ir.actions.act_window,name:commission_calculation.commission_payment_all_act
 msgid "Comisiones"
 msgstr "Comisiones"
 
-#. module: ims
-#: view:commission.lines:ims.commission_lines_graph
+#. module: commission_calculation
+#: view:commission.lines:commission_calculation.commission_lines_graph
 msgid "Comisiones x Producto"
 msgstr "Comisiones x Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,days:0
 msgid "Comm. Days"
 msgstr "Días Com."
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_baremo_policy:0
 #: selection:commission.payment,commission_salesman_policy:0
 msgid "Commercial Entity"
 msgstr "Entidad Comercial"
 
-#. module: ims
-#: model:res.groups,name:ims.group_comm_payment_manager
+#. module: commission_calculation
+#: model:res.groups,name:commission_calculation.group_comm_payment_manager
 msgid "Commision Payment / Manager"
 msgstr "Administrador / Pago de Comisiones"
 
-#. module: ims
-#: model:res.groups,name:ims.group_comm_payment_user
+#. module: commission_calculation
+#: model:res.groups,name:commission_calculation.group_comm_payment_user
 msgid "Commision Payment / User"
 msgstr "Usuario / Pago de Comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.voucher,commission_id:0
 msgid "Commission"
 msgstr "Comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,commission:0
 #: field:commission.lines,commission:0
-#: view:commission.salesman:ims.commission_salesman_tree
+#: view:commission.salesman:commission_calculation.commission_salesman_tree
 #: field:commission.salesman,comm_total:0
 #: field:commission.voucher,commission:0
 msgid "Commission Amount"
 msgstr "Monto de Comisión"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 #: field:commission.payment,name:0
 msgid "Commission Concept"
 msgstr "Concepto de la Comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,commission_id:0
 #: field:commission.salesman,commission_id:0
 msgid "Commission Document"
 msgstr "Documento Comisión"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_tree
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_tree
 msgid "Commission Payments"
 msgstr "Pagos de Comisiones"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Commissions"
 msgstr "Comisiones"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Commissions by Salespeople"
 msgstr "Comisiones por Vendedores"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
-#: model:ir.actions.act_window,name:ims.comm_line_invoice_ids_all_act
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
+#: model:ir.actions.act_window,name:commission_calculation.comm_line_invoice_ids_all_act
 msgid "Commissions on Invoices"
 msgstr "Comisiones en Facturas"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
-#: model:ir.actions.act_window,name:ims.comm_line_fix_act
-#: model:ir.actions.act_window,name:ims.comm_line_product_ids_all_act
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
+#: model:ir.actions.act_window,name:commission_calculation.comm_line_fix_act
+#: model:ir.actions.act_window,name:commission_calculation.comm_line_product_ids_all_act
 msgid "Commissions on Products"
 msgstr "Comisiones en Productos"
 
-#. module: ims
-#: model:ir.model,name:ims.model_res_company
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_res_company
 msgid "Companies"
 msgstr "Compañías"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_baremo_policy:0
 #: field:commission.payment,company_id:0
 #: field:commission.salesman,company_id:0
 msgid "Company"
 msgstr "Compañía"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Computation begins on"
 msgstr "Cálculo comienza en"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Computation ends on"
 msgstr "Cálculo termina en"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Compute on"
 msgstr "Calcular con"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,create_uid:0
 #: field:commission.lines,create_uid:0
 #: field:commission.noprice,create_uid:0
@@ -723,7 +711,7 @@ msgstr "Calcular con"
 msgid "Created by"
 msgstr "Creado por"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,create_date:0
 #: field:commission.lines,create_date:0
 #: field:commission.noprice,create_date:0
@@ -734,20 +722,20 @@ msgstr "Creado por"
 msgid "Created on"
 msgstr "Creado el"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,currency_id:0
 #: field:commission.payment,currency_id:0
 #: field:commission.salesman,currency_id:0
 msgid "Currency"
 msgstr "Moneda"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,commission_currency:0
 #: field:commission.salesman,comm_total_currency:0
 msgid "Currency Amount"
 msgstr "Cantidad en Moneda"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,currency_id:0
 #: help:commission.salesman,company_id:0
 msgid "Currency at which this report will be                     expressed. If not selected will be used the                     one set in the company"
@@ -755,28 +743,28 @@ msgstr ""
 "Moneda en la cual este reporte será                     expresado. Si no se "
 "selecciona se usará la                     que está en la compañía"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "DATE"
 msgstr "FECHA"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "DUE DAYS"
 msgstr "FECHA VENCIMIENTO"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.noprice,date:0
 #: field:commission.voucher,date:0
 msgid "Date"
 msgstr "Fecha"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_policy_date_end:0
 msgid "Date of Payment"
 msgstr "Fecha de Pago"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,exchange_date:0
 msgid "Date of change                                                            that will be                                                            printed in the                                                            report, with                                                            respect to the                                                            currency of the                                                            company"
 msgstr ""
@@ -787,78 +775,78 @@ msgstr ""
 "la                                                            moneda de "
 "la                                                            compañía"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,message_last_post:0
 msgid "Date of the last message posted on the record."
 msgstr "Fecha del último mensaje escrito en el documento."
 
-#. module: ims
+#. module: commission_calculation
 #: field:res.company,comm_tax:0
 msgid "Default Tax for Commissions"
 msgstr "Impuesto predeterminado en las Comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.sale.noid,inv_line_id:0
 msgid "Descripcion de Articulo"
 msgstr "Descripción de Artículo"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_baremo_policy:0
 msgid "Document"
 msgstr "Documento"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,state:0
 msgid "Done"
 msgstr "Realizado"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,state:0
 msgid "Draft"
 msgstr "Borrador"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,rate_item:0
 msgid "Dsct. (%)"
 msgstr "Dcto. (%)"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_policy_date_start:0
 msgid "Due Date"
 msgstr "Fecha de Vencimiento"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "EMISSION DAYS"
 msgstr "DÍÁS EMISIÓN"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "END DATE"
 msgstr "FECHA FINAL"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_policy_date_start:0
 msgid "Emission Date"
 msgstr "Fecha Emisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,date_stop:0
 #: field:commission.payment,date_stop:0
 msgid "End Date"
 msgstr "Fecha Final"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_policy_date_end:0
 msgid "End Date Computation Policy"
 msgstr "Política de Cálculo de Fecha Final"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,aml_id:0
 msgid "Entry Line"
 msgstr "Línea de Asiento"
 
-#. module: ims
+#. module: commission_calculation
 #: code:addons/commission_payment/model/commission.py:83
 #: code:addons/commission_payment/model/commission.py:1144
 #: code:addons/commission_payment/model/commission.py:1220
@@ -866,48 +854,48 @@ msgstr "Línea de Asiento"
 msgid "Error!"
 msgstr "Error!"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,state:0
 msgid "Estado"
 msgstr "Estado"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,exchange_date:0
 msgid "Exchange Date"
 msgstr "Fecha de Cambio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,invoice_id:0
 msgid "Factura"
 msgstr "Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,comm_invoice_ids:0
 #: field:commission.voucher,comm_invoice_ids:0
 msgid "Facturas afectadas en esta comision"
 msgstr "Facturas afectadas en esta comisión"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Fix Commissions"
 msgstr "Resolver Comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,comm_fix:0
 msgid "Fix Commissions?"
 msgstr "Resolver Comisiones?"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_follower_ids:0
 msgid "Followers"
 msgstr "Seguidores"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_type:0
 msgid "Fully Paid Invoices"
 msgstr "Facturas Totalmente Pagadas"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,message_summary:0
 msgid "Holds the Chatter summary (number of messages, ...). This summary is directly in html format in order to be inserted in kanban views."
 msgstr ""
@@ -915,7 +903,7 @@ msgstr ""
 "sumario está directamente en formato html con el fin de ser insertado en las "
 "vistas kanban."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,id:0
 #: field:commission.lines,id:0
 #: field:commission.noprice,id:0
@@ -923,128 +911,128 @@ msgstr ""
 #: field:commission.sale.noid,id:0
 #: field:commission.salesman,id:0
 #: field:commission.voucher,id:0
-#: field:report.ims.comm_salespeople_template,id:0
+#: field:report.commission_calculation.comm_salespeople_template,id:0
 msgid "ID"
 msgstr "ID"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICE DATE"
 msgstr "FECHA FACTURA"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICE NUMBER"
 msgstr "NÚMERO DE FACTURA"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICE PAYMENT"
 msgstr "PAGO FACTURA"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICE SUBTOTAL"
 msgstr "SUBTOTAL FACTURADO"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICE TOTAL"
 msgstr "TOTAL FACTURADO"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "INVOICED AMOUNT"
 msgstr "CANTIDAD FACTURADA"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,message_unread:0
 msgid "If checked new messages require your attention."
 msgstr "Si está marcado nuevos mensajes requieren de su atención."
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,state:0
 msgid "In Progress"
 msgstr "En Progreso"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_salesman_policy:0
-#: model:ir.model,name:ims.model_account_invoice
+#: model:ir.model,name:commission_calculation.model_account_invoice
 msgid "Invoice"
 msgstr "Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,comm_invoice_id:0
 msgid "Invoice Commission"
 msgstr "Comisión en Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,inv_date:0
 msgid "Invoice Date"
 msgstr "Fecha Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.noprice,invoice_num:0
 msgid "Invoice Number"
 msgstr "Número de Factura"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Invoice. Comm."
 msgstr "Com. Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_scope:0
 msgid "Invoiced Products "
 msgstr "Productos Facturados "
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 #: field:commission.payment,invoice_ids:0
 msgid "Invoices"
 msgstr "Facturas"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_is_follower:0
 msgid "Is a Follower"
 msgstr "Es un Seguidor"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Item w/o Products"
 msgstr "Artículo sin Productos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,am_id:0
 #: field:commission.voucher,am_id:0
 msgid "Journal Entry"
 msgstr "Asiento Contable"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 #: field:commission.payment,aml_ids:0
-#: model:ir.actions.act_window,name:ims.action_account_moves_all_tree
-#: model:ir.model,name:ims.model_account_move_line
+#: model:ir.actions.act_window,name:commission_calculation.action_account_moves_all_tree
+#: model:ir.model,name:commission_calculation.model_account_move_line
 msgid "Journal Items"
 msgstr "Líneas de Asiento"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_last_post:0
 msgid "Last Message Date"
 msgstr "Fecha Último Mensaje"
 
-#. module: ims
+#. module: commission_calculation
 #: field:account.invoice,date_last_payment:0
 #: field:account.move.line,date_last_payment:0
 msgid "Last Payment Date"
 msgstr "Fecha de Último Pago"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_policy_date_end:0
 msgid "Last Payment on Invoice"
 msgstr "Último Pago en Factura"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,write_uid:0
 #: field:commission.lines,write_uid:0
 #: field:commission.noprice,write_uid:0
@@ -1055,7 +1043,7 @@ msgstr "Último Pago en Factura"
 msgid "Last Updated by"
 msgstr "Última Actualización por"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,write_date:0
 #: field:commission.lines,write_date:0
 #: field:commission.noprice,write_date:0
@@ -1066,361 +1054,361 @@ msgstr "Última Actualización por"
 msgid "Last Updated on"
 msgstr "Última Actualización el"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,price_date:0
 msgid "List Date"
 msgstr "Fecha de Lista"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_ids:0
 msgid "Messages"
 msgstr "Mensajes"
 
-#. module: ims
+#. module: commission_calculation
 #: help:commission.payment,message_ids:0
 msgid "Messages and communication history"
 msgstr "Mensajes e historia de comunicación"
 
-#. module: ims
-#: view:website:ims.external_layout_header
+#. module: commission_calculation
+#: view:website:commission_calculation.external_layout_header
 msgid "NO SALESMAN SET (NEEDS TO BE FIXED)"
 msgstr "SIN VENDEDOR ASIGNADO (SE NECESITA SOLVENTAR)"
 
-#. module: ims
-#: model:ir.model,name:ims.model_commission_payment
+#. module: commission_calculation
+#: model:ir.model,name:commission_calculation.model_commission_payment
 msgid "OpenERP Model : commission_payment\n"
 "    "
 msgstr ""
 "OpenERP Model : commission_payment↵\n"
 "    "
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Other Info"
 msgstr "Otra Información"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "PARTNER"
 msgstr "PARTNER"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "PAYMENT AMOUNT"
 msgstr "MONTO DE PAGO"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "PRODUCT"
 msgstr "PRODUCTO"
 
-#. module: ims
-#: view:website:ims.external_layout_footer
+#. module: commission_calculation
+#: view:website:commission_calculation.external_layout_footer
 msgid "Page:"
 msgstr "Página:"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,pay_off:0
 msgid "Pago"
 msgstr "Pago"
 
-#. module: ims
-#: view:commission.lines:ims.commission_lines_form
-#: view:commission.payment:ims.commission_payment_form
-#: view:commission.salesman:ims.commission_salesman_form
-#: view:commission.salesman:ims.commission_salesman_graph
+#. module: commission_calculation
+#: view:commission.lines:commission_calculation.commission_lines_form
+#: view:commission.payment:commission_calculation.commission_payment_form
+#: view:commission.salesman:commission_calculation.commission_salesman_form
+#: view:commission.salesman:commission_calculation.commission_salesman_graph
 msgid "Pago de Comisiones"
 msgstr "Pago de Comisiones"
 
-#. module: ims
+#. module: commission_calculation
 #: field:account.move.line,paid_comm:0
 msgid "Paid Commission?"
 msgstr "Comisión Pagada?"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_type:0
 msgid "Partial Payments"
 msgstr "Ƥagos Parciales"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,partner_id:0
 #: selection:commission.payment,commission_baremo_policy:0
 #: selection:commission.payment,commission_salesman_policy:0
 msgid "Partner"
 msgstr "Partner"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,pay_inv:0
 msgid "Pay. to Doc."
 msgstr "Pago al Doc."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,pay_date:0
 msgid "Payment Date"
 msgstr "Fecha de Pago"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Payments"
 msgstr "Pagos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,price_unit:0
 msgid "Prec. Unit."
 msgstr "Prec. Unit."
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Prepare"
 msgstr "Preparar"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,price_list:0
 msgid "Price List"
 msgstr "Lista de Precios"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Prod. Comm."
 msgstr "Com. Prod."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,product_id:0
 msgid "Product"
 msgstr "Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.noprice,product_id:0
 msgid "Producto"
 msgstr "Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,noprice_ids:0
 msgid "Productos sin precio de lista historico"
 msgstr "Productos sin precio de lista histórico"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Products w/o PriceList"
 msgstr "Productos sin Lista de Precios"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Recompute"
 msgstr "Recalcular"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,am_rec:0
 msgid "Reconciling Entry"
 msgstr "Asiento Conciliatorio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:account.move.line,rec_invoice:0
 #: field:commission.lines,invoice_id:0
 msgid "Reconciling Invoice"
 msgstr "Factura Conciliatoria"
 
-#. module: ims
+#. module: commission_calculation
 #: field:account.move.line,rec_aml:0
 msgid "Reconciling Journal Item"
 msgstr "Línea de Asiento Conciliatorio"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "START DATE"
 msgstr "FECHA INICIO"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,salesman_id:0
 #: field:commission.salesman,salesman_id:0
 #: field:commission.voucher,comm_sale_id:0
 msgid "Salesman"
 msgstr "Vendedor"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_salesman_policy:0
 msgid "Salesman Policy"
 msgstr "Política de Vendedor"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 #: selection:commission.payment,commission_baremo_policy:0
 #: field:commission.payment,user_ids:0
 msgid "Salespeople"
 msgstr "Vendedores"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,comm_salespeople_id:0
 msgid "Salespeople Commission"
 msgstr "Comisiones de Vendedores"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.salesman,comm_lines_ids:0
 msgid "Salespeople Commission Details"
 msgstr "Detalles de Comisiones a Vendedores"
 
-#. module: ims
-#: model:ir.actions.report.xml,name:ims.comm_salespeople_report
+#. module: commission_calculation
+#: model:ir.actions.report.xml,name:commission_calculation.comm_salespeople_report
 msgid "Salespeople Commission Payment"
 msgstr "Pago de Comisiones a Vendedores"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,salesman_ids:0
-#: view:commission.salesman:ims.commission_salesman_tree
-#: model:ir.actions.act_window,name:ims.commission_salesman_all_act
-#: model:ir.ui.menu,name:ims.commission
+#: view:commission.salesman:commission_calculation.commission_salesman_tree
+#: model:ir.actions.act_window,name:commission_calculation.commission_salesman_all_act
+#: model:ir.ui.menu,name:commission_calculation.commission
 msgid "Salespeople Commissions"
 msgstr "Comisiones a Vendedores"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Salespeople from"
 msgstr "Vendedores en"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_scope:0
 msgid "Scope"
 msgstr "Abarca"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Set to Draft"
 msgstr "Volver a Borrador"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,date_start:0
 #: field:commission.payment,date_start:0
 msgid "Start Date"
 msgstr "Fecha de Inicio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,commission_policy_date_start:0
 msgid "Start Date Computation Policy"
 msgstr "Política de Cálculo para Fecha de Inicio"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,inv_subtotal:0
 msgid "SubTot. Doc."
 msgstr "Doc. SubTot."
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,price_subtotal:0
 msgid "SubTot. Product"
 msgstr "SubTot. Producto"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_summary:0
 msgid "Summary"
 msgstr "Sumario"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "TAX %"
 msgstr "% IVA"
 
-#. module: ims
-#: view:website:ims.salespeople_document
+#. module: commission_calculation
+#: view:website:commission_calculation.salespeople_document
 msgid "TRANSACTION"
 msgstr "TRANSACCIÓN"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,perc_iva:0
 msgid "Tax (%)"
 msgstr "Imp. (%)"
 
-#. module: ims
+#. module: commission_calculation
 #: code:addons/commission_payment/model/commission.py:1220
 #, python-format
 msgid "There are items to fix"
 msgstr "Hay artículos que resolver"
 
-#. module: ims
+#. module: commission_calculation
 #: code:addons/commission_payment/model/commission.py:84
 #, python-format
 msgid "There is no default company for the current user!"
 msgstr "No compañía predeterminada para el usuario actual!"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "This baremo is the only one to be used on this Document:"
 msgstr "Este baremo es el único que se usará en este Documento:"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,total_comm:0
 msgid "Total Commission"
 msgstr "Comisión Total"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Total Credit"
 msgstr "Crédito Total"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,name:0
 msgid "Transaccion"
 msgstr "Transacción"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,message_unread:0
 msgid "Unread Messages"
 msgstr "Mensajes no leídos"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "Validate"
 msgstr "Validar"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "View Invoices"
 msgstr "Ver Facturas"
 
-#. module: ims
-#: view:commission.payment:ims.commission_payment_form
+#. module: commission_calculation
+#: view:commission.payment:commission_calculation.commission_payment_form
 msgid "View Payments"
 msgstr "Ver Pagos"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.invoice,comm_voucher_id:0
 msgid "Voucher"
 msgstr "Comprobante"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.lines,comm_voucher_id:0
 msgid "Voucher Commission"
 msgstr "Comprobante de Comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.salesman,comm_voucher_ids:0
 msgid "Vouchers Affected in this commission"
 msgstr "Comprobantes Afectados en esta comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: field:commission.payment,comm_voucher_ids:0
 msgid "Vouchers afectados en esta comision"
 msgstr "Vouchers afectados en esta comisión"
 
-#. module: ims
+#. module: commission_calculation
 #: selection:commission.payment,commission_scope:0
 msgid "Whole Invoice"
 msgstr "Factura Completa"
 
-#. module: ims
-#: view:website:ims.layout
-msgid "ims.layout"
-msgstr "ims.layout"
+#. module: commission_calculation
+#: view:website:commission_calculation.layout
+msgid "commission_calculation.layout"
+msgstr "commission_calculation.layout"
 
-#. module: ims
-#: view:website:ims.layout
+#. module: commission_calculation
+#: view:website:commission_calculation.layout
 msgid "data_report_dpi if data_report_dpi else None"
 msgstr "data_report_dpi if data_report_dpi else None"
 
-#. module: ims
-#: view:website:ims.layout
+#. module: commission_calculation
+#: view:website:commission_calculation.layout
 msgid "data_report_header_spacing if data_report_header_spacing else None"
 msgstr "data_report_header_spacing if data_report_header_spacing else None"
 
-#. module: ims
-#: view:website:ims.layout
+#. module: commission_calculation
+#: view:website:commission_calculation.layout
 msgid "data_report_margin_top if data_report_margin_top else None"
 msgstr "data_report_margin_top if data_report_margin_top else None"

@@ -4,6 +4,6 @@
   !python {model: account.account, id: False}: |
     from odoo import tools
     from odoo.modules.module import get_module_resource
-    tools.convert_file(self.env.cr, 'ims',
+    tools.convert_file(self.env.cr, 'commission_calculation',
                        get_module_resource('account', 'test', 'account_minimal_test.xml'),
                        {}, 'init', False, 'test')

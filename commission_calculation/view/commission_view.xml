@@ -121,7 +121,7 @@
                         <button name="validate" states="open" string="Validate" type="object" class="oe_highlight"/>
                         <button name="prepare" states="open" string="Prepare" type="object"/>
                         <button name="action_draft" states="open" string="Set to Draft" type="object"/>
-                        <button name="action_draft" states="done" string="Set to Draft" type="object" groups="ims.group_comm_payment_manager"/>
+                        <button name="action_draft" states="done" string="Set to Draft" type="object" groups="commission_calculation.group_comm_payment_manager"/>
                         <field
                             name="state"
                             widget="statusbar"
@@ -158,7 +158,7 @@
                                 string="Commissions"
                                 class="oe_inline oe_stat_button"
                                 type="action"
-                                name="%(ims.commission_salesman_all_act)d"
+                                name="%(commission_calculation.commission_salesman_all_act)d"
                                 attrs="{'invisible':[('state','=','draft')]}"
                                 icon="fa-strikethrough"
                                 >
@@ -167,7 +167,7 @@
                                 string="Prod. Comm."
                                 class="oe_inline oe_stat_button"
                                 type="action"
-                                name="%(ims.comm_line_product_ids_all_act)d"
+                                name="%(commission_calculation.comm_line_product_ids_all_act)d"
                                 attrs="{'invisible':['|',('state','=','draft'),('commission_scope','!=','product_invoiced')]}"
                                 icon="fa-strikethrough"
                                 >
@@ -176,7 +176,7 @@
                                 string="Invoice. Comm."
                                 class="oe_inline oe_stat_button"
                                 type="action"
-                                name="%(ims.comm_line_invoice_ids_all_act)d"
+                                name="%(commission_calculation.comm_line_invoice_ids_all_act)d"
                                 attrs="{'invisible':['|',('state','=','draft'),('commission_scope','!=','whole_invoice')]}"
                                 icon="fa-strikethrough"
                                 >
@@ -637,7 +637,7 @@
 
         <record id="res_company_view_comm_tax" model="ir.ui.view">
             <field name="name">res.company.view.comm_tax</field>
-            <field name="inherit_id" ref="ims.res_company_view_baremo"/>
+            <field name="inherit_id" ref="commission_calculation.res_company_view_baremo"/>
             <field name="model">res.company</field>
             <field name="arch" type="xml">
                 <xpath expr="//group[@name='baremo_grp']" position="inside">

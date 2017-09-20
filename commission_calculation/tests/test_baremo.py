@@ -15,7 +15,7 @@ class TestBaremo(TransactionCase):
 
     def test_basic_baremo(self):
         cur, uid = self.cr, self.uid
-        baremo_id = self.ref('ims.baremo_book_01')
+        baremo_id = self.ref('commission_calculation.baremo_book_01')
 
         company_brw = self.company_obj.browse(cur, uid, 1)
         company_brw.baremo_id = baremo_id

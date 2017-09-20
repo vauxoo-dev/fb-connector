@@ -2,12 +2,12 @@
 <openerp>
     <data>
         <template id="salespeople_document">
-            <t t-call="ims.external_layout">
+            <t t-call="commission_calculation.external_layout">
                 <!--VARIABLES TO BE USED LATER-->
                 <t t-set="comm_scope" t-value="o.commission_id.commission_scope"/>
                 <!-- CALLING HEADER and FOOTER -->
-                <t t-call="ims.external_layout_header"/>
-                <t t-call="ims.external_layout_footer"/>
+                <t t-call="commission_calculation.external_layout_header"/>
+                <t t-call="commission_calculation.external_layout_footer"/>
 
                 <div class="page">
                     <t t-if="comm_scope=='product_invoiced'">
@@ -263,9 +263,9 @@
         </template>
 
         <template id="comm_salespeople_template">
-            <t t-call="ims.html_container">
+            <t t-call="commission_calculation.html_container">
                 <t t-foreach="doc_ids" t-as="doc_id">
-                    <t t-raw="translate_doc(doc_id, doc_model, 'company_id.partner_id.lang', 'ims.salespeople_document')"/>
+                    <t t-raw="translate_doc(doc_id, doc_model, 'company_id.partner_id.lang', 'commission_calculation.salespeople_document')"/>
                 </t>
             </t>
         </template>

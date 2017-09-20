@@ -48,7 +48,7 @@ class TestCommission(TransactionCase):
 
     def test_basic_commission(self):
         cur, uid = self.cr, self.uid
-        cp_id = self.ref('ims.commission_1'),
+        cp_id = self.ref('commission_calculation.commission_1'),
         demo_id = self.ref('base.user_demo'),
 
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
@@ -86,7 +86,7 @@ class TestCommission(TransactionCase):
 
     def test_fix_commission(self):
         cur, uid = self.cr, self.uid
-        cp_id = self.ref('ims.commission_1'),
+        cp_id = self.ref('commission_calculation.commission_1'),
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
         self.assertEquals(
             cp_brw.total_comm, 660,
@@ -129,7 +129,7 @@ class TestCommission(TransactionCase):
 
     def test_aml_commission(self):
         cur, uid = self.cr, self.uid
-        cp_id = self.ref('ims.commission_1')
+        cp_id = self.ref('commission_calculation.commission_1')
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
         cp_brw.action_draft()
 
@@ -138,8 +138,8 @@ class TestCommission(TransactionCase):
         cp_brw.date_stop = time.strftime('%Y') + '-' + month + '-28'
         cp_brw.unknown_salespeople = True
 
-        aml_ids = [self.ref('ims.aml_rec_debit')]
-        aml_ids += [self.ref('ims.aml_rec_credit')]
+        aml_ids = [self.ref('commission_calculation.aml_rec_debit')]
+        aml_ids += [self.ref('commission_calculation.aml_rec_credit')]
         self.aml_model.reconcile_partial(cur, uid, aml_ids, 'auto')
 
         cp_brw.prepare()
@@ -193,7 +193,7 @@ class TestCommission(TransactionCase):
             'There should historical prices on product %s' %
             prod_brw.name)
 
-        cp_id = self.ref('ims.commission_1')
+        cp_id = self.ref('commission_calculation.commission_1')
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
 
         cp_brw.action_draft()
@@ -220,7 +220,7 @@ class TestCommission(TransactionCase):
 
     def test_partial_payment_commission(self):
         cur, uid = self.cr, self.uid
-        cp_id = self.ref('ims.commission_1'),
+        cp_id = self.ref('commission_calculation.commission_1'),
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
         cp_brw.action_draft()
         cp_brw.commission_type = 'partial_payment'
@@ -232,7 +232,7 @@ class TestCommission(TransactionCase):
 
     def test_matrix_commission(self):
         cur, uid = self.cr, self.uid
-        cp_id = self.ref('ims.commission_2')
+        cp_id = self.ref('commission_calculation.commission_2')
         cp_brw = self.cp_model.browse(cur, uid, cp_id)
 
         self.assertEquals(

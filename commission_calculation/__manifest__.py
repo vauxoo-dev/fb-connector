@@ -71,7 +71,7 @@
         "view/commission_report.xml",
         "view/commission_view.xml",
         "view/account_view.xml",
-        "view/ims_menuitem.xml",
+        "view/commission_calculation_menuitem.xml",
     ],
     "test": [],
     "js": [],

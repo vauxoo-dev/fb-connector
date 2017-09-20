@@ -27,10 +27,10 @@ class CommParser(report_sxw.rml_parse):
 class IfrsPortraitPdfReport(models.AbstractModel):
 
     # _name = `report.` + `report_name`
-    # report_name="ims.comm_salespeople_template"
-    _name = 'report.ims.comm_salespeople_template'
+    # report_name="commission_calculation.comm_salespeople_template"
+    _name = 'report.commission_calculation.comm_salespeople_template'
 
     # this inheritance will allow to render this particular report
     _inherit = 'report.abstract_report'
-    _template = 'ims.comm_salespeople_template'
+    _template = 'commission_calculation.comm_salespeople_template'
     _wrapped_report_class = CommParser

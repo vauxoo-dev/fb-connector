@@ -2,19 +2,19 @@
 <odoo>
     <menuitem name="ICM"
         id="menu_icm_root"
-        web_icon="ims,static/description/icon.png"
+        web_icon="commission_calculation,static/description/icon.png"
         sequence="70"/>
 
-    <menuitem id="commission" name="Commission Settings"
+    <menuitem id="commission_config" name="Settings"
         parent="menu_icm_root"
-        groups="ims.group_baremo_manager"
+        groups="commission_calculation.group_baremo_manager"
         sequence="10"/>
 
     <menuitem
         id="commission"
         name="Salespeople Commissions"
         parent="menu_icm_root"
-        groups="ims.group_comm_payment_user"
+        groups="commission_calculation.group_comm_payment_user"
         sequence="10"
         />
 
@@ -22,18 +22,18 @@
         name="All Commissions"
         id="commission_all_mi"
         action="commission_payment_all_act"
-        groups="ims.group_comm_payment_user"
+        groups="commission_calculation.group_comm_payment_user"
         parent="commission"/>
 
-    <menuitem name="Baremes" parent="commission" id="menu_baremes_tree"
-        action="commission_baremo_act" groups="ims.group_baremo_manager"/>
+    <menuitem name="Baremes" parent="commission_config" id="menu_baremes_tree"
+        action="commission_baremo_act" groups="commission_calculation.group_baremo_manager"/>
 
     <menuitem
         name="Bareme Matrix"
-        parent="commission"
+        parent="commission_config"
         id="menu_bareme_matrix_tree"
         action="commission_baremo_matrix_act"
-        groups="ims.group_baremo_manager"
+        groups="commission_calculation.group_baremo_manager"
         />
 
 </odoo>

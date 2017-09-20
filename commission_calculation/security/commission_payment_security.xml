@@ -22,7 +22,7 @@
 
     <record id="group_baremo_manager" model="res.groups">
         <field name="name">Baremo / Manager</field>
-        <field name="implied_ids" eval="[(4, ref('ims.group_baremo_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('commission_calculation.group_baremo_user'))]"/>
     </record>
 
     <!-- commission_payment -->
@@ -34,7 +34,7 @@
 
     <record id="group_comm_payment_manager" model="res.groups">
         <field name="name">Commision Payment / Manager</field>
-        <field name="implied_ids" eval="[(4, ref('ims.group_comm_payment_user'))]"/>
+        <field name="implied_ids" eval="[(4, ref('commission_calculation.group_comm_payment_user'))]"/>
     </record>
 
 </data>
