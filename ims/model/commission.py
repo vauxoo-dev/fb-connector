@@ -110,8 +110,8 @@ class CommissionPayment(models.Model):
         'Total Commission',
         digits_compute=dp.get_precision('Commission'),
         readonly=True, states={'write': [('readonly', False)]},
-        track_visibility='onchange',
-    ),
+        track_visibility='onchange')
+
     sale_noids = fields.One2many(
         'commission.sale.noid', 'commission_id',
         'Articulos sin asociacion', readonly=True,
