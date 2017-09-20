@@ -1,5 +1,5 @@
 -
-  In order to test the PDF reports defined on an invoice, we will print an Invoice Report
+  In order to load chart of account, the account_minimal_test.xml in account is loaded here
 -
   !python {model: account.account, id: False}: |
     from odoo import tools
