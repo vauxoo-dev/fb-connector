@@ -64,12 +64,13 @@ class ProductHistorical(models.Model):
         help='Historical changes '
         'of the sale price of '
         'this product')
-    cost_historical_ids = fields.One2many(
-        'product.price.history',
-        'product_template_id',
-        'Historical Cost',
-        help='Historical changes '
-        'in the cost of this product')
+    # /!\ HBTO: Is this code still relevant?
+    # cost_historical_ids = fields.One2many(
+    #     'product.price.history',
+    #     'product_template_id',
+    #     'Historical Cost',
+    #     help='Historical changes '
+    #     'in the cost of this product')
 
 
 class ProductHistoricPrice(models.Model):
