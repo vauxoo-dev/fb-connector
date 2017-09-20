@@ -4,8 +4,8 @@ from __future__ import division
 import datetime
 import logging
 
-from odoo import _, fields, models
-from odoo.addons.decimal_precision import decimal_precision as dp
+from odoo import _, fields, models, api
+from odoo.addons import decimal_precision as dp
 from odoo.exceptions import Warning as UserError
 
 _logger = logging.getLogger(__name__)
@@ -1472,8 +1472,7 @@ class CommissionSalesman(models.Model):
         'commission.lines',
         'comm_salespeople_id', 'Salespeople Commission Details',
         required=False)
-    currency_id =
-        fields.Many2one('res.currency', 'Currency', readonly=True)
+    currency_id = fields.Many2one('res.currency', 'Currency', readonly=True)
     comm_total_currency = fields.Float(
         'Currency Amount',
         digits_compute=dp.get_precision('Commission'), readonly=True)
