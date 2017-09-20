@@ -3,14 +3,6 @@
     <data>
 <!-- Salesman Commission Main Menu-->
 
-    <menuitem
-        id="commission"
-        name="Salespeople Commissions"
-        parent="base.menu_base_partner"
-        groups="ims.group_comm_payment_user"
-        sequence="10"
-        />
-
         <!-- Creating and Action to open the View LIST for the object commission.salesman -->
         <record model="ir.actions.act_window" id="commission_salesman_all_act">
             <field name="name">Salespeople Commissions</field>
@@ -498,13 +490,6 @@
         </record>
 
         <!-- Creating a menu to use the action sales_commission_payment_all_act -->
-
-        <menuitem
-            name="All Commissions"
-            id="commission_all_mi"
-            action="commission_payment_all_act"
-            groups="ims.group_comm_payment_user"
-            parent="commission"/>
 
         <record model="ir.ui.view" id="commission_salesman_graph">
             <field name="name">commission.salesman.graph</field>

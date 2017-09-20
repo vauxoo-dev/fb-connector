@@ -2,8 +2,6 @@
 <openerp>
     <data>
 
-    <menuitem id="commission" name="Commission Settings" parent="base.menu_base_config" groups="ims.group_baremo_manager" sequence="10"/>
-
     <record model="ir.ui.view" id="view_baremo_book_form">
         <field name="name">baremo.book.form</field>
         <field name="model">baremo.book</field>
@@ -71,9 +69,6 @@
             <field name="view_id" ref="view_baremo_book_form"/>
             <field name="act_window_id" ref="commission_baremo_act"/>
         </record>
-
-
-    <menuitem name="Baremes" parent="commission" id="menu_baremes_tree" action="commission_baremo_act" groups="ims.group_baremo_manager"/>
 
 
     <record model="ir.ui.view" id="view_baremo_form">
