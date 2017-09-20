@@ -6,6 +6,7 @@ import logging
 
 from odoo import _, fields, models
 from odoo.addons.decimal_precision import decimal_precision as dp
+from odoo.exceptions import Warning as UserError
 
 _logger = logging.getLogger(__name__)
 
@@ -81,158 +82,175 @@ class CommissionPayment(models.Model):
         company_id = self.pool.get('res.users')._get_company(cr, uid,
                                                              context=context)
         if not company_id:
-            raise models.except_osv(
-                _('Error!'),
+            raise UserError(
                 _('There is no default company for the current user!'))
         return company_id
 
-    _columns = {
-        'name': fields.char(
-            'Commission Concept', size=256, required=True,
-            readonly=True, states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'baremo_id': fields.many2one(
-            'baremo.book', 'Baremo', required=True,
-            readonly=True, states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'date_start': fields.date(
-            'Start Date', required=True, readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'date_stop': fields.date(
-            'End Date', required=True, readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'total_comm': fields.float(
-            'Total Commission',
-            digits_compute=dp.get_precision('Commission'),
-            readonly=True, states={'write': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'sale_noids': fields.one2many(
-            'commission.sale.noid', 'commission_id',
-            'Articulos sin asociacion', readonly=True,
-            states={'write': [('readonly', False)]}),
-        'noprice_ids': fields.one2many(
-            'commission.noprice', 'commission_id',
-            'Productos sin precio de lista historico', readonly=True,
-            states={'write': [('readonly', False)]}),
-        'comm_line_product_ids': fields.one2many(
-            'commission.lines', 'commission_id',
-            'Comision por productos', readonly=True,
-            domain=[('product_id', '!=', False)],
-            states={'write': [('readonly', False)]}),
-        'comm_line_invoice_ids': fields.one2many(
-            'commission.lines', 'commission_id',
-            'Comision por productos', readonly=True,
-            domain=[('product_id', '=', False)],
-            states={'write': [('readonly', False)]}),
-        'comm_line_ids': fields.one2many(
-            'commission.lines', 'commission_id',
-            'Comision por productos', readonly=True,
-            states={'write': [('readonly', False)]}),
-        'salesman_ids': fields.one2many(
-            'commission.salesman', 'commission_id',
-            'Salespeople Commissions', readonly=True,
-            states={'write': [('readonly', False)]}),
-        'user_ids': fields.many2many(
-            'res.users', 'commission_users',
-            'commission_id', 'user_id', 'Salespeople', required=True,
-            readonly=True, states={'draft': [('readonly', False)]}),
-        'invoice_ids': fields.many2many(
-            'account.invoice', 'commission_account_invoice', 'commission_id',
-            'invoice_id', 'Invoices', readonly=True,
-            states={'draft': [('readonly', False)]}),
-        'aml_ids': fields.many2many(
-            'account.move.line', 'commission_aml_rel', 'commission_id',
-            'aml_id', 'Journal Items', readonly=True,
-        ),
-        'comm_voucher_ids': fields.one2many(
-            'commission.voucher',
-            'commission_id', 'Vouchers afectados en esta comision',
-            readonly=True, states={'write': [('readonly', False)]}),
-        'comm_invoice_ids': fields.one2many(
-            'commission.invoice',
-            'commission_id', 'Facturas afectadas en esta comision',
-            readonly=True, states={'write': [('readonly', False)]}),
-        'state': fields.selection(
-            COMMISSION_STATES, 'Estado', readonly=True,
-            track_visibility='onchange',
-        ),
-        'commission_type': fields.selection(
-            COMMISSION_TYPES,
-            string='Basis', required=True,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'commission_scope': fields.selection(
-            COMMISSION_SCOPES,
-            string='Scope', required=False,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'commission_policy_date_start': fields.selection(
-            COMMISSION_POLICY_DATE_START,
-            string='Start Date Computation Policy', required=False,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'commission_policy_date_end': fields.selection(
-            COMMISSION_POLICY_DATE_END,
-            string='End Date Computation Policy', required=False,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'commission_salesman_policy': fields.selection(
-            COMMISSION_SALESMAN_POLICY,
-            string='Salesman Policy', required=False,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'commission_baremo_policy': fields.selection(
-            COMMISSION_POLICY_BAREMO,
-            string='Baremo Policy', required=False,
-            readonly=True,
-            states={'draft': [('readonly', False)]},
-            track_visibility='onchange',
-        ),
-        'company_id': fields.many2one('res.company', 'Company',
-                                      readonly='1'),
-        'currency_id': fields.related(
-            'company_id', 'currency_id',
-            string='Currency',
-            relation='res.currency',
-            type='many2one',
-            store=True,
-            readonly=True,
-            help=('Currency at which this report will be \
-                    expressed. If not selected will be used the \
-                    one set in the company')),
-        'exchange_date': fields.date('Exchange Date', help=('Date of change\
-                                                            that will be\
-                                                            printed in the\
-                                                            report, with\
-                                                            respect to the\
-                                                            currency of the\
-                                                            company')),
-        'comm_fix': fields.boolean('Fix Commissions?'),
-        'unknown_salespeople': fields.boolean('Allow Unknown Salespeople?'),
-    }
-    _defaults = {
-        'name': lambda *a: None,
-        'total_comm': lambda *a: 0.00,
-        'state': lambda *a: 'draft',
-        'company_id': _get_default_company,
-    }
+    name = fields.Char(
+        'Commission Concept', size=256, required=True,
+        readonly=True, states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+    baremo_id = fields.Many2one(
+        'baremo.book', 'Baremo', required=True,
+        readonly=True, states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+    date_start = fields.Date(
+        'Start Date', required=True, readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+    date_stop = fields.Date(
+        'End Date', required=True, readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+    total_comm = fields.Float(
+        'Total Commission',
+        digits_compute=dp.get_precision('Commission'),
+        readonly=True, states={'write': [('readonly', False)]},
+        track_visibility='onchange',
+    ),
+    sale_noids = fields.One2many(
+        'commission.sale.noid', 'commission_id',
+        'Articulos sin asociacion', readonly=True,
+        states={'write': [('readonly', False)]})
+
+    noprice_ids = fields.One2many(
+        'commission.noprice', 'commission_id',
+        'Productos sin precio de lista historico', readonly=True,
+        states={'write': [('readonly', False)]})
+
+    comm_line_product_ids = fields.One2many(
+        'commission.lines', 'commission_id',
+        'Comision por productos', readonly=True,
+        domain=[('product_id', '!=', False)],
+        states={'write': [('readonly', False)]})
+
+    comm_line_invoice_ids = fields.One2many(
+        'commission.lines', 'commission_id',
+        'Comision por productos', readonly=True,
+        domain=[('product_id', '=', False)],
+        states={'write': [('readonly', False)]})
+
+    comm_line_ids = fields.One2many(
+        'commission.lines', 'commission_id',
+        'Comision por productos', readonly=True,
+        states={'write': [('readonly', False)]})
+
+    salesman_ids = fields.One2many(
+        'commission.salesman', 'commission_id',
+        'Salespeople Commissions', readonly=True,
+        states={'write': [('readonly', False)]})
+
+    user_ids = fields.Many2many(
+        'res.users', 'commission_users',
+        'commission_id', 'user_id', 'Salespeople', required=True,
+        readonly=True, states={'draft': [('readonly', False)]})
+
+    invoice_ids = fields.Many2many(
+        'account.invoice', 'commission_account_invoice', 'commission_id',
+        'invoice_id', 'Invoices', readonly=True,
+        states={'draft': [('readonly', False)]})
+
+    aml_ids = fields.Many2many(
+        'account.move.line', 'commission_aml_rel', 'commission_id',
+        'aml_id', 'Journal Items', readonly=True,
+    )
+
+    comm_voucher_ids = fields.One2many(
+        'commission.voucher',
+        'commission_id', 'Vouchers afectados en esta comision',
+        readonly=True, states={'write': [('readonly', False)]})
+
+    comm_invoice_ids = fields.One2many(
+        'commission.invoice',
+        'commission_id', 'Facturas afectadas en esta comision',
+        readonly=True, states={'write': [('readonly', False)]})
+
+    state = fields.Selection(
+        COMMISSION_STATES, 'Estado', readonly=True,
+        track_visibility='onchange',
+    )
+
+    commission_type = fields.Selection(
+        COMMISSION_TYPES,
+        string='Basis', required=True,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    commission_scope = fields.Selection(
+        COMMISSION_SCOPES,
+        string='Scope', required=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    commission_policy_date_start = fields.Selection(
+        COMMISSION_POLICY_DATE_START,
+        string='Start Date Computation Policy', required=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    commission_policy_date_end = fields.Selection(
+        COMMISSION_POLICY_DATE_END,
+        string='End Date Computation Policy', required=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    commission_salesman_policy = fields.Selection(
+        COMMISSION_SALESMAN_POLICY,
+        string='Salesman Policy', required=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    commission_baremo_policy = fields.Selection(
+        COMMISSION_POLICY_BAREMO,
+        string='Baremo Policy', required=False,
+        readonly=True,
+        states={'draft': [('readonly', False)]},
+        track_visibility='onchange',
+    )
+
+    company_id = fields.Many2one('res.company', 'Company',
+                                    readonly='1')
+    currency_id = fields.Related(
+        'company_id', 'currency_id',
+        string='Currency',
+        relation='res.currency',
+        type='many2one',
+        store=True,
+        readonly=True,
+        help=('Currency at which this report will be \
+                expressed. If not selected will be used the \
+                one set in the company'))
+    exchange_date = fields.Date('Exchange Date', help=('Date of change\
+                                                        that will be\
+                                                        printed in the\
+                                                        report, with\
+                                                        respect to the\
+                                                        currency of the\
+                                                        company'))
+    comm_fix = fields.Boolean('Fix Commissions?')
+
+    unknown_salespeople = fields.Boolean('Allow Unknown Salespeople?')
+
+    # _defaults = {
+    #     'name': lambda *a: None,
+    #     'total_comm': lambda *a: 0.00,
+    #     'state': lambda *a: 'draft',
+    #     'company_id': _get_default_company,
+    # }
 
     def action_view_fixlines(self, cr, uid, ids, context=None):
         """This function returns an action that display existing Commissions of
@@ -1137,8 +1155,7 @@ class CommissionPayment(models.Model):
         comm_brw = self.browse(cr, uid, ids[0], context=context)
         if comm_brw.commission_baremo_policy == 'onMatrix' and \
                 comm_brw.commission_scope != 'product_invoiced':
-            raise models.except_osv(
-                _('Error!'),
+            raise UserError(
                 _('Baremo on Matrix only applies on Invoiced Products'))
         # Desvincular lineas existentes, si las hubiere
         comm_brw.clear()
@@ -1214,7 +1231,7 @@ class CommissionPayment(models.Model):
         # first if any of the line has being paid arise a warning
         for comm_brw in self.browse(cr, user, ids, context=context):
             if comm_brw.comm_fix:
-                raise models.except_osv(_('Error!'), _('There are items to fix'))
+                raise UserError(_('There are items to fix'))
 
             aml_obj.write(cr, user,
                           [line.aml_id.id for line in comm_brw.comm_line_ids],
@@ -1233,15 +1250,13 @@ class CommissionSaleNoid(models.Model):
 
     _name = 'commission.sale.noid'
 
-    _columns = {
-        'name': fields.char('Comentario', size=256),
-        'commission_id': fields.many2one('commission.payment', 'Comision'),
-        'inv_line_id': fields.many2one(
-            'account.invoice.line', 'Descripcion de Articulo'),
-    }
-    _defaults = {
-        'name': lambda *a: None,
-    }
+    name = fields.Char('Comentario', size=256)
+    commission_id = fields.Many2one('commission.payment', 'Comision')
+    inv_line_id = fields.Many2one(
+        'account.invoice.line', 'Descripcion de Articulo')
+    # _defaults = {
+    #     'name': lambda *a: None,
+    # }
 
 
 class CommissionNoprice(models.Model):
@@ -1252,16 +1267,14 @@ class CommissionNoprice(models.Model):
     _name = 'commission.noprice'
     _order = 'product_id'
 
-    _columns = {
-        'name': fields.char('Comentario', size=256),
-        'commission_id': fields.many2one('commission.payment', 'Comision'),
-        'product_id': fields.many2one('product.product', 'Producto'),
-        'date': fields.date('Date'),
-        'invoice_num': fields.char('Invoice Number', size=256),
-    }
-    _defaults = {
-        'name': lambda *a: None,
-    }
+    name = fields.Char('Comentario', size=256)
+    commission_id = fields.Many2one('commission.payment', 'Comision')
+    product_id = fields.Many2one('product.product', 'Producto')
+    date = fields.Date('Date')
+    invoice_num = fields.Char('Invoice Number', size=256)
+    # _defaults = {
+    #     'name': lambda *a: None,
+    # }
 
 
 class CommissionLines(models.Model):
@@ -1272,94 +1285,92 @@ class CommissionLines(models.Model):
     _name = 'commission.lines'
     _order = 'pay_date'
 
-    _columns = {
-        'commission_id': fields.many2one(
-            'commission.payment', 'Commission Document', required=True),
-        'name': fields.char('Transaccion', size=256, required=True),
-        'pay_date': fields.date('Payment Date', required=True),
-        'pay_off': fields.float(
-            'Pago',
-            digits_compute=dp.get_precision('Commission')),
+    commission_id = fields.Many2one(
+        'commission.payment', 'Commission Document', required=True)
+    name = fields.Char('Transaccion', size=256, required=True)
+    pay_date = fields.Date('Payment Date', required=True)
+    pay_off = fields.Float(
+        'Pago',
+        digits_compute=dp.get_precision('Commission'))
 
-        'aml_id': fields.many2one('account.move.line', 'Entry Line'),
-        'am_rec': fields.many2one('account.move', 'Reconciling Entry'),
-        'am_id': fields.related(
-            'aml_id', 'move_id',
-            string='Journal Entry', relation='account.move',
-            type='many2one', store=True, readonly=True),
+    aml_id = fields.Many2one('account.move.line', 'Entry Line')
+    am_rec = fields.Many2one('account.move', 'Reconciling Entry')
+    am_id = fields.Related(
+        'aml_id', 'move_id',
+        string='Journal Entry', relation='account.move',
+        type='many2one', store=True, readonly=True)
 
-        'invoice_id': fields.related(
-            'aml_id', 'rec_invoice',
-            string='Reconciling Invoice', relation='account.invoice',
-            type='many2one', store=True, readonly=True),
-        'partner_id': fields.many2one('res.partner', 'Partner'),
-        'salesman_id': fields.many2one('res.users', 'Salesman',
-                                       required=False),
-        'comm_salespeople_id': fields.many2one(
-            'commission.salesman', 'Salespeople Commission', required=False),
-        'comm_voucher_id': fields.many2one(
-            'commission.voucher', 'Voucher Commission', required=False),
-        'pay_inv': fields.float(
-            'Pay. to Doc.',
-            digits_compute=dp.get_precision('Commission')),
+    invoice_id = fields.Related(
+        'aml_id', 'rec_invoice',
+        string='Reconciling Invoice', relation='account.invoice',
+        type='many2one', store=True, readonly=True)
+    partner_id = fields.Many2one('res.partner', 'Partner')
+    salesman_id = fields.Many2one('res.users', 'Salesman',
+                                    required=False)
+    comm_salespeople_id = fields.Many2one(
+        'commission.salesman', 'Salespeople Commission', required=False)
+    comm_voucher_id = fields.Many2one(
+        'commission.voucher', 'Voucher Commission', required=False)
+    pay_inv = fields.Float(
+        'Pay. to Doc.',
+        digits_compute=dp.get_precision('Commission'))
 
-        'inv_date': fields.date('Invoice Date'),
-        'date_start': fields.date(
-            'Start Date', required=False, readonly=True,
-        ),
-        'date_stop': fields.date(
-            'End Date', required=False, readonly=True,
-        ),
-        'days': fields.float(
-            'Comm. Days',
-            digits_compute=dp.get_precision('Commission')),
+    inv_date = fields.Date('Invoice Date')
+    date_start = fields.Date(
+        'Start Date', required=False, readonly=True,
+    )
+    date_stop = fields.Date(
+        'End Date', required=False, readonly=True,
+    )
+    days = fields.Float(
+        'Comm. Days',
+        digits_compute=dp.get_precision('Commission'))
 
-        'inv_subtotal': fields.float(
-            'SubTot. Doc.',
-            digits_compute=dp.get_precision('Commission')),
+    inv_subtotal = fields.Float(
+        'SubTot. Doc.',
+        digits_compute=dp.get_precision('Commission'))
 
-        'product_id': fields.many2one('product.product', 'Product'),
-        'price_unit': fields.float(
-            'Prec. Unit.',
-            digits_compute=dp.get_precision('Commission')),
-        'price_subtotal': fields.float(
-            'SubTot. Product',
-            digits_compute=dp.get_precision('Commission')),
+    product_id = fields.Many2one('product.product', 'Product')
+    price_unit = fields.Float(
+        'Prec. Unit.',
+        digits_compute=dp.get_precision('Commission'))
+    price_subtotal = fields.Float(
+        'SubTot. Product',
+        digits_compute=dp.get_precision('Commission'))
 
-        'price_list': fields.float(
-            'Price List',
-            digits_compute=dp.get_precision('Commission')),
-        'price_date': fields.date('List Date'),
+    price_list = fields.Float(
+        'Price List',
+        digits_compute=dp.get_precision('Commission'))
+    price_date = fields.Date('List Date')
 
-        'perc_iva': fields.float(
-            'Tax (%)',
-            digits_compute=dp.get_precision('Commission')),
+    perc_iva = fields.Float(
+        'Tax (%)',
+        digits_compute=dp.get_precision('Commission'))
 
-        'rate_item': fields.float(
-            'Dsct. (%)',
-            digits_compute=dp.get_precision('Commission')),
+    rate_item = fields.Float(
+        'Dsct. (%)',
+        digits_compute=dp.get_precision('Commission'))
 
-        'rate_number': fields.float(
-            'B./Rate (%)',
-            digits_compute=dp.get_precision('Commission')),
-        'timespan': fields.float(
-            'B./Days',
-            digits_compute=dp.get_precision('Commission')),
-        'baremo_comm': fields.float(
-            'B./%Comm.',
-            digits_compute=dp.get_precision('Commission')),
-        'commission': fields.float(
-            'Commission Amount',
-            digits_compute=dp.get_precision('Commission')),
-        'commission_currency': fields.float(
-            'Currency Amount',
-            digits_compute=dp.get_precision('Commission')),
-        'currency_id': fields.many2one('res.currency', 'Currency'),
-    }
+    rate_number = fields.Float(
+        'B./Rate (%)',
+        digits_compute=dp.get_precision('Commission'))
+    timespan = fields.Float(
+        'B./Days',
+        digits_compute=dp.get_precision('Commission'))
+    baremo_comm = fields.Float(
+        'B./%Comm.',
+        digits_compute=dp.get_precision('Commission'))
+    commission = fields.Float(
+        'Commission Amount',
+        digits_compute=dp.get_precision('Commission'))
+    commission_currency = fields.Float(
+        'Currency Amount',
+        digits_compute=dp.get_precision('Commission'))
+    currency_id = fields.Many2one('res.currency', 'Currency')
 
-    _defaults = {
-        'name': lambda *a: None,
-    }
+    # _defaults = {
+    #     'name': lambda *a: None,
+    # }
 
     def _recompute_commission(self, cr, uid, ids, context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
@@ -1446,38 +1457,36 @@ class CommissionSalesman(models.Model):
     _name = 'commission.salesman'
     _rec_name = 'salesman_id'
 
-    _columns = {
-        'commission_id': fields.many2one(
-            'commission.payment', 'Commission Document', readonly=True),
-        'salesman_id': fields.many2one(
-            'res.users', 'Salesman', required=False, readonly=True),
-        'comm_total': fields.float(
-            'Commission Amount',
-            digits_compute=dp.get_precision('Commission'), readonly=True),
-        'comm_voucher_ids': fields.one2many(
-            'commission.voucher',
-            'comm_sale_id', 'Vouchers Affected in this commission',
-            required=False),
-        'comm_lines_ids': fields.one2many(
-            'commission.lines',
-            'comm_salespeople_id', 'Salespeople Commission Details',
-            required=False),
-        'currency_id':
-            fields.many2one('res.currency', 'Currency', readonly=True),
-        'comm_total_currency': fields.float(
-            'Currency Amount',
-            digits_compute=dp.get_precision('Commission'), readonly=True),
-        'company_id': fields.related(
-            'commission_id', 'company_id',
-            string='Company',
-            relation='res.company',
-            type='many2one',
-            store=True,
-            readonly=True,
-            help=('Currency at which this report will be \
-                    expressed. If not selected will be used the \
-                    one set in the company')),
-    }
+    commission_id = fields.Many2one(
+        'commission.payment', 'Commission Document', readonly=True)
+    salesman_id = fields.Many2one(
+        'res.users', 'Salesman', required=False, readonly=True)
+    comm_total = fields.Float(
+        'Commission Amount',
+        digits_compute=dp.get_precision('Commission'), readonly=True)
+    comm_voucher_ids = fields.One2many(
+        'commission.voucher',
+        'comm_sale_id', 'Vouchers Affected in this commission',
+        required=False)
+    comm_lines_ids = fields.One2many(
+        'commission.lines',
+        'comm_salespeople_id', 'Salespeople Commission Details',
+        required=False)
+    currency_id =
+        fields.Many2one('res.currency', 'Currency', readonly=True)
+    comm_total_currency = fields.Float(
+        'Currency Amount',
+        digits_compute=dp.get_precision('Commission'), readonly=True)
+    company_id = fields.Related(
+        'commission_id', 'company_id',
+        string='Company',
+        relation='res.company',
+        type='many2one',
+        store=True,
+        readonly=True,
+        help=('Currency at which this report will be \
+                expressed. If not selected will be used the \
+                one set in the company'))
 
 
 class CommissionVoucher(models.Model):
@@ -1497,22 +1506,20 @@ class CommissionVoucher(models.Model):
                 [ci_brw.commission for ci_brw in brw.comm_invoice_ids])
         return res
 
-    _columns = {
-        'commission_id': fields.many2one('commission.payment', 'Commission'),
-        'comm_sale_id': fields.many2one('commission.salesman', 'Salesman'),
-        'am_id': fields.many2one('account.move', 'Journal Entry'),
-        'comm_invoice_ids': fields.one2many(
-            'commission.invoice',
-            'comm_voucher_id', 'Facturas afectadas en esta comision',
-            required=False),
-        'date': fields.related('am_id', 'date', string='Date', type='date',
-                               store=True, readonly=True),
-        'commission': fields.function(
-            _get_commission,
-            type='float',
-            string='Commission Amount',
-            digits_compute=dp.get_precision('Commission')),
-    }
+    commission_id = fields.Many2one('commission.payment', 'Commission')
+    comm_sale_id = fields.Many2one('commission.salesman', 'Salesman')
+    am_id = fields.Many2one('account.move', 'Journal Entry')
+    comm_invoice_ids = fields.One2many(
+        'commission.invoice',
+        'comm_voucher_id', 'Facturas afectadas en esta comision',
+        required=False)
+    date = fields.Related('am_id', 'date', string='Date', type='date',
+                            store=True, readonly=True)
+    commission = fields.Function(
+        _get_commission,
+        type='float',
+        string='Commission Amount',
+        digits_compute=dp.get_precision('Commission'))
 
 
 class CommissionInvoice(models.Model):
@@ -1531,26 +1538,24 @@ class CommissionInvoice(models.Model):
                 [cl_brw.commission for cl_brw in brw.comm_line_ids])
         return res
 
-    _columns = {
-        'name': fields.char('Comentario', size=256),
-        'commission_id': fields.many2one('commission.payment', 'Comision'),
-        'comm_voucher_id': fields.many2one('commission.voucher', 'Voucher'),
-        'invoice_id': fields.many2one('account.invoice', 'Factura'),
-        'comm_line_ids': fields.one2many(
-            'commission.lines',
-            'comm_invoice_id', 'Comision por productos', required=False),
-        'pay_inv': fields.float(
-            'Abono Fact.',
-            digits_compute=dp.get_precision('Commission')),
-        'commission': fields.function(
-            _get_commission,
-            type='float',
-            string='Commission Amount',
-            digits_compute=dp.get_precision('Commission')),
-    }
-    _defaults = {
-        'name': lambda *a: None,
-    }
+    name = fields.Char('Comentario', size=256)
+    commission_id = fields.Many2one('commission.payment', 'Comision')
+    comm_voucher_id = fields.Many2one('commission.voucher', 'Voucher')
+    invoice_id = fields.Many2one('account.invoice', 'Factura')
+    comm_line_ids = fields.One2many(
+        'commission.lines',
+        'comm_invoice_id', 'Comision por productos', required=False)
+    pay_inv = fields.Float(
+        'Abono Fact.',
+        digits_compute=dp.get_precision('Commission'))
+    commission = fields.Function(
+        _get_commission,
+        type='float',
+        string='Commission Amount',
+        digits_compute=dp.get_precision('Commission'))
+    # _defaults = {
+    #     'name': lambda *a: None,
+    # }
 
 
 class CommissionLines2(models.Model):
@@ -1560,16 +1565,12 @@ class CommissionLines2(models.Model):
 
     _inherit = 'commission.lines'
 
-    _columns = {
-        'comm_invoice_id': fields.many2one('commission.invoice',
-                                           'Invoice Commission'),
-    }
+    comm_invoice_id = fields.Many2one('commission.invoice',
+                                        'Invoice Commission')
 
 
 class ResCompany(models.Model):
     _inherit = "res.company"
     _description = 'Companies'
 
-    _columns = {
-        'comm_tax': fields.float('Default Tax for Commissions'),
-    }
+    comm_tax = fields.Float('Default Tax for Commissions')

@@ -4,6 +4,15 @@ from odoo import api, fields, models
 
 class AccountInvoice(models.Model):
 
+    _inherit = "account.invoice"
+
+    date_last_payment = fields.Function(
+        _date_last_payment, string='Last Payment Date', type="date",
+        store={
+            _inherit: (lambda s, c, u, ids, cx: ids,
+                        ['residual', 'payment_ids'], 15),
+        })
+
     def _date_last_payment(self, cr, uid, ids, fieldname, arg, context=None):
         res = {}.fromkeys(ids, None)
         context = context or {}
@@ -18,13 +27,3 @@ class AccountInvoice(models.Model):
 
             res[inv_brw.id] = date_last_payment
         return res
-
-    _inherit = "account.invoice"
-    _columns = {
-        'date_last_payment': fields.function(
-            _date_last_payment, string='Last Payment Date', type="date",
-            store={
-                _inherit: (lambda s, c, u, ids, cx: ids,
-                           ['residual', 'payment_ids'], 15),
-            }),
-    }

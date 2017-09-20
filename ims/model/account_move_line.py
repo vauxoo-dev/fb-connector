@@ -231,30 +231,28 @@ class AccountMoveLine(models.Model):
 
     _inherit = 'account.move.line'
 
-    _columns = {
-        'paid_comm': fields.boolean('Paid Commission?'),
-        'rec_invoice': fields.function(
-            _get_reconciling_invoice,
-            string='Reconciling Invoice',
-            type="many2one",
-            relation="account.invoice",
-            fnct_search=_rec_invoice_search,
-        ),
-        'rec_aml': fields.function(
-            _get_reconciling_aml,
-            string='Reconciling Journal Item',
-            type="many2one",
-            relation="account.move.line",
-            fnct_search=_rec_aml_search,
-        ),
-        'date_last_payment': fields.function(
-            _date_last_payment, string='Last Payment Date', type="date",
-            store={
-                _inherit: (_get_aml_related_date,
-                           ['reconcile_id', 'reconcile_partial_id',
-                            'reconcile_ref'], 15),
-            }),
-    }
-    _defaults = {
-        'paid_comm': lambda *a: False,
-    }
+    paid_comm = fields.Boolean('Paid Commission?')
+    rec_invoice = fields.Function(
+        _get_reconciling_invoice,
+        string='Reconciling Invoice',
+        type="many2one",
+        relation="account.invoice",
+        fnct_search=_rec_invoice_search,
+    )
+    rec_aml = fields.Function(
+        _get_reconciling_aml,
+        string='Reconciling Journal Item',
+        type="many2one",
+        relation="account.move.line",
+        fnct_search=_rec_aml_search,
+    )
+    date_last_payment = fields.Function(
+        _date_last_payment, string='Last Payment Date', type="date",
+        store={
+            _inherit: (_get_aml_related_date,
+                        ['reconcile_id', 'reconcile_partial_id',
+                        'reconcile_ref'], 15),
+        })
+    # _defaults = {
+    #     'paid_comm': lambda *a: False,
+    # }

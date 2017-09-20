@@ -32,40 +32,36 @@ class BaremoMatrix(models.Model):
 
     _name = 'baremo.matrix'
 
-    _columns = {
-        'baremo_id': fields.many2one(
-            'baremo.book', 'Bareme', required=True),
-        'user_id': fields.many2one(
-            'res.users', 'Salesman', required=True),
-        'product_id': fields.many2one(
-            'product.product', 'Product', required=True),
-    }
+    baremo_id = fields.Many2one(
+        'baremo.book', 'Bareme', required=True)
+    user_id = fields.Many2one(
+        'res.users', 'Salesman', required=True)
+    product_id = fields.Many2one(
+        'product.product', 'Product', required=True)
 
-    _sql_constraints = [
-        ('baremo_permutation_unique',
-         'unique(user_id, product_id)',
-         'Same Salesman & Product can be assigned to only one Baremo')]
+    # _sql_constraints = [
+    #     ('baremo_permutation_unique',
+    #      'unique(user_id, product_id)',
+    #      'Same Salesman & Product can be assigned to only one Baremo')]
 
 
 class BaremoBook(models.Model):
     _name = 'baremo.book'
 
-    _columns = {
-        'name': fields.char('Baremo Description',
-                            size=64,
-                            required=True,
-                            readonly=False),
-        'bar_ids': fields.one2many(
-            'baremo', 'baremo_id', 'Emission Days',
-            required=False,
-            copy=True,
-        ),
-        'matrix_ids': fields.one2many(
-            'baremo.matrix', 'baremo_id',
-            'Baremo Matrix',
-            copy=False,
-        ),
-    }
+    name = fields.Char('Baremo Description',
+                        size=64,
+                        required=True,
+                        readonly=False)
+    bar_ids = fields.One2many(
+        'baremo', 'baremo_id', 'Emission Days',
+        required=False,
+        copy=True,
+    )
+    matrix_ids = fields.One2many(
+        'baremo.matrix', 'baremo_id',
+        'Baremo Matrix',
+        copy=False,
+    )
 
 
 class Baremo(models.Model):
@@ -76,22 +72,20 @@ class Baremo(models.Model):
     _name = 'baremo'
     _order = "number asc"
 
-    _columns = {
-        'name': fields.char(
-            'Due Days Description', size=64, required=True, readonly=False,
-            help="Due days Description"),
-        'number': fields.integer(
-            'Due Days', help="Days since Emission/Due Date", required=True),
-        'disc_ids': fields.one2many(
-            'baremo.discount', 'disc_id', 'Commission per Discount @ Due Days',
-            required=False, help="Commission per Discount @ Due Days",
-            copy=True,
-        ),
-        'baremo_id': fields.many2one('baremo.book', 'Padre', required=False),
-    }
-    _defaults = {
-        'name': lambda *a: None,
-    }
+    name = fields.Char(
+        'Due Days Description', size=64, required=True, readonly=False,
+        help="Due days Description")
+    number = fields.Integer(
+        'Due Days', help="Days since Emission/Due Date", required=True)
+    disc_ids = fields.One2many(
+        'baremo.discount', 'disc_id', 'Commission per Discount @ Due Days',
+        required=False, help="Commission per Discount @ Due Days",
+        copy=True,
+    )
+    baremo_id = fields.Many2one('baremo.book', 'Padre', required=False)
+    # _defaults = {
+    #     'name': lambda *a: None,
+    # }
 
 
 class BaremoDiscount(models.Model):
@@ -102,44 +96,36 @@ class BaremoDiscount(models.Model):
     _name = 'baremo.discount'
     _order = "porc_disc asc"
     _rec_name = 'porc_disc'
-    _columns = {
-        'porc_disc': fields.float(
-            '% Dcto', digits_compute=dp.get_precision('Commission'),
-            help="% de Descuento por producto", required=True),
-        'porc_com': fields.float(
-            '% Com.', digits_compute=dp.get_precision('Commission'),
-            help="% de Comision @ porcentaje Descuento", required=True),
-        'disc_id': fields.many2one('baremo', 'Baremo', required=False),
-    }
+    porc_disc = fields.Float(
+        '% Dcto', digits_compute=dp.get_precision('Commission'),
+        help="% de Descuento por producto", required=True)
+    porc_com = fields.Float(
+        '% Com.', digits_compute=dp.get_precision('Commission'),
+        help="% de Comision @ porcentaje Descuento", required=True)
+    disc_id = fields.Many2one('baremo', 'Baremo', required=False)
 
 
 class ResParter(models.Model):
     _inherit = "res.partner"
-    _columns = {
-        'baremo_id': fields.many2one('baremo.book', 'Baremo', required=False),
-    }
+    baremo_id = fields.Many2one('baremo.book', 'Baremo', required=False)
 
 
 class ResUsers(models.Model):
     _inherit = "res.users"
-    _columns = {
-        'matrix_ids': fields.one2many(
-            'baremo.matrix', 'user_id',
-            'Baremo Matrix',
-            copy=False,
-        ),
-    }
+    matrix_ids = fields.One2many(
+        'baremo.matrix', 'user_id',
+        'Baremo Matrix',
+        copy=False,
+    )
 
 
 class ProductProduct(models.Model):
     _inherit = "product.product"
-    _columns = {
-        'matrix_ids': fields.one2many(
-            'baremo.matrix', 'product_id',
-            'Baremo Matrix',
-            copy=False,
-        ),
-    }
+    matrix_ids = fields.One2many(
+        'baremo.matrix', 'product_id',
+        'Baremo Matrix',
+        copy=False,
+    )
 
 
 class ResCompany(models.Model):
@@ -170,13 +156,11 @@ class ResCompany(models.Model):
                 context=context)
         return True
 
-    _columns = {
-        'baremo_id': fields.function(
-            _get_baremo_data,
-            fnct_inv=_set_baremo_data,
-            type='many2one',
-            relation='baremo.book',
-            string="Baremo",
-            multi='baremo',
-        ),
-    }
+    baremo_id = fields.Function(
+        _get_baremo_data,
+        fnct_inv=_set_baremo_data,
+        type='many2one',
+        relation='baremo.book',
+        string="Baremo",
+        multi='baremo',
+    )

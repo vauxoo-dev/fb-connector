@@ -23,7 +23,7 @@
 ##########################################################################
 from odoo import fields, models
 
-from odoo.addons.decimal_precision import decimal_precision as dp
+import odoo.addons.decimal_precision as dp
 import time
 
 
@@ -50,32 +50,30 @@ class ProductHistorical(models.Model):
         return res
 
     _inherit = 'product.template'
-    _columns = {
-        'list_price_historical': fields.function(
-            _get_historical_price,
-            method=True, string='Latest Price',
-            type='float',
-            digits_compute=dp.get_precision('List_Price_Historical'),
-            store={
-                _inherit: (
-                    lambda self, cr, uid, ids, c={}: ids,
-                    ['list_price'], 50),
-            },
-            help="Latest Recorded Historical Value"),
-        'list_price_historical_ids': fields.one2many(
-            'product.historic.price',
-            'product_id',
-            'Historical Prices',
-            help='Historical changes '
-            'of the sale price of '
-            'this product'),
-        'cost_historical_ids': fields.one2many(
-            'product.price.history',
-            'product_template_id',
-            'Historical Cost',
-            help='Historical changes '
-            'in the cost of this product')
-    }
+    list_price_historical = fields.Function(
+        _get_historical_price,
+        method=True, string='Latest Price',
+        type='float',
+        digits_compute=dp.get_precision('List_Price_Historical'),
+        store={
+            _inherit: (
+                lambda self, cr, uid, ids, c={}: ids,
+                ['list_price'], 50),
+        },
+        help="Latest Recorded Historical Value")
+    list_price_historical_ids = fields.One2many(
+        'product.historic.price',
+        'product_id',
+        'Historical Prices',
+        help='Historical changes '
+        'of the sale price of '
+        'this product')
+    cost_historical_ids = fields.One2many(
+        'product.price.history',
+        'product_template_id',
+        'Historical Cost',
+        help='Historical changes '
+        'in the cost of this product')
 
 
 class ProductHistoricPrice(models.Model):
@@ -83,20 +81,18 @@ class ProductHistoricPrice(models.Model):
     _name = "product.historic.price"
     _description = "Historical Price List"
 
-    _columns = {
-        'product_id': fields.many2one(
-            'product.template',
-            string='Product related to this Price',
-            required=True),
-        'name': fields.datetime(string='Date', required=True),
-        'price': fields.float(
-            string='Price', digits_compute=dp.get_precision('Price')),
-        'product_uom': fields.many2one(
-            'product.uom', string="Supplier UoM",
-            help="""Choose here the Unit of Measure in which the prices and
-                    quantities are expressed below."""),
-    }
+    product_id = fields.Many2one(
+        'product.template',
+        string='Product related to this Price',
+        required=True)
+    name = fields.Datetime(string='Date', required=True)
+    price = fields.Float(
+        string='Price', digits_compute=dp.get_precision('Price'))
+    product_uom = fields.Many2one(
+        'product.uom', string="Supplier UoM",
+        help="""Choose here the Unit of Measure in which the prices and
+                quantities are expressed below.""")
 
-    _defaults = {
-        'name': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-    }
+    # _defaults = {
+    #     'name': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
+    # }
