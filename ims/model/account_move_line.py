@@ -1,5 +1,5 @@
 # coding: utf-8
-from odoo import fields, models
+from odoo import api, fields, models
 
 QUERY_REC_AML = '''
 SELECT aml_id, id
@@ -79,17 +79,15 @@ WHERE
 
 class AccountMoveLine(models.Model):
 
-    def _get_reconciling_aml(self, cr, uid, ids, fieldname, arg, context=None):
-        res = {}.fromkeys(ids, None)
-        context = context or {}
+    @api.multi
+    def _get_reconciling_aml(self):
         sub_query = 'AND aml_id IN (%s)' % ', '.join([str(idx) for idx in ids])
-        cr.execute(QUERY_REC_AML + sub_query)
-        rex = cr.fetchall()
+        self.env.cr.execute(QUERY_REC_AML + sub_query)
+        rex = self.env.cr.fetchall()
 
         for aml_id, rec_aml in rex:
-            res[aml_id] = rec_aml
-
-        return res
+            aml = self.browse(aml_id)
+            aml.rec_aml = rec_aml
 
     def _rec_aml_search(self, cursor, user, obj, name, args, context=None):
         if not args:
@@ -135,18 +133,15 @@ class AccountMoveLine(models.Model):
             return [('id', '=', '0')]
         return [('id', 'in', [x[0] for x in res])]
 
-    def _get_reconciling_invoice(self, cr, uid, ids, fieldname, arg,
-                                 context=None):
-        res = {}.fromkeys(ids, None)
-        context = context or {}
+    @api.multi
+    def _get_reconciling_invoice(self):
         sub_query = 'AND id IN (%s)' % ', '.join([str(xxx) for xxx in ids])
-        cr.execute(QUERY_REC_INVOICE + sub_query)
-        rex = cr.fetchall()
+        self.env.cr.execute(QUERY_REC_INVOICE + sub_query)
+        rex = self.env.cr.fetchall()
 
         for aml_id, inv_id in rex:
-            res[aml_id] = inv_id
-
-        return res
+            aml = self.browse(aml_id)
+            aml.rec_invoice = inv_id
 
     def _rec_invoice_search(self, cursor, user, obj, name, args, context=None):
         if not args:
@@ -192,10 +187,9 @@ class AccountMoveLine(models.Model):
             return [('id', '=', '0')]
         return [('id', 'in', [x[0] for x in res])]
 
-    def _date_last_payment(self, cr, uid, ids, fieldname, arg, context=None):
-        res = {}.fromkeys(ids, None)
-        context = context or {}
-        for aml_brw in self.browse(cr, uid, ids, context=context):
+    @api.multi
+    def _date_last_payment(self):
+        for aml_brw in self:
             if aml_brw.rec_aml:
                 continue
             if aml_brw.reconcile_id:
@@ -210,9 +204,7 @@ class AccountMoveLine(models.Model):
                     continue
                 date_last_payment = raml_brw.date > date_last_payment and \
                     raml_brw.date or date_last_payment
-            res[aml_brw.id] = date_last_payment
-
-        return res
+            aml_brw.date_last_payment = date_last_payment
 
     def _get_aml_related_date(self, cr, uid, ids, context=None):
         res = set([])
@@ -232,27 +224,27 @@ class AccountMoveLine(models.Model):
     _inherit = 'account.move.line'
 
     paid_comm = fields.Boolean('Paid Commission?')
-    rec_invoice = fields.Function(
-        _get_reconciling_invoice,
+    rec_invoice = fields.Many2one(
+        "account.invoice",
+        compute='_get_reconciling_invoice',
+        inverse='_rec_invoice_search',
         string='Reconciling Invoice',
-        type="many2one",
-        relation="account.invoice",
-        fnct_search=_rec_invoice_search,
     )
-    rec_aml = fields.Function(
-        _get_reconciling_aml,
+    rec_aml = fields.Many2one(
+        "account.move.line",
+        compute='_get_reconciling_aml',
         string='Reconciling Journal Item',
-        type="many2one",
-        relation="account.move.line",
-        fnct_search=_rec_aml_search,
+        inverse='_rec_aml_search',
     )
-    date_last_payment = fields.Function(
-        _date_last_payment, string='Last Payment Date', type="date",
-        store={
-            _inherit: (_get_aml_related_date,
-                        ['reconcile_id', 'reconcile_partial_id',
-                        'reconcile_ref'], 15),
-        })
+    date_last_payment = fields.Date(
+        compute='_date_last_payment',
+        string='Last Payment Date',
+        # store={
+        #     _inherit: (_get_aml_related_date,
+        #                 ['reconcile_id', 'reconcile_partial_id',
+        #                 'reconcile_ref'], 15),
+        # }
+    )
     # _defaults = {
     #     'paid_comm': lambda *a: False,
     # }

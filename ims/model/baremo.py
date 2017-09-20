@@ -132,12 +132,13 @@ class ResCompany(models.Model):
     _inherit = "res.company"
     _description = 'Companies'
 
-    def _get_baremo_data(self, cr, uid, ids, field_names, arg, context=None):
+    #TODO
+    @api.multi
+    def _get_baremo_data(self):
         """ Read the 'baremo_id' functional field. """
-        result = {}
-        part_obj = self.pool.get('res.partner')
-        for company in self.browse(cr, uid, ids, context=context):
-            result[company.id] = {}.fromkeys(field_names, False)
+        part_obj = self.env['res.partner']
+        for company in self:
+            # result[company.id] = {}.fromkeys(field_names, False)
             if company.partner_id:
                 data = part_obj.read(cr, SUPERUSER_ID, [company.partner_id.id],
                                      field_names, context=context)[0]
@@ -156,11 +157,10 @@ class ResCompany(models.Model):
                 context=context)
         return True
 
-    baremo_id = fields.Function(
-        _get_baremo_data,
-        fnct_inv=_set_baremo_data,
-        type='many2one',
-        relation='baremo.book',
+    baremo_id = fields.Many2one(
+        'baremo.book',
+        compute='_get_baremo_data',
+        inverse='_set_baremo_data',
         string="Baremo",
-        multi='baremo',
+        # multi='baremo',
     )

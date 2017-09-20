@@ -21,7 +21,7 @@
 #    You should have received a copy of the GNU Affero General Public License
 #    along with this program.  If not, see <http://www.gnu.org/licenses/>.
 ##########################################################################
-from odoo import fields, models
+from odoo import api, fields, models
 
 import odoo.addons.decimal_precision as dp
 import time
@@ -31,35 +31,31 @@ class ProductHistorical(models.Model):
 
     """product_historical
     """
+    _inherit = 'product.template'
 
-    def _get_historical_price(self, cr, uid, ids, field_name, field_value,
-                              arg, context=None):
-        context = context or {}
-        res = {}
-        product_hist = self.pool.get('product.historic.price')
-        for brw in self.browse(cr, uid, ids, context=context):
-            res[brw.id] = brw.list_price_historical
+    @api.multi
+    def _get_historical_price(self):
+        product_hist = self.env['product.historic.price']
+        for brw in self:
             if brw.list_price != brw.list_price_historical:
-                res[brw.id] = brw.list_price
+                brw.list_price_historical = brw.list_price
                 values = {
                     'product_id': brw.id,
                     'name': time.strftime('%Y-%m-%d %H:%M:%S'),
                     'price': brw.list_price,
                 }
-                product_hist.create(cr, uid, values, context=context)
-        return res
+                product_hist.create(values)
 
-    _inherit = 'product.template'
-    list_price_historical = fields.Function(
-        _get_historical_price,
-        method=True, string='Latest Price',
-        type='float',
+    list_price_historical = fields.Float(
+        compute='_get_historical_price',
+        # method=True,
+        string='Latest Price',
         digits_compute=dp.get_precision('List_Price_Historical'),
-        store={
-            _inherit: (
-                lambda self, cr, uid, ids, c={}: ids,
-                ['list_price'], 50),
-        },
+        # store={
+        #     _inherit: (
+        #         lambda self, cr, uid, ids, c={}: ids,
+        #         ['list_price'], 50),
+        # },
         help="Latest Recorded Historical Value")
     list_price_historical_ids = fields.One2many(
         'product.historic.price',

@@ -1498,13 +1498,11 @@ class CommissionVoucher(models.Model):
     _order = 'date'
     _rec_name = 'am_id'
 
-    def _get_commission(self, cr, uid, ids, name, args, context=None):
-        context = dict(context or {})
-        res = {}.fromkeys(ids, 0.0)
-        for brw in self.browse(cr, uid, ids, context=context):
-            res[brw.id] = sum(
+    @api.multi
+    def _get_commission(self):
+        for brw in self:
+            brw.commission = sum(
                 [ci_brw.commission for ci_brw in brw.comm_invoice_ids])
-        return res
 
     commission_id = fields.Many2one('commission.payment', 'Commission')
     comm_sale_id = fields.Many2one('commission.salesman', 'Salesman')
@@ -1515,9 +1513,8 @@ class CommissionVoucher(models.Model):
         required=False)
     date = fields.Related('am_id', 'date', string='Date', type='date',
                             store=True, readonly=True)
-    commission = fields.Function(
-        _get_commission,
-        type='float',
+    commission = fields.Float(
+        compute='_get_commission',
         string='Commission Amount',
         digits_compute=dp.get_precision('Commission'))
 
@@ -1530,13 +1527,11 @@ class CommissionInvoice(models.Model):
     _name = 'commission.invoice'
     _order = 'invoice_id'
 
-    def _get_commission(self, cr, uid, ids, name, args, context=None):
-        context = dict(context or {})
-        res = {}.fromkeys(ids, 0.0)
-        for brw in self.browse(cr, uid, ids, context=context):
-            res[brw.id] = sum(
+    @api.multi
+    def _get_commission(self):
+        for brw in self:
+            brw.commission = sum(
                 [cl_brw.commission for cl_brw in brw.comm_line_ids])
-        return res
 
     name = fields.Char('Comentario', size=256)
     commission_id = fields.Many2one('commission.payment', 'Comision')
@@ -1548,9 +1543,8 @@ class CommissionInvoice(models.Model):
     pay_inv = fields.Float(
         'Abono Fact.',
         digits_compute=dp.get_precision('Commission'))
-    commission = fields.Function(
-        _get_commission,
-        type='float',
+    commission = fields.Float(
+        compute='_get_commission',
         string='Commission Amount',
         digits_compute=dp.get_precision('Commission'))
     # _defaults = {
