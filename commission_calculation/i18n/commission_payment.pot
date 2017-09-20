@@ -488,7 +488,7 @@ msgid "Baremo from"
 msgstr ""
 
 #. module: commission_calculation
-#: code:addons/commission_payment/model/commission.py:1145
+#: code:addons/commission_calculation/model/commission.py:1145
 #, python-format
 msgid "Baremo on Matrix only applies on Invoiced Products"
 msgstr ""
@@ -811,9 +811,9 @@ msgid "Entry Line"
 msgstr ""
 
 #. module: commission_calculation
-#: code:addons/commission_payment/model/commission.py:83
-#: code:addons/commission_payment/model/commission.py:1144
-#: code:addons/commission_payment/model/commission.py:1220
+#: code:addons/commission_calculation/model/commission.py:83
+#: code:addons/commission_calculation/model/commission.py:1144
+#: code:addons/commission_calculation/model/commission.py:1220
 #, python-format
 msgid "Error!"
 msgstr ""
@@ -1276,13 +1276,13 @@ msgid "Tax (%)"
 msgstr ""
 
 #. module: commission_calculation
-#: code:addons/commission_payment/model/commission.py:1220
+#: code:addons/commission_calculation/model/commission.py:1220
 #, python-format
 msgid "There are items to fix"
 msgstr ""
 
 #. module: commission_calculation
-#: code:addons/commission_payment/model/commission.py:84
+#: code:addons/commission_calculation/model/commission.py:84
 #, python-format
 msgid "There is no default company for the current user!"
 msgstr ""

@@ -256,7 +256,7 @@ class CommissionPayment(models.Model):
         mod_obj = self.pool.get('ir.model.data')
         act_obj = self.pool.get('ir.actions.act_window')
 
-        result = mod_obj.get_object_reference(cr, uid, 'ims',
+        result = mod_obj.get_object_reference(cr, uid, 'commission_calculation',
                                               'comm_line_fix_act')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]
@@ -284,7 +284,7 @@ class CommissionPayment(models.Model):
         mod_obj = self.pool.get('ir.model.data')
         act_obj = self.pool.get('ir.actions.act_window')
 
-        result = mod_obj.get_object_reference(cr, uid, 'commission_payment',
+        result = mod_obj.get_object_reference(cr, uid, 'commission_calculation',
                                               'action_account_moves_all_tree')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]
