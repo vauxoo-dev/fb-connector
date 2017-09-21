@@ -79,8 +79,7 @@ class CommissionPayment(models.Model):
     _description = __doc__
 
     def _get_default_company(self, cr, uid, context=None):
-        company_id = self.pool.get('res.users')._get_company(cr, uid,
-                                                             context=context)
+        company_id = self.env['res.users']._get_company()
         if not company_id:
             raise UserError(
                 _('There is no default company for the current user!'))
@@ -248,21 +247,22 @@ class CommissionPayment(models.Model):
     #     'company_id': _get_default_company,
     # }
 
-    def action_view_fixlines(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_view_fixlines(self):
         """This function returns an action that display existing Commissions of
         given commission payment ids that are required for some details to
         provide a proper computation of commissions.
         """
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
+        mod_obj = self.env['ir.model.data']
+        act_obj = self.env['ir.actions.act_window']
 
-        result = mod_obj.get_object_reference(cr, uid, 'commission_calculation',
+        result = mod_obj.get_object_reference('commission_calculation',
                                               'comm_line_fix_act')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]
         # compute the number of payments to display
         cl_ids = []
-        for cp_brw in self.browse(cr, uid, ids, context=context):
+        for cp_brw in self:
             cl_ids += [cl_brw.id for cs_brw in cp_brw.salesman_ids
                        if not cs_brw.salesman_id
                        for cl_brw in cs_brw.comm_lines_ids
@@ -276,21 +276,22 @@ class CommissionPayment(models.Model):
             result['domain'] = "[('id','in',[])]"
         return result
 
-    def action_view_payment(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_view_payment(self):
         """This function returns an action that display existing Payments of given
         commission payment ids. It can either be a in a list or in a form view,
         if there is only one invoice to show.
         """
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
+        mod_obj = self.env['ir.model.data']
+        act_obj = self.env['ir.actions.act_window']
 
-        result = mod_obj.get_object_reference(cr, uid, 'commission_calculation',
+        result = mod_obj.get_object_reference('commission_calculation',
                                               'action_account_moves_all_tree')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]
         # compute the number of payments to display
         aml_ids = []
-        for cp_brw in self.browse(cr, uid, ids, context=context):
+        for cp_brw in self.browse():
             aml_ids += [aml_brw.id for aml_brw in cp_brw.aml_ids]
         # choose the view_mode accordingly
         if len(aml_ids) > 1:
@@ -301,21 +302,22 @@ class CommissionPayment(models.Model):
             result['domain'] = "[('id','in',[])]"
         return result
 
-    def action_view_invoice(self, cr, uid, ids, context=None):
+    @api.multi
+    def action_view_invoice(self):
         """This function returns an action that display existing invoices of given
         commission payment ids. It can either be a in a list or in a form view,
         if there is only one invoice to show.
         """
-        mod_obj = self.pool.get('ir.model.data')
-        act_obj = self.pool.get('ir.actions.act_window')
+        mod_obj = self.env['ir.model.data']
+        act_obj = self.env['ir.actions.act_window']
 
-        result = mod_obj.get_object_reference(cr, uid, 'account',
+        result = mod_obj.get_object_reference('account',
                                               'action_invoice_tree1')
         idx = result and result[1] or False
         result = act_obj.read(cr, uid, [idx], context=context)[0]
         # compute the number of invoices to display
         inv_ids = []
-        for cp_brw in self.browse(cr, uid, ids, context=context):
+        for cp_brw in self.browse():
             inv_ids += [invoice.id for invoice in cp_brw.invoice_ids]
         # choose the view_mode accordingly
         if len(inv_ids) >= 1:
@@ -326,12 +328,11 @@ class CommissionPayment(models.Model):
             result['domain'] = "[('id','in',[])]"
         return result
 
-    def _prepare_based_on_payments(self, cr, uid, ids, context=None):
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-        aml_obj = self.pool.get('account.move.line')
+    @api.multi
+    def _prepare_based_on_payments(self):
+        aml_obj = self.env['account.move.line']
 
-        for comm_brw in self.browse(cr, uid, ids, context=context):
+        for comm_brw in self:
             date_start = comm_brw.date_start
             date_stop = comm_brw.date_stop
 
@@ -368,13 +369,12 @@ class CommissionPayment(models.Model):
 
         return True
 
-    def _prepare_based_on_invoices(self, cr, uid, ids, context=None):
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-        inv_obj = self.pool.get('account.invoice')
-        aml_obj = self.pool.get('account.move.line')
+    @api.multi
+    def _prepare_based_on_invoices(self):
+        inv_obj = self.env['account.invoice']
+        aml_obj = self.env['account.move.line']
 
-        for comm_brw in self.browse(cr, uid, ids, context=context):
+        for comm_brw in self:
             comm_brw.write({'aml_ids': []})
             date_start = comm_brw.date_start
             date_stop = comm_brw.date_stop
@@ -382,11 +382,11 @@ class CommissionPayment(models.Model):
             # En esta busqueda restringimos que la factura de cliente se haya
             # pagado y que  este dentro de la fecha estipulada
             invoice_ids = inv_obj.search(
-                cr, uid, [('state', '=', 'paid'),
+                        [('state', '=', 'paid'),
                           ('type', '=', 'out_invoice'),
                           ('date_last_payment', '>=', date_start),
                           ('date_last_payment', '<=', date_stop),
-                          ], context=context)
+                          ])
 
             comm_brw.write({
                 'invoice_ids': [(6, comm_brw.id, invoice_ids)]})
@@ -397,21 +397,21 @@ class CommissionPayment(models.Model):
                        ]
 
             aml_ids2 = aml_obj.search(
-                cr, uid, [('state', '=', 'valid'),
+                        [('state', '=', 'valid'),
                           ('reconcile_id', '!=', False),
                           ('journal_id.type', '=', 'sale'),
                           ('date_last_payment', '>=', date_start),
                           ('date_last_payment', '<=', date_stop),
-                          ], context=context)
+                          ])
 
             aml_ids2 = aml_obj.search(
-                cr, uid, [('state', '=', 'valid'),
+                        [('state', '=', 'valid'),
                           ('reconcile_id', '!=', False),
                           ('journal_id.type', 'in', ('bank', 'cash')),
                           ('rec_aml', 'in', aml_ids2),
                           # ('date_last_payment', '>=', date_start),
                           # ('date_last_payment', '<=', date_stop),
-                          ], context=context)
+                          ])
 
             aml_ids = list(set(aml_ids + aml_ids2))
             comm_brw.write({'aml_ids': [(6, comm_brw.id, aml_ids)]})
@@ -422,7 +422,7 @@ class CommissionPayment(models.Model):
                              bar_brw=None, context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
         # Determinar dias entre la emision de la factura del producto y el pago
         # del mismo
         pay_date = datetime.datetime.strptime(pay_date, '%Y-%m-%d')
@@ -480,8 +480,8 @@ class CommissionPayment(models.Model):
                                           context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        aml_obj = self.pool.get('account.move.line')
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        aml_obj = self.env['account.move.line']
+        comm_brw = self.browse(ids)
         aml_brw = aml_obj.browse(cr, uid, pay_id, context=context)
         date = False
         if comm_brw.commission_policy_date_start == 'invoice_emission_date':
@@ -501,8 +501,8 @@ class CommissionPayment(models.Model):
                                         context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        aml_obj = self.pool.get('account.move.line')
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        aml_obj = self.env['account.move.line']
+        comm_brw = self.browse(ids)
         aml_brw = aml_obj.browse(cr, uid, pay_id, context=context)
         date = aml_brw.date
         if comm_brw.commission_policy_date_end == 'last_payment_date':
@@ -516,7 +516,7 @@ class CommissionPayment(models.Model):
         context = context or {}
         if not salesman_brw:
             return None
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
         user_ids = [usr_brw.id for usr_brw in comm_brw.user_ids]
         if not user_ids:
             return salesman_brw
@@ -530,9 +530,9 @@ class CommissionPayment(models.Model):
             return salesman_id
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        aml_obj = self.pool.get('account.move.line')
-        rp_obj = self.pool.get('res.partner')
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        aml_obj = self.env['account.move.line']
+        rp_obj = self.env['res.partner']
+        comm_brw = self.browse(ids)
         aml_brw = aml_obj.browse(cr, uid, pay_id, context=context)
         res = None
         if aml_brw.rec_invoice:
@@ -560,7 +560,7 @@ class CommissionPayment(models.Model):
                                       salesman_id, context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        bm_obj = self.pool.get('baremo.matrix')
+        bm_obj = self.env['baremo.matrix']
         res = bm_obj.search(cr, uid, [
             ('product_id', '=', product_id),
             ('user_id', '=', salesman_id.id),
@@ -568,7 +568,7 @@ class CommissionPayment(models.Model):
         if res:
             return bm_obj.browse(cr, uid, res[0], context=context).baremo_id
 
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
         return comm_brw.baremo_id
 
     def _get_commission_policy_baremo(self, cr, uid, ids, pay_id,
@@ -577,9 +577,9 @@ class CommissionPayment(models.Model):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
         partner_id = partner_id or None
-        aml_obj = self.pool.get('account.move.line')
-        rp_obj = self.pool.get('res.partner')
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        aml_obj = self.env['account.move.line']
+        rp_obj = self.env['res.partner']
+        comm_brw = self.browse(ids)
         aml_brw = aml_obj.browse(cr, uid, pay_id, context=context)
         res = None
         if comm_brw.commission_baremo_policy == 'onCompany':
@@ -612,13 +612,13 @@ class CommissionPayment(models.Model):
                                                 context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
 
-        aml_obj = self.pool.get('account.move.line')
-        prod_prices = self.pool.get('product.historic.price')
-        sale_noids = self.pool.get('commission.sale.noid')
-        noprice_ids = self.pool.get('commission.noprice')
-        comm_line_ids = self.pool.get('commission.lines')
+        aml_obj = self.env['account.move.line']
+        prod_prices = self.env['product.historic.price']
+        sale_noids = self.env['commission.sale.noid']
+        noprice_ids = self.env['commission.noprice']
+        comm_line_ids = self.env['commission.lines']
 
         aml_brw = aml_obj.browse(cr, uid, pay_id, context=context)
         if not aml_brw.credit:
@@ -815,10 +815,10 @@ class CommissionPayment(models.Model):
                                            context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
 
-        aml_obj = self.pool.get('account.move.line')
-        comm_line_ids = self.pool.get('commission.lines')
+        aml_obj = self.env['account.move.line']
+        comm_line_ids = self.env['commission.lines']
 
         aml_brw = aml_obj.browse(cr, uid, aml_id, context=context)
         if not aml_brw.credit:
@@ -921,13 +921,13 @@ class CommissionPayment(models.Model):
                                        context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
 
         if not comm_brw.unknown_salespeople:
             return True
 
-        aml_obj = self.pool.get('account.move.line')
-        comm_line_ids = self.pool.get('commission.lines')
+        aml_obj = self.env['account.move.line']
+        comm_line_ids = self.env['commission.lines']
 
         aml_brw = aml_obj.browse(cr, uid, aml_id, context=context)
         if not aml_brw.credit:
@@ -988,7 +988,7 @@ class CommissionPayment(models.Model):
     def _get_commission_payment(self, cr, uid, ids, aml_id, context=None):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
+        comm_brw = self.browse(ids)
         if comm_brw.commission_scope == 'product_invoiced':
             self._get_commission_payment_on_invoice_line(cr, uid, ids, aml_id,
                                                          context=context)
@@ -998,11 +998,9 @@ class CommissionPayment(models.Model):
 
         return True
 
-    def _commission_based_on_payments(self, cr, uid, ids, context=None):
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-
-        for comm_brw in self.browse(cr, uid, ids, context=context):
+    @api.multi
+    def _commission_based_on_payments(self):
+        for comm_brw in self:
 
             payment_ids = set([])
             uninvoice_payment_ids = set([])
@@ -1034,13 +1032,13 @@ class CommissionPayment(models.Model):
 
         return True
 
-    def _post_processing(self, cr, uid, ids, context=None):
+    def _post_processing(self):
         ids = isinstance(ids, (int, long)) and [ids] or ids
         context = context or {}
-        salesman_ids = self.pool.get('commission.salesman')
-        comm_line_obj = self.pool.get('commission.lines')
-        comm_voucher_ids = self.pool.get('commission.voucher')
-        comm_invoice_ids = self.pool.get('commission.invoice')
+        salesman_ids = self.env['commission.salesman']
+        comm_line_obj = self.env['commission.lines']
+        comm_voucher_ids = self.env['commission.voucher']
+        comm_invoice_ids = self.env['commission.invoice']
 
         # habiendo recorrido todos los vouchers, mostrado todos los elementos
         # que necesitan correccion se procede a agrupar las comisiones por
@@ -1050,7 +1048,7 @@ class CommissionPayment(models.Model):
                      'commission_currency', 'am_id', 'invoice_id',
                      'comm_salespeople_id', 'comm_voucher_id', ]
 
-        for commission in self.browse(cr, uid, ids, context=context):
+        for commission in self.browse():
             # Erasing what was previously set as Commission per Salesman
             commission.salesman_ids.unlink()
             commission.comm_invoice_ids.unlink()
@@ -1124,7 +1122,7 @@ class CommissionPayment(models.Model):
 
         return True
 
-    def prepare(self, cr, uid, ids, context=None):
+    def prepare(self):
         """Este metodo recorre los elementos de lineas de asiento y verifica al
         menos tres (3) caracteristicas primordiales para continuar con los
         mismos: estas caracteristicas son:
@@ -1146,30 +1144,26 @@ class CommissionPayment(models.Model):
 
         @return: return a result
         """
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-        comm_brw = self.browse(cr, uid, ids[0], context=context)
-        if comm_brw.commission_baremo_policy == 'onMatrix' and \
-                comm_brw.commission_scope != 'product_invoiced':
+        if self.commission_baremo_policy == 'onMatrix' and \
+                self.commission_scope != 'product_invoiced':
             raise UserError(
                 _('Baremo on Matrix only applies on Invoiced Products'))
         # Desvincular lineas existentes, si las hubiere
-        comm_brw.clear()
-        if comm_brw.commission_type == 'partial_payment':
-            self._prepare_based_on_payments(cr, uid, ids, context=context)
-        elif comm_brw.commission_type == 'fully_paid_invoice':
-            self._prepare_based_on_invoices(cr, uid, ids, context=context)
+        self.clear()
+        if self.commission_type == 'partial_payment':
+            self._prepare_based_on_payments()
+        elif self.commission_type == 'fully_paid_invoice':
+            self._prepare_based_on_invoices()
 
-        self._commission_based_on_payments(cr, uid, ids, context=context)
-        self._post_processing(cr, uid, ids, context=context)
+        self._commission_based_on_payments()
+        self._post_processing()
 
-        self.write(cr, uid, ids, {'state': 'open'}, context=context)
+        self.write({'state': 'open'})
         return True
 
-    def _recompute_commission(self, cr, uid, ids, context=None):
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-        for comm_brw in self.browse(cr, uid, ids, context=context):
+    @api.model
+    def _recompute_commission(self):
+        for comm_brw in self:
             for cs_brw in comm_brw.salesman_ids:
                 if cs_brw.salesman_id:
                     continue
@@ -1177,17 +1171,18 @@ class CommissionPayment(models.Model):
                     cl_brw._recompute_commission()
         return True
 
-    def action_recompute(self, cr, uid, ids, context=None):
+    @api.model
+    def action_recompute(self):
 
-        self._recompute_commission(cr, uid, ids, context=context)
-        self._post_processing(cr, uid, ids, context=context)
+        self._recompute_commission()
+        self._post_processing()
         return True
 
     def action_draft(self, cr, user, ids, context=None):
 
         context = context or {}
         ids = isinstance(ids, (int, long)) and [ids] or ids
-        aml_obj = self.pool.get('account.move.line')
+        aml_obj = self.env['account.move.line']
 
         for comm_brw in self.browse(cr, user, ids, context=context):
             if comm_brw.state == 'done':
@@ -1220,7 +1215,7 @@ class CommissionPayment(models.Model):
                      (3, inv_brw.id) for inv_brw in comm_brw.invoice_ids]})
 
     def validate(self, cr, user, ids, context=None):
-        aml_obj = self.pool.get('account.move.line')
+        aml_obj = self.env['account.move.line']
         # escribir en el aml el estado buleano de paid_comm a True para indicar
         # que ya esta comision se esta pagando
         # TODO: prior to write anything here paid_comm field has to be check
@@ -1366,14 +1361,12 @@ class CommissionLines(models.Model):
     #     'name': lambda *a: None,
     # }
 
-    def _recompute_commission(self, cr, uid, ids, context=None):
-        ids = isinstance(ids, (int, long)) and [ids] or ids
-        context = context or {}
-        cl_brw = self.browse(cr, uid, ids[0], context=context)
-        comm_brw = cl_brw.commission_id
+    @api.model
+    def _recompute_commission(self):
+        comm_brw = self.commission_id
 
-        aml_brw = cl_brw.aml_id
-        aml_id = cl_brw.aml_id.id
+        aml_brw = self.aml_id
+        aml_id = self.aml_id.id
         if not aml_brw.credit:
             return True
 
@@ -1385,8 +1378,8 @@ class CommissionLines(models.Model):
 
         commission_policy_baremo = \
             comm_brw._get_commission_policy_baremo(
-                aml_id, partner_id=cl_brw.partner_id,
-                salesman_id=cl_brw.salesman_id)
+                aml_id, partner_id=self.partner_id,
+                salesman_id=self.salesman_id)
 
         commission_params = comm_brw._get_commission_rate(
             commission_policy_date_end,

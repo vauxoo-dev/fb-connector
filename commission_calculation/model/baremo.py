@@ -149,7 +149,7 @@ class ResCompany(models.Model):
     def _set_baremo_data(self, cr, uid, company_id, name, value, arg,
                          context=None):
         """ Write the 'baremo_id' functional field. """
-        part_obj = self.pool.get('res.partner')
+        part_obj = self.env['res.partner']
         company = self.browse(cr, uid, company_id, context=context)
         if company.partner_id:
             part_obj.write(

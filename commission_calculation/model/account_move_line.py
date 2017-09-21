@@ -92,7 +92,7 @@ class AccountMoveLine(models.Model):
     def _rec_aml_search(self, cursor, user, obj, name, args, context=None):
         if not args:
             return []
-        aml_obj = self.pool.get('account.move.line')
+        aml_obj = self.env['account.move.line']
         i = 0
         while i < len(args):
             fargs = args[i][0].split('.', 1)
@@ -146,7 +146,7 @@ class AccountMoveLine(models.Model):
     def _rec_invoice_search(self, cursor, user, obj, name, args, context=None):
         if not args:
             return []
-        invoice_obj = self.pool.get('account.invoice')
+        invoice_obj = self.env['account.invoice']
         i = 0
         while i < len(args):
             fargs = args[i][0].split('.', 1)
