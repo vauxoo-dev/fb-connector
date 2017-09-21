@@ -40,18 +40,16 @@ class TestCommission(TransactionCase):
         """basic method to define some basic data to be re use in all test cases.
         """
         super(TestCommission, self).setUp()
-        self.cp_model = self.registry('commission.payment')
-        self.php_model = self.registry('product.historic.price')
-        self.aml_model = self.registry('account.move.line')
-        self.inv_model = self.registry('account.invoice')
-        self.prod_model = self.registry('product.product')
+        self.cp_model = self.env['commission.payment']
+        self.php_model = self.env['product.historic.price']
+        self.aml_model = self.env['account.move.line']
+        self.inv_model = self.env['account.invoice']
+        self.prod_model = self.env['product.product']
 
     def test_basic_commission(self):
-        cur, uid = self.cr, self.uid
-        cp_id = self.ref('commission_calculation.commission_1'),
-        demo_id = self.ref('base.user_demo'),
+        cp_brw = self.env.ref('commission_calculation.commission_1')
+        demo_id = self.env.ref('base.user_demo')
 
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
         cp_brw.action_view_payment()
         cp_brw.action_view_invoice()
 
@@ -67,7 +65,7 @@ class TestCommission(TransactionCase):
         for cs_brw in cp_brw.salesman_ids:
             if not cs_brw.salesman_id:
                 continue
-            self.assertEquals(cs_brw.salesman_id.id, demo_id[0],
+            self.assertEquals(cs_brw.salesman_id, demo_id,
                               'Salesman shall be "Demo User"')
             self.assertEquals(cs_brw.comm_total, 660.00,
                               'Wrong Quantity on commission')
@@ -85,9 +83,7 @@ class TestCommission(TransactionCase):
         return True
 
     def test_fix_commission(self):
-        cur, uid = self.cr, self.uid
-        cp_id = self.ref('commission_calculation.commission_1'),
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
+        cp_brw = self.env.ref('commission_calculation.commission_1')
         self.assertEquals(
             cp_brw.total_comm, 660,
             'Commission should be 660')
@@ -128,9 +124,7 @@ class TestCommission(TransactionCase):
         return True
 
     def test_aml_commission(self):
-        cur, uid = self.cr, self.uid
-        cp_id = self.ref('commission_calculation.commission_1')
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
+        cp_brw = self.env.ref('commission_calculation.commission_1')
         cp_brw.action_draft()
 
         month = str((date.today().month % 12) + 1)
@@ -140,7 +134,7 @@ class TestCommission(TransactionCase):
 
         aml_ids = [self.ref('commission_calculation.aml_rec_debit')]
         aml_ids += [self.ref('commission_calculation.aml_rec_credit')]
-        self.aml_model.reconcile_partial(cur, uid, aml_ids, 'auto')
+        self.aml_model.reconcile_partial(aml_ids, 'auto')
 
         cp_brw.prepare()
         self.assertEquals(
@@ -180,12 +174,9 @@ class TestCommission(TransactionCase):
         return True
 
     def test_product_commission(self):
-        cur, uid = self.cr, self.uid
-        prod_id = self.ref('product.product_product_4')
-        prod_brw = self.prod_model.browse(cur, uid, prod_id)
+        prod_brw = self.env.ref('product.product_product_4')
 
         price_ids = self.php_model.search(
-            cur, uid,
             [('product_id', '=', prod_brw.product_tmpl_id.id)])
 
         self.assertEquals(
@@ -193,8 +184,7 @@ class TestCommission(TransactionCase):
             'There should historical prices on product %s' %
             prod_brw.name)
 
-        cp_id = self.ref('commission_calculation.commission_1')
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
+        cp_brw = self.env.ref('commission_calculation.commission_1')
 
         cp_brw.action_draft()
         self.assertEquals(
@@ -219,9 +209,7 @@ class TestCommission(TransactionCase):
         return True
 
     def test_partial_payment_commission(self):
-        cur, uid = self.cr, self.uid
-        cp_id = self.ref('commission_calculation.commission_1'),
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
+        cp_brw = self.env.ref('commission_calculation.commission_1')
         cp_brw.action_draft()
         cp_brw.commission_type = 'partial_payment'
         cp_brw.prepare()
@@ -231,9 +219,7 @@ class TestCommission(TransactionCase):
         return True
 
     def test_matrix_commission(self):
-        cur, uid = self.cr, self.uid
-        cp_id = self.ref('commission_calculation.commission_2')
-        cp_brw = self.cp_model.browse(cur, uid, cp_id)
+        cp_brw = self.env.ref('commission_calculation.commission_2')
 
         self.assertEquals(
             cp_brw.state, 'draft',
