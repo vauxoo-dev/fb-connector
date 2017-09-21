@@ -97,10 +97,10 @@ class BaremoDiscount(models.Model):
     _order = "porc_disc asc"
     _rec_name = 'porc_disc'
     porc_disc = fields.Float(
-        '% Dcto', digits_compute=dp.get_precision('Commission'),
+        '% Dcto', digits=dp.get_precision('Commission'),
         help="% de Descuento por producto", required=True)
     porc_com = fields.Float(
-        '% Com.', digits_compute=dp.get_precision('Commission'),
+        '% Com.', digits=dp.get_precision('Commission'),
         help="% de Comision @ porcentaje Descuento", required=True)
     disc_id = fields.Many2one('baremo', 'Baremo', required=False)
 

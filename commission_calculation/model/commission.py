@@ -107,7 +107,7 @@ class CommissionPayment(models.Model):
     )
     total_comm = fields.Float(
         'Total Commission',
-        digits_compute=dp.get_precision('Commission'),
+        digits=dp.get_precision('Commission'),
         readonly=True, states={'write': [('readonly', False)]},
         track_visibility='onchange')
 
@@ -1282,7 +1282,7 @@ class CommissionLines(models.Model):
     pay_date = fields.Date('Payment Date', required=True)
     pay_off = fields.Float(
         'Pago',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     aml_id = fields.Many2one('account.move.line', 'Entry Line')
     am_rec = fields.Many2one('account.move', 'Reconciling Entry')
@@ -1302,7 +1302,7 @@ class CommissionLines(models.Model):
         'commission.voucher', 'Voucher Commission', required=False)
     pay_inv = fields.Float(
         'Pay. to Doc.',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     inv_date = fields.Date('Invoice Date')
     date_start = fields.Date(
@@ -1313,48 +1313,48 @@ class CommissionLines(models.Model):
     )
     days = fields.Float(
         'Comm. Days',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     inv_subtotal = fields.Float(
         'SubTot. Doc.',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     product_id = fields.Many2one('product.product', 'Product')
     price_unit = fields.Float(
         'Prec. Unit.',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     price_subtotal = fields.Float(
         'SubTot. Product',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     price_list = fields.Float(
         'Price List',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     price_date = fields.Date('List Date')
 
     perc_iva = fields.Float(
         'Tax (%)',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     rate_item = fields.Float(
         'Dsct. (%)',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
     rate_number = fields.Float(
         'B./Rate (%)',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     timespan = fields.Float(
         'B./Days',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     baremo_comm = fields.Float(
         'B./%Comm.',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     commission = fields.Float(
         'Commission Amount',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     commission_currency = fields.Float(
         'Currency Amount',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     currency_id = fields.Many2one('res.currency', 'Currency')
 
     # _defaults = {
@@ -1450,7 +1450,7 @@ class CommissionSalesman(models.Model):
         'res.users', 'Salesman', required=False, readonly=True)
     comm_total = fields.Float(
         'Commission Amount',
-        digits_compute=dp.get_precision('Commission'), readonly=True)
+        digits=dp.get_precision('Commission'), readonly=True)
     comm_voucher_ids = fields.One2many(
         'commission.voucher',
         'comm_sale_id', 'Vouchers Affected in this commission',
@@ -1462,7 +1462,7 @@ class CommissionSalesman(models.Model):
     currency_id = fields.Many2one('res.currency', 'Currency', readonly=True)
     comm_total_currency = fields.Float(
         'Currency Amount',
-        digits_compute=dp.get_precision('Commission'), readonly=True)
+        digits=dp.get_precision('Commission'), readonly=True)
     company_id = fields.Many2one(
         related='commission_id.company_id', store=True, readonly=True,
         string='Company',
@@ -1498,7 +1498,7 @@ class CommissionVoucher(models.Model):
     commission = fields.Float(
         compute='_get_commission',
         string='Commission Amount',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
 
 
 class CommissionInvoice(models.Model):
@@ -1524,11 +1524,11 @@ class CommissionInvoice(models.Model):
         'comm_invoice_id', 'Comision por productos', required=False)
     pay_inv = fields.Float(
         'Abono Fact.',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     commission = fields.Float(
         compute='_get_commission',
         string='Commission Amount',
-        digits_compute=dp.get_precision('Commission'))
+        digits=dp.get_precision('Commission'))
     # _defaults = {
     #     'name': lambda *a: None,
     # }

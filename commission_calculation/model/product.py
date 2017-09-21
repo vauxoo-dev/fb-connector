@@ -50,7 +50,7 @@ class ProductHistorical(models.Model):
         compute='_get_historical_price',
         # method=True,
         string='Latest Price',
-        digits_compute=dp.get_precision('List_Price_Historical'),
+        digits=dp.get_precision('List_Price_Historical'),
         # store={
         #     _inherit: (
         #         lambda self, cr, uid, ids, c={}: ids,
@@ -84,7 +84,7 @@ class ProductHistoricPrice(models.Model):
         required=True)
     name = fields.Datetime(string='Date', required=True)
     price = fields.Float(
-        string='Price', digits_compute=dp.get_precision('Price'))
+        string='Price', digits=dp.get_precision('Price'))
     product_uom = fields.Many2one(
         'product.uom', string="Supplier UoM",
         help="""Choose here the Unit of Measure in which the prices and
