@@ -11,13 +11,12 @@ class TestBaremo(TransactionCase):
         """basic method to define some basic data to be re use in all test cases.
         """
         super(TestBaremo, self).setUp()
-        self.company_obj = self.registry('res.company')
+        self.company_obj = self.env['res.company']
 
     def test_basic_baremo(self):
-        cur, uid = self.cr, self.uid
-        baremo_id = self.ref('commission_calculation.baremo_book_01')
-
-        company_brw = self.company_obj.browse(cur, uid, 1)
+        baremo_id = self.env.ref('commission_calculation.baremo_book_01')
+        company_brw = self.env.ref('base.main_company')
         company_brw.baremo_id = baremo_id
-        self.assertEquals(baremo_id, company_brw.baremo_id.id)
+        self.assertEquals(baremo_id, company_brw.baremo_id)
+        self.assertEquals(baremo_id, company_brw.partner_id.baremo_id)
         return True

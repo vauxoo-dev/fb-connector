@@ -1,1 +1,1 @@
-addons-vauxoo git@github.com:Vauxoo/addons-vauxoo.git
+addons-vauxoo git@github.com:vauxoo-dev/addons-vauxoo.git 10.0-delete_commission_payment_modules-dev-yani

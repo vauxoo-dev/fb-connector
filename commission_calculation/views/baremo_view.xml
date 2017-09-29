@@ -55,7 +55,7 @@
             <field name="name">Baremes</field>
             <field name="res_model">baremo.book</field>
             <field name="view_type">form</field>
-            <field name="view_mode">tree,form,calendar,graph</field>
+            <field name="view_mode">tree,form</field>
         </record>
         <record model="ir.actions.act_window.view" id="action_baremo_book_tree">
             <field name="sequence" eval="10"/>

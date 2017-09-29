@@ -49,39 +49,29 @@
     ],
     "demo": [
         "../account/test/account_minimal_test.xml",
-        # Baremo
-        "demo/demo.xml",
-        # Commission Payment
-        "demo/account_invoice_demo.xml",
+        "demo/baremo.xml",
+        "demo/res_partner.xml",
+        "demo/account_invoice.xml",
     ],
     "data": [
         # product_historical_price
-        "view/product_view.xml",
+        "views/product_view.xml",
         "data/product_data.xml",
         "data/action_server_data.xml",
         # Baremo
-        "view/baremo_view.xml",
+        "views/baremo_view.xml",
         # Commission Payment
-        "security/commission_payment_security.xml",
+        "security/commission_calculation_security.xml",
         "security/ir.model.access.csv",
         "report/layouts.xml",
         "report/template.xml",
         "data/report_paperformat.xml",
         "data/data.xml",
-        "view/commission_report.xml",
-        "view/commission_view.xml",
-        "view/account_view.xml",
-        "view/commission_calculation_menuitem.xml",
+        "views/commission_report.xml",
+        "views/commission_view.xml",
+        "views/account_view.xml",
+        "views/commission_calculation_menuitem.xml",
     ],
-    "test": [],
-    "js": [],
-    "css": [],
-    "qweb": [],
     "installable": True,
     "auto_install": False,
-    "external_dependencies": {
-        "python": [
-            'pandas',
-        ]
-    }
 }

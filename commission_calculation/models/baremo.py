@@ -21,7 +21,6 @@
 ##############################################################################
 from odoo import fields, models, api
 from odoo.addons import decimal_precision as dp
-from openerp import SUPERUSER_ID
 
 
 class BaremoMatrix(models.Model):
@@ -49,9 +48,9 @@ class BaremoBook(models.Model):
     _name = 'baremo.book'
 
     name = fields.Char('Baremo Description',
-                        size=64,
-                        required=True,
-                        readonly=False)
+                       size=64,
+                       required=True,
+                       readonly=False)
     bar_ids = fields.One2many(
         'baremo', 'baremo_id', 'Emission Days',
         required=False,
@@ -83,9 +82,6 @@ class Baremo(models.Model):
         copy=True,
     )
     baremo_id = fields.Many2one('baremo.book', 'Padre', required=False)
-    # _defaults = {
-    #     'name': lambda *a: None,
-    # }
 
 
 class BaremoDiscount(models.Model):
@@ -129,38 +125,27 @@ class ProductProduct(models.Model):
 
 
 class ResCompany(models.Model):
+
     _inherit = "res.company"
     _description = 'Companies'
 
-    #TODO
-    @api.multi
-    def _get_baremo_data(self):
+    @api.depends('partner_id')
+    def _compute_baremo_data(self):
         """ Read the 'baremo_id' functional field. """
-        part_obj = self.env['res.partner']
         for company in self:
-            # result[company.id] = {}.fromkeys(field_names, False)
             if company.partner_id:
-                data = part_obj.read(cr, SUPERUSER_ID, [company.partner_id.id],
-                                     field_names, context=context)[0]
-                for field in field_names:
-                    result[company.id][field] = data[field] or False
-        return result
+                company.baremo_id = company.partner_id.baremo_id
 
-    def _set_baremo_data(self, cr, uid, company_id, name, value, arg,
-                         context=None):
+    @api.multi
+    def _inverse_baremo_data(self):
         """ Write the 'baremo_id' functional field. """
-        part_obj = self.env['res.partner']
-        company = self.browse(cr, uid, company_id, context=context)
-        if company.partner_id:
-            part_obj.write(
-                cr, uid, company.partner_id.id, {name: value or False},
-                context=context)
-        return True
+        for company in self:
+            if company.partner_id:
+                company.partner_id.write({'baremo_id': company.baremo_id.id})
 
     baremo_id = fields.Many2one(
         'baremo.book',
-        compute='_get_baremo_data',
-        inverse='_set_baremo_data',
+        compute='_compute_baremo_data',
+        inverse='_inverse_baremo_data',
         string="Baremo",
-        # multi='baremo',
     )

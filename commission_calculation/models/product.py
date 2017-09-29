@@ -33,29 +33,25 @@ class ProductHistorical(models.Model):
     """
     _inherit = 'product.template'
 
-    @api.multi
-    def _get_historical_price(self):
-        product_hist = self.env['product.historic.price']
-        for brw in self:
-            if brw.list_price != brw.list_price_historical:
-                brw.list_price_historical = brw.list_price
+    @api.depends('list_price')
+    def _compute_historical_price(self):
+        product_historic = self.env['product.historic.price']
+        for product_template in self:
+            if product_template.list_price != \
+                    product_template.list_price_historical:
+                product_template.list_price_historical = \
+                    product_template.list_price
                 values = {
-                    'product_id': brw.id,
+                    'product_id': product_template.id,
                     'name': time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'price': brw.list_price,
+                    'price': product_template.list_price,
                 }
-                product_hist.create(values)
+                product_historic.create(values)
 
     list_price_historical = fields.Float(
-        compute='_get_historical_price',
-        # method=True,
+        compute='_compute_historical_price',
         string='Latest Price',
         digits=dp.get_precision('List_Price_Historical'),
-        # store={
-        #     _inherit: (
-        #         lambda self, cr, uid, ids, c={}: ids,
-        #         ['list_price'], 50),
-        # },
         help="Latest Recorded Historical Value")
     list_price_historical_ids = fields.One2many(
         'product.historic.price',
@@ -82,14 +78,11 @@ class ProductHistoricPrice(models.Model):
         'product.template',
         string='Product related to this Price',
         required=True)
-    name = fields.Datetime(string='Date', required=True)
+    name = fields.Datetime(string='Date', required=True,
+                           default=fields.Datetime.now)
     price = fields.Float(
         string='Price', digits=dp.get_precision('Price'))
     product_uom = fields.Many2one(
         'product.uom', string="Supplier UoM",
         help="""Choose here the Unit of Measure in which the prices and
                 quantities are expressed below.""")
-
-    # _defaults = {
-    #     'name': lambda *a: time.strftime('%Y-%m-%d %H:%M:%S'),
-    # }
