@@ -26,13 +26,12 @@
             </field>
         </record>
 
-        <!--
         <record model="ir.ui.view" id="product_historical_price">
             <field name="name">product.historical.price</field>
             <field name="model">product.template</field>
             <field name="inherit_id" ref="account.product_template_form_view"/>
             <field name="arch" type="xml">
-                <xpath expr="//page[@string='Accounting']" position="after">
+                <xpath expr="//page[last()]" position="after">
                     <page string="Historical Cost Price">
                         <group colspan="2" col="4">
                             <separator string="Historical Costs" colspan="2"/>
@@ -49,6 +48,5 @@
                 </xpath>
             </field>
         </record>
-        -->
     </data>
 </openerp>

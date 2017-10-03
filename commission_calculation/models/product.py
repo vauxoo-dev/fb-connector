@@ -60,13 +60,30 @@ class ProductHistorical(models.Model):
         help='Historical changes '
         'of the sale price of '
         'this product')
-    # /!\ HBTO: Is this code still relevant?
-    # cost_historical_ids = fields.One2many(
-    #     'product.price.history',
-    #     'product_template_id',
-    #     'Historical Cost',
-    #     help='Historical changes '
-    #     'in the cost of this product')
+
+    cost_historical_ids = fields.One2many(
+        'product.price.history',
+        'product_id',
+        'Historical Cost',
+        help='Historical changes '
+        'in the cost of this product')
+
+    @api.depends('standard_price')
+    def _get_historical_cost(self):
+        product_hist = self.env['product.historic.price']
+        for product in self.filtered(lambda a: a.standard_price != a.cost_historical):
+            product.cost_historical = product.standard_price
+            product_hist.create({
+                'product_id': product.id,
+                'name': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'price': product.standard_price,
+            })
+
+    cost_historical = fields.Float(
+        compute=_get_historical_cost,
+        string=' Latest Cost',
+        digits_compute=dp.get_precision('Cost_Historical'),
+        help="Latest Recorded Historical Cost")
 
 
 class ProductHistoricPrice(models.Model):

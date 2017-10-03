@@ -8,10 +8,10 @@ class AccountInvoice(models.Model):
 
     @api.model
     def _date_last_payment(self):
-        return max(
-            aml_brw.date for aml_brw in
-            self.payment_move_line_ids.filtered(
-                lambda b: b.journal_id.type in ('bank', 'cash')))
+        payments = [aml_brw.date for aml_brw in
+        self.payment_move_line_ids.filtered(
+            lambda b: b.journal_id.type in ('bank', 'cash'))]
+        return max(payments) if payments else False
 
     @api.depends('residual', 'payment_ids')
     def _compute_date_last_payment(self):
