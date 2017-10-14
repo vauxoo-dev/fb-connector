@@ -1,57 +1,69 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <odoo>
-    <data>
+    <record id="product_historical_price_tree" model="ir.ui.view">
+        <field name="name">product.historical.price.tree</field>
+        <field name="model">product.historic.price</field>
+        <field name="arch" type="xml">
+            <tree string="Historical List Price">
+                <field name="datetime"/>
+                <field name="price"/>
+                <field name="product_uom"/>
+            </tree>
+        </field>
+    </record>
 
-        <record id="product_historical_price_tree" model="ir.ui.view">
-            <field name="name">product.historical.price.tree</field>
-            <field name="model">product.historic.price</field>
-            <field name="arch" type="xml">
-                <tree string="Historical List Price">
-                    <field name="datetime"/>
-                    <field name="price"/>
-                    <field name="product_uom"/>
-                </tree>
-            </field>
-        </record>
+    <record id="product_historical_price_form" model="ir.ui.view">
+        <field name="name">product.historical.price.form</field>
+        <field name="model">product.historic.price</field>
+        <field name="arch" type="xml">
+            <form string="Historical List Price" version="7.0">
+                <field name="datetime"/>
+                <field name="price"/>
+                <field name="product_uom"/>
+            </form>
+        </field>
+    </record>
 
-        <record id="product_historical_price_form" model="ir.ui.view">
-            <field name="name">product.historical.price.form</field>
-            <field name="model">product.historic.price</field>
-            <field name="arch" type="xml">
-                <form string="Historical List Price" version="7.0">
-                    <field name="datetime"/>
-                    <field name="price"/>
-                    <field name="product_uom"/>
-                </form>
-            </field>
-        </record>
-
-        <record model="ir.ui.view" id="product_historical_price">
-            <field name="name">product.historical.price</field>
-            <field name="model">product.product</field>
-            <field name="inherit_id" ref="product.product_normal_form_view"/>
-            <field name="arch" type="xml">
-                <xpath expr="//page[last()]" position="after">
-                    <page string="Historical Cost Price">
-                        <group colspan="2" col="4">
-                            <separator string="Historical Costs" colspan="2"/>
-                            <field name="cost_historical" colspan="2"/>
-                            <field name="cost_historical_ids" nolabel="1" colspan="4">
+    <record model="ir.ui.view" id="product_historical_price">
+        <field name="name">product.historical.price</field>
+        <field name="model">product.product</field>
+        <field name="inherit_id" ref="product.product_normal_form_view"/>
+        <field name="arch" type="xml">
+            <xpath expr="//page[last()]" position="after">
+                <page string="Commisions" groups="commission_calculation.manager">
+                    <group string="Historical Cost and Price" groups="base.group_no_one">
+                        <group string="Costs" name="costs">
+                            <field name="cost_historical"/>
+                            <newline/>
+                            <field name="cost_historical_ids" nolabel="1" colspan="3">
                                 <tree>
                                     <field name="datetime"/>
                                     <field name="cost"/>
                                 </tree>
                             </field>
                         </group>
-                        <group colspan="2" col="4">
-                            <separator string="Historical Prices" nolabel="1" colspan="2"/>
-                            <field name="list_price_historical" colspan="2"/>
+                        <group string="Prices" name="prices">
+                            <field name="list_price_historical"/>
                             <newline/>
-                            <field name="list_price_historical_ids" nolabel="1" colspan="4"/>
+                            <field name="list_price_historical_ids"
+                                   nolabel="1" colspan="3"/>
                         </group>
-                    </page>
-                </xpath>
-            </field>
-        </record>
-    </data>
+                    </group>
+                    <newline/>
+                    <group string="Baremo" name="baremo">
+                        <label string='On this Product these Baremes will be used when Commission Payment on these Salesmen are computed on Invoiced Products and option Matrix Bareme is selected'/>
+                        <field
+                            name="matrix_ids"
+                            nolabel="1"
+                            colspan="6">
+                            <tree editable='top'>
+                                <field name="baremo_id"/>
+                                <field name="user_id"/>
+                            </tree>
+                        </field>
+                    </group>
+                </page>
+            </xpath>
+        </field>
+    </record>
 </odoo>

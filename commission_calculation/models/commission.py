@@ -197,7 +197,10 @@ class CommissionPayment(models.Model):
     comm_fix = fields.Boolean('Fix Commissions?')
 
     unknown_salespeople = fields.Boolean(
-        'Allow Unknown Salespeople?')
+        help="If true then if the salespeople in the record does not have a "
+             "clear sales person set then this will be computed as unknown if "
+             "False then this lines will not be included in the computation"
+    )
 
     @api.multi
     def action_view_fixlines(self):

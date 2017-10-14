@@ -1,48 +1,10 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-
-    <menuitem name="ICM"
-        id="menu_icm_root"
-        web_icon="commission_calculation,static/description/icon.png"
-        sequence="70"/>
-
-    <menuitem
-        id="commission"
-        name="Salespeople Commissions"
-        parent="menu_icm_root"
-        groups="commission_calculation.group_comm_payment_user"
-        sequence="10"
-        />
-
-    <menuitem id="commission_config" name="Settings"
-        parent="menu_icm_root"
-        groups="commission_calculation.group_baremo_manager"
-        sequence="20"/>
-
-    <menuitem
-        name="All Commissions"
-        id="commission_all_mi"
-        action="commission_payment_all_act"
-        groups="commission_calculation.group_comm_payment_user"
-        parent="commission"/>
-
-    <menuitem name="Baremes" parent="commission_config" id="menu_baremes_tree"
-        action="commission_baremo_act" groups="commission_calculation.group_baremo_manager"/>
-
-    <menuitem
-        name="Bareme Matrix"
-        parent="commission_config"
-        id="menu_bareme_matrix_tree"
-        action="commission_baremo_matrix_act"
-        groups="commission_calculation.group_baremo_manager"
-        />
-
-    <menuitem
-        name="Templates"
-        parent="commission_config"
-        id="menu_commission_template"
-        action="commission_template_act"
-        groups="commission_calculation.group_baremo_manager"
-        />
-
+    <menuitem name="ICM" id="menu_icm_root" web_icon="commission_calculation,static/description/icon.png" sequence="70"/>
+    <menuitem id="config" name="Master Data" parent="menu_icm_root" groups="commission_calculation.manager" sequence="20"/>
+    <menuitem name="Commissions" id="commission_all_mi" action="commission_payment_all_act" groups="commission_calculation.user" parent="menu_icm_root"/>
+    <menuitem id="menu_products" name="Products" parent="config" sequence="1" action="product.product_normal_action_sell"/>
+    <menuitem id="menu_baremes" name="Baremes" parent="config" action="commission_baremo_act" groups="commission_calculation.manager"/>
+    <menuitem name="Bareme Matrix" parent="config" id="menu_bareme_matrix" action="commission_baremo_matrix_act" groups="commission_calculation.manager"/>
+    <menuitem name="Templates" parent="config" id="menu_commission_template" action="commission_template_act" groups="commission_calculation.manager"/>
 </odoo>

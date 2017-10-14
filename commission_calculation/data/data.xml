@@ -1,11 +1,7 @@
- <odoo>
-     <data noupdate="1">
-
-         <!-- Added Track on commission.payment object -->
-         <function model="ir.model" name="_add_write_patch_model">
-             <function eval="[[('model', '=', 'commission.payment')]]" model="ir.model" name="search"/>
-         </function>
-
-     </data>
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="icm" model="ir.module.category">
+        <field name="name">ICM</field>
+        <field name="sequence">100</field>
+    </record>
  </odoo>
-
