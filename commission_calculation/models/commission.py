@@ -1,4 +1,14 @@
 # coding: utf-8
+############################################################################
+#    Module Writen For Odoo, Open Source Management Solution
+#
+#    Copyright (c) 2017 Vauxoo - http://www.vauxoo.com
+#    All Rights Reserved.
+#    info Vauxoo (info@vauxoo.com)
+#    coded by: Humberto Arocha <hbto@vauxoo.com>
+#              Yanina Aular <yanina.aular@vauxoo.com>
+#    audited by: Humberto Arocha <hbto@vauxoo.com>
+############################################################################
 
 from __future__ import division
 import datetime
@@ -18,49 +28,6 @@ except ImportError:
                  ' from addons-vauxoo '
                  ' you will need: sudo pip install pandas')
 
-COMMISSION_STATES = [
-    ('draft', 'Draft'),
-    ('open', 'In Progress'),
-    ('done', 'Done'),
-    ('cancel', 'Cancelled'),
-]
-
-COMMISSION_TYPES = [
-    ('partial_payment', 'Partial Payments'),
-    ('fully_paid_invoice', 'Fully Paid Invoices'),
-]
-
-COMMISSION_SALESMAN_POLICY = [
-    ('on_invoice', 'Invoice'),
-    ('on_invoiced_partner', 'Partner'),
-    ('on_accounting_partner', 'Commercial Entity'),
-]
-
-COMMISSION_SCOPES = [
-    ('whole_invoice', 'Whole Invoice'),
-    ('product_invoiced', 'Invoiced Products '),
-]
-
-COMMISSION_POLICY_DATE_START = [
-    ('invoice_emission_date', 'Emission Date'),
-    ('invoice_due_date', 'Due Date'),
-]
-
-COMMISSION_POLICY_DATE_END = [
-    ('last_payment_date', 'Last Payment on Invoice'),
-    ('date_on_payment', 'Date of Payment'),
-]
-
-COMMISSION_POLICY_BAREMO = [
-    ('onCompany', 'Company'),
-    ('onPartner', 'Partner'),
-    ('onAccountingPartner', 'Commercial Entity'),
-    ('onUser', 'Salespeople'),
-    ('onMatrix', 'Baremo Matrix'),
-    ('onCommission', 'Document'),
-]
-
-
 def t_time(date):
     """Trims time from "%Y-%m-%d %H:%M:%S" to "%Y-%m-%d"
     """
@@ -71,12 +38,20 @@ def t_time(date):
 
 class CommissionPayment(models.Model):
 
-    """OpenERP Model : commission_payment
-    """
-
     _name = 'commission.payment'
-    _inherit = ['mail.thread']
+    _inherit = ['mail.thread', 'commission.abstract']
     _description = __doc__
+
+    @api.onchange("template_id")
+    def _onchange_commission_template(self):
+        if self.template_id:
+            self.commission_type = self.template_id.commission_type
+            self.scope = self.template_id.scope
+            self.policy_date_start = self.template_id.policy_date_start
+            self.policy_date_end = self.template_id.policy_date_end
+            self.salesman_policy = self.template_id.salesman_policy
+            self.baremo_policy = self.template_id.baremo_policy
+            self.baremo_id = self.template_id.baremo_id
 
     @api.model
     def _get_default_company(self):
@@ -99,6 +74,7 @@ class CommissionPayment(models.Model):
     )
     date_start = fields.Date(
         'Start Date', required=True,
+        readonly=True, states={'draft': [('readonly', False)]},
         track_visibility='onchange',
         help="The calculation of commissions begins "
         "with this date, including it."
@@ -109,6 +85,7 @@ class CommissionPayment(models.Model):
     )
     date_stop = fields.Date(
         'End Date', required=True,
+        readonly=True, states={'draft': [('readonly', False)]},
         track_visibility='onchange',
         help="The calculation of commissions ends "
         "with this date, including it."
@@ -128,12 +105,12 @@ class CommissionPayment(models.Model):
 
     sale_noids = fields.One2many(
         'commission.sale.noid', 'commission_id',
-        'Articulos sin asociacion', readonly=True,
+        'Articles without association', readonly=True,
         states={'write': [('readonly', False)]})
 
     noprice_ids = fields.One2many(
         'commission.noprice', 'commission_id',
-        'Productos sin precio de lista historico', readonly=True,
+        'Products without price of historic\'s list', readonly=True,
         states={'write': [('readonly', False)]})
 
     comm_line_product_ids = fields.One2many(
@@ -183,134 +160,21 @@ class CommissionPayment(models.Model):
         'commission_id', 'Facturas afectadas en esta comision',
         readonly=True, states={'write': [('readonly', False)]})
 
-    state = fields.Selection(
-        COMMISSION_STATES, 'Estado', readonly=True,
+    state = fields.Selection([
+        ('draft', 'Draft'),
+        ('open', 'In Progress'),
+        ('done', 'Done'),
+        ('cancel', 'Cancelled')],
+        'Estado',
+        readonly=True,
         default='draft',
         track_visibility='onchange',
         help="State of the commission document",
     )
 
-    commission_type = fields.Selection(
-        COMMISSION_TYPES,
-        string='Basis', required=True,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="* Fully Paid Invoices: Sales commissions will be paid when the "
-        "invoice is fully paid.\n"
-        "* Partial Payments: Sales commissions will "
-        "be partially paid, for each"
-        " payment made to the invoice, a commission "
-        "is calculated.",
-    )
-
-    commission_scope = fields.Selection(
-        COMMISSION_SCOPES,
-        string='Scope', required=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="* Full invoice: Commission payment based on invoice. "
-        "The commission is calculated on the subtotal of the invoice, "
-        "not including taxes. \n"
-        "* Products invoiced: Payment of commission based on the "
-        "products. The commission is calculated on each line of the "
-        "invoice, not including taxes. You must specify by product "
-        "how much commission will be paid. \n"
-        "Note: Commissions are paid without taxes."
-    )
-
-    commission_policy_date_start = fields.Selection(
-        COMMISSION_POLICY_DATE_START,
-        string='Start Date Computation Policy', required=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="* Date of emission: The commission payment calculation begins "
-        "on the date of emission of the invoice. That is, from the date of "
-        "emission of the invoice, begins the count of days to know what "
-        "percentage of commission will be the vendor. \n"
-        "* Due date: The commission payment calculation starts on "
-        "the invoice due date. That is, from the date of expiration "
-        "of the invoice, begins the count of days to know what percentage"
-        " of commission will be the vendor. \n"
-        " Example:\n"
-        "- If the customer pays in 0 days or less, "
-        "you will get 7% commission. \n"
-        "- If the customer pays in 20 days or less, "
-        "you will get 5% commission. \n"
-        "- Date of emission: July 13, 2017. \n"
-        "- Date of last payment: July 26, 2017. \n"
-        "- Due date: August 12, 2017. \n"
-        "If the commission payment calculation is chosen as of "
-        "the emission Date, the vendor will receive a 5% commission, since "
-        "the payment date was 13 days AFTER the date of emission. That "
-        "is, paid before 20 days. \n"
-        "If the commission payment calculation is chosen from "
-        "the Due Date, the vendor will get a 7% commission, since the "
-        "payment date was 24 days BEFORE the expiration date. That is,"
-        " paid before 20 days. \n"
-    )
-
-    commission_policy_date_end = fields.Selection(
-        COMMISSION_POLICY_DATE_END,
-        string='End Date Computation Policy', required=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="* Last payment on invoice: The commission will be "
-        "calculated based on the date of the last payment "
-        "(ie the date on which the invoice is paid in full). "
-        "That is, although there are payments in the invoice "
-        "that were made in a range where the vendor would earn "
-        "a 7% commission, it will only be taken into account "
-        "the last payment date for all payments, and if the "
-        "last payment is in a commission rate of 1%, then the "
-        "commission for all payments will be based on 1%. "
-        "That is, the worst commission is used and this "
-        "forces the vendors to convince the customer to "
-        "pay the bill in full as quickly as possible.\n"
-        "* Payment date: The commission will be calculated based "
-        "on the date of each payment. If there are payments in "
-        "different commission ranges, for example, payment #1 "
-        "has 7% commission, payment #2 has %5 commission and "
-        "payment #3 has 1% commission. Then you would pay "
-        "commission which corresponds to the percentage of "
-        "the amount of the payment."
-    )
-
-    commission_salesman_policy = fields.Selection(
-        COMMISSION_SALESMAN_POLICY,
-        string='Salesman Policy', required=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="* Invoice: The one on the invoice. The one that serves "
-        "the person.\n"
-        "* Partner: In the invoice partner tab or in the account "
-        "move line. Partner assigned to the entity to which I am "
-        "invoicing. That is, each customer has their assigned "
-        "salesperson.\n"
-        "* Commercial entity: The parent of the partner on the "
-        "invoice. The customer handles the whole group. Serves "
-        "if you have a group of vendors."
-    )
-
-    commission_baremo_policy = fields.Selection(
-        COMMISSION_POLICY_BAREMO,
-        string='Baremo Policy', required=False,
-        readonly=True,
-        states={'draft': [('readonly', False)]},
-        track_visibility='onchange',
-        help="- Company: use the baremo configured in the company.\n"
-        "- Partner: Use the baremo by partner, ie the baremo "
-        "configured for the partner \n"
-        "- Business entity: Use the partner's parent baremo. "
-        "That is the baremo configured for a group of clients.\n"
-        "- Vendor: Use the baremo set up for the seller.\n"
-        "- Baremo matrix: Use the baremo specified. When it comes "
-        "to paying commissions on product lines.\n"
-        "- Document: Select a baremo by hand for everything\n"
+    template_id = fields.Many2one(
+        'commission.template', 'Template',
+        readonly=True, states={'draft': [('readonly', False)]},
     )
 
     company_id = fields.Many2one(
@@ -359,6 +223,9 @@ class CommissionPayment(models.Model):
             ) + "])]"
         else:
             result['domain'] = "[('id','in',[])]"
+        title = 'Fix commissions'
+        result['name'] = title
+        result['display_name'] = title
         return result
 
     @api.multi
@@ -435,14 +302,20 @@ class CommissionPayment(models.Model):
             date_start = comm_brw.date_start
             date_stop = comm_brw.date_stop
 
-            # En esta busqueda restringimos que la factura de cliente se haya
-            # pagado y que  este dentro de la fecha estipulada
+            # En esta busqueda restringimos que la factura de cliente
+            # se haya pagado
             invoice_ids = inv_obj.search([
                 ('state', '=', 'paid'),
                 ('type', '=', 'out_invoice'),
-                # ('date_last_payment', '>=', date_start),
-                # ('date_last_payment', '<=', date_stop)
             ])
+
+            # En esta busqueda restringimos que la factura de cliente
+            # este dentro de la fecha estipulada, se hace de esta manera
+            # porque date_last_payment es un campo calculado no almacenable
+            # y no se permite usarlo dentro de un search, y si el campo
+            # se hace almacenable entonces no se recalcula de forma correcta
+            # /!\ NOTE: Let us make a TODO in order to allow us in the future
+            # to make the date_last_payment a searchable field.
             invoice_ids_2 = []
             for current_invoice in invoice_ids:
                 date_payment = current_invoice._date_last_payment()
@@ -459,9 +332,12 @@ class CommissionPayment(models.Model):
             aml_ids2 = aml_obj.search([
                 ('full_reconcile_id', '!=', False),
                 ('journal_id.type', '=', 'sale'),
-                # ('date_last_payment', '>=', date_start),
-                # ('date_last_payment', '<=', date_stop)
             ])
+            # En esta busqueda restringimos que los aml
+            # este dentro de la fecha estipulada, se hace de esta manera
+            # porque date_last_payment es un campo calculado no almacenable
+            # y no se permite usarlo dentro de un search, y si el campo
+            # se hace almacenable entonces no se recalcula de forma correcta
             aml_ids_2 = []
             for current_aml in aml_ids2:
                 date_payment = current_aml._date_last_payment()
@@ -546,9 +422,9 @@ class CommissionPayment(models.Model):
             lambda a: a.journal_id.type == 'sale')
         if not aml_brw:
             return False
-        if comm_brw.commission_policy_date_start == 'invoice_emission_date':
+        if comm_brw.policy_date_start == 'invoice_emission_date':
             date_field = 'date'
-        elif comm_brw.commission_policy_date_start == 'invoice_due_date':
+        elif comm_brw.policy_date_start == 'invoice_due_date':
             date_field = 'date_maturity'
         return min(l[date_field] for l in aml_brw)
 
@@ -557,7 +433,7 @@ class CommissionPayment(models.Model):
         comm_brw = self
         aml_brw = pay_id
         date = aml_brw.date
-        if comm_brw.commission_policy_date_end == 'last_payment_date':
+        if comm_brw.policy_date_end == 'last_payment_date':
             date = aml_brw.matched_debit_ids.debit_move_id.filtered(
                 lambda a: a.journal_id.type == 'sale').invoice_id.\
                 date_last_payment or date
@@ -576,7 +452,7 @@ class CommissionPayment(models.Model):
         return salesman_brw
 
     @api.model
-    def _compute_commission_salesman_policy(self, pay_id, salesman_id=None):
+    def _compute_salesman_policy(self, pay_id, salesman_id=None):
         if salesman_id:
             return salesman_id
         rp_obj = self.env['res.partner']
@@ -584,20 +460,20 @@ class CommissionPayment(models.Model):
         aml_brw = pay_id
         res = None
         if aml_brw.rec_invoice:
-            if comm_brw.commission_salesman_policy == 'on_invoice':
+            if comm_brw.salesman_policy == 'on_invoice':
                 res = aml_brw.rec_invoice.user_id
-            elif comm_brw.commission_salesman_policy == \
+            elif comm_brw.salesman_policy == \
                     'on_invoiced_partner':
                 res = aml_brw.rec_invoice.partner_id.user_id
-            elif comm_brw.commission_salesman_policy == \
+            elif comm_brw.salesman_policy == \
                     'on_accounting_partner':
                 res = rp_obj._find_accounting_partner(
                     aml_brw.rec_invoice.partner_id).user_id
         else:
-            if comm_brw.commission_salesman_policy in \
+            if comm_brw.salesman_policy in \
                     ('on_invoiced_partner', 'on_invoice'):
                 res = aml_brw.rec_aml.partner_id.user_id
-            elif comm_brw.commission_salesman_policy == \
+            elif comm_brw.salesman_policy == \
                     'on_accounting_partner':
                 res = rp_obj._find_accounting_partner(
                     aml_brw.rec_aml.partner_id).user_id
@@ -607,12 +483,13 @@ class CommissionPayment(models.Model):
     @api.model
     def _compute_commission_matrix_policy(self, product_id, salesman_id):
         bm_obj = self.env['baremo.matrix']
-        res = bm_obj.search([
-            ('product_id', '=', product_id.id),
-            ('user_id', '=', salesman_id.id),
-        ], limit=1)
-        if res:
-            return res.baremo_id
+
+        domain = [('product_id', '=', product_id.id)]
+        res = bm_obj.search(domain + [('user_id', '=', salesman_id.id)], limit=1)
+        baremo = res if res else bm_obj.search(domain + [('user_id', '=', False)], limit=1)
+
+        if baremo:
+            return baremo.baremo_id
 
         return self.baremo_id
 
@@ -624,23 +501,23 @@ class CommissionPayment(models.Model):
         comm_brw = self
         aml_brw = pay_id
         res = None
-        if comm_brw.commission_baremo_policy == 'onCompany':
+        if comm_brw.baremo_policy == 'onCompany':
             partner_id = comm_brw.company_id.partner_id
-        elif comm_brw.commission_baremo_policy == 'onPartner':
+        elif comm_brw.baremo_policy == 'onPartner':
             if aml_brw.rec_invoice:
                 partner_id = partner_id or aml_brw.rec_invoice.partner_id
             else:
                 partner_id = partner_id or aml_brw.rec_aml.partner_id
-        elif comm_brw.commission_baremo_policy == 'onAccountingPartner':
+        elif comm_brw.baremo_policy == 'onAccountingPartner':
             if aml_brw.rec_invoice:
                 partner_id = partner_id or aml_brw.rec_invoice.partner_id
             else:
                 partner_id = partner_id or aml_brw.rec_aml.partner_id
             partner_id = rp_obj._find_accounting_partner(partner_id)
-        elif comm_brw.commission_baremo_policy == 'onUser':
-            partner_id = self._compute_commission_salesman_policy(
+        elif comm_brw.baremo_policy == 'onUser':
+            partner_id = self._compute_salesman_policy(
                 pay_id, salesman_id=salesman_id).partner_id
-        elif comm_brw.commission_baremo_policy == 'onCommission':
+        elif comm_brw.baremo_policy == 'onCommission':
             res = comm_brw.baremo_id
         # Fall back to baremo in Commission
         if partner_id:
@@ -662,25 +539,25 @@ class CommissionPayment(models.Model):
             return True
 
         # Retrieve Partner's Salesman
-        salesman = self._compute_commission_salesman_policy(aml_brw)
+        salesman = self._compute_salesman_policy(aml_brw)
         salesman_ok = self._compute_commission_saleman(salesman)
 
         if not salesman_ok:
             if not (comm_brw.unknown_salespeople and not salesman):
                 return True
 
-        commission_policy_date_start = \
+        policy_date_start = \
             self._compute_commission_policy_start_date(aml_brw)
 
-        commission_policy_date_end = \
+        policy_date_end = \
             self._compute_commission_policy_end_date(aml_brw)
 
         # Si esta aqui dentro es porque esta linea tiene una id valida
         # de una factura.
         inv_brw = aml_brw.rec_invoice
-        commission_baremo_policy = comm_brw.commission_baremo_policy
+        baremo_policy = comm_brw.baremo_policy
         # /!\ NOTE: Retrieve here the fallback commission baremo policy
-        if not commission_baremo_policy == 'onMatrix':
+        if not baremo_policy == 'onMatrix':
             commission_policy_baremo = \
                 self._compute_commission_policy_baremo(aml_brw)
 
@@ -700,7 +577,7 @@ class CommissionPayment(models.Model):
                                  inv_lin.invoice_line_tax_ids]) * 100
                             if inv_lin.invoice_line_tax_ids else 0.0)
                 # Si esta aqui es porque hay un producto asociado
-                prod_id = inv_lin.product_id.product_tmpl_id.id
+                prod_id = inv_lin.product_id.id
                 # se obtienen las listas de precio, vienen ordenadas
                 # por defecto, de acuerdo al objeto product.historic de
                 # mayor a menor fecha
@@ -711,9 +588,9 @@ class CommissionPayment(models.Model):
                 no_price = True
 
                 for prod_prices_brw in price_ids:
-                    if inv_brw.date_invoice >= t_time(prod_prices_brw.name):
+                    if inv_brw.date_invoice >= t_time(prod_prices_brw.datetime):
                         list_price = prod_prices_brw.price
-                        list_date = prod_prices_brw.name
+                        list_date = prod_prices_brw.datetime
                         no_price = False
                         break
                 if not no_price:
@@ -734,7 +611,7 @@ class CommissionPayment(models.Model):
                                      list_price, 1)
                     rate_item = dcto
 
-                    if commission_baremo_policy == 'onMatrix':
+                    if baremo_policy == 'onMatrix':
                         commission_policy_baremo = \
                             self._compute_commission_matrix_policy(
                                 inv_lin.product_id, salesman)
@@ -742,8 +619,8 @@ class CommissionPayment(models.Model):
                     # CHECK: If no commission policy is passed why it retrieves
                     # values
                     commission_params = comm_brw._compute_commission_rate(
-                        commission_policy_date_end,
-                        commission_policy_date_start, dcto=0.0,
+                        policy_date_end,
+                        policy_date_start, dcto=0.0,
                         bar_brw=commission_policy_baremo)
 
                     bar_day = commission_params['bar_day']
@@ -792,8 +669,8 @@ class CommissionPayment(models.Model):
                         'salesman_id': salesman and salesman.id,
                         'pay_inv': aml_brw.credit,
                         'inv_date': inv_brw.date_invoice,
-                        'date_start': commission_policy_date_start,
-                        'date_stop': commission_policy_date_end,
+                        'date_start': policy_date_start,
+                        'date_stop': policy_date_end,
                         'days': emission_days,
                         'inv_subtotal': inv_brw.amount_untaxed,
                         'product_id': inv_lin.product_id.id,
@@ -846,17 +723,17 @@ class CommissionPayment(models.Model):
             return True
 
         # Retrieve Partner's Salesman
-        salesman = self._compute_commission_salesman_policy(aml_brw)
+        salesman = self._compute_salesman_policy(aml_brw)
         salesman_ok = self._compute_commission_saleman(salesman)
 
         if not salesman_ok:
             if not (comm_brw.unknown_salespeople and not salesman):
                 return True
 
-        commission_policy_date_start = \
+        policy_date_start = \
             self._compute_commission_policy_start_date(aml_brw)
 
-        commission_policy_date_end = \
+        policy_date_end = \
             self._compute_commission_policy_end_date(aml_brw)
 
         # Si esta aqui dentro es porque esta linea tiene una id valida
@@ -873,8 +750,8 @@ class CommissionPayment(models.Model):
             self._compute_commission_policy_baremo(aml_brw)
 
         commission_params = comm_brw._compute_commission_rate(
-            commission_policy_date_end,
-            commission_policy_date_start, dcto=0.0,
+            policy_date_end,
+            policy_date_start, dcto=0.0,
             bar_brw=commission_policy_baremo)
 
         bar_day = commission_params['bar_day']
@@ -916,8 +793,8 @@ class CommissionPayment(models.Model):
             'salesman_id': salesman and salesman.id,
             'pay_inv': aml_brw.credit,
             'inv_date': inv_brw.date_invoice,
-            'date_start': commission_policy_date_start,
-            'date_stop': commission_policy_date_end,
+            'date_start': policy_date_start,
+            'date_stop': policy_date_end,
             'days': emission_days,
             'inv_subtotal': inv_brw.amount_untaxed,
             'perc_iva': perc_iva,
@@ -944,18 +821,18 @@ class CommissionPayment(models.Model):
         if not aml_brw.credit:
             return True
 
-        commission_policy_date_start = \
+        policy_date_start = \
             self._compute_commission_policy_start_date(aml_brw)
 
-        commission_policy_date_end = \
+        policy_date_end = \
             self._compute_commission_policy_end_date(aml_brw)
 
         commission_policy_baremo = \
             self._compute_commission_policy_baremo(aml_brw)
 
         commission_params = comm_brw._compute_commission_rate(
-            commission_policy_date_end,
-            commission_policy_date_start, dcto=0.0,
+            policy_date_end,
+            policy_date_start, dcto=0.0,
             bar_brw=commission_policy_baremo)
 
         bar_day = commission_params['bar_day']
@@ -975,8 +852,8 @@ class CommissionPayment(models.Model):
             'salesman_id': None,
             'pay_inv': aml_brw.credit,
             'inv_date': aml_brw.rec_aml.date,
-            'date_start': commission_policy_date_start,
-            'date_stop': commission_policy_date_end,
+            'date_start': policy_date_start,
+            'date_stop': policy_date_end,
             'days': emission_days,
             'inv_subtotal': None,
             'perc_iva': None,
@@ -994,9 +871,9 @@ class CommissionPayment(models.Model):
     @api.model
     def _compute_commission_payment(self, aml_brw):
         comm_brw = self
-        if comm_brw.commission_scope == 'product_invoiced':
+        if comm_brw.scope == 'product_invoiced':
             self._compute_commission_payment_on_invoice_line(aml_brw)
-        elif comm_brw.commission_scope == 'whole_invoice':
+        elif comm_brw.scope == 'whole_invoice':
             self._compute_commission_payment_on_invoice(aml_brw)
 
         return True
@@ -1138,8 +1015,8 @@ class CommissionPayment(models.Model):
 
         @return: return a result
         """
-        if self.commission_baremo_policy == 'onMatrix' and \
-                self.commission_scope != 'product_invoiced':
+        if self.baremo_policy == 'onMatrix' and \
+                self.scope != 'product_invoiced':
             raise UserError(
                 _('Baremo on Matrix only applies on Invoiced Products'))
         # Desvincular lineas existentes, si las hubiere
@@ -1334,10 +1211,10 @@ class CommissionLines(models.Model):
             if not aml_brw.credit:
                 return True
 
-            commission_policy_date_start = \
+            policy_date_start = \
                 comm_brw._compute_commission_policy_start_date(aml_brw)
 
-            commission_policy_date_end = \
+            policy_date_end = \
                 comm_brw._compute_commission_policy_end_date(aml_brw)
 
             commission_policy_baremo = \
@@ -1346,8 +1223,8 @@ class CommissionLines(models.Model):
                     salesman_id=commission_line.salesman_id)
 
             commission_params = comm_brw._compute_commission_rate(
-                commission_policy_date_end,
-                commission_policy_date_start, dcto=0.0,
+                policy_date_end,
+                policy_date_start, dcto=0.0,
                 bar_brw=commission_policy_baremo)
 
             bar_day = commission_params['bar_day']
@@ -1384,8 +1261,8 @@ class CommissionLines(models.Model):
                 'pay_off': aml_brw.credit,
                 'pay_inv': aml_brw.credit,
                 'inv_date': aml_brw.rec_aml.date,
-                'date_start': commission_policy_date_start,
-                'date_stop': commission_policy_date_end,
+                'date_start': policy_date_start,
+                'date_stop': policy_date_end,
                 'days': emission_days,
                 'inv_subtotal': (aml_brw.rec_aml.debit / (1 + perc_iva / 100)),
                 'perc_iva': perc_iva,

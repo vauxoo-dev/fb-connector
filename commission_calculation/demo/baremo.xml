@@ -89,8 +89,8 @@
 
         <record id="product_historic_price_01" model="product.historic.price">
             <field name="price">1500.0</field>
-            <field name="product_id" ref="product.product_product_4_product_template"/>
-            <field name="name" eval="time.strftime('%Y-%m') + '-01 00:00:00'"/>
+            <field name="product_id" ref="product.product_product_4"/>
+            <field name="datetime" eval="time.strftime('%Y-%m') + '-01 00:00:00'"/>
         </record>
 
         <record id="commission_1" model="commission.payment">
@@ -101,11 +101,11 @@
             <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
             <field name="state">draft</field>
             <field name="commission_type">fully_paid_invoice</field>
-            <field name="commission_scope">whole_invoice</field>
-            <field name="commission_policy_date_start">invoice_due_date</field>
-            <field name="commission_policy_date_end">last_payment_date</field>
-            <field name="commission_salesman_policy">on_invoiced_partner</field>
-            <field name="commission_baremo_policy">onCommission</field>
+            <field name="scope">whole_invoice</field>
+            <field name="policy_date_start">invoice_due_date</field>
+            <field name="policy_date_end">last_payment_date</field>
+            <field name="salesman_policy">on_invoiced_partner</field>
+            <field name="baremo_policy">onCommission</field>
             <field name="baremo_id" ref="baremo_book_01"/>
             <field name="user_ids" eval="[(4, ref('base.user_demo'))]"/>
         </record>
@@ -118,11 +118,11 @@
             <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
             <field name="state">draft</field>
             <field name="commission_type">fully_paid_invoice</field>
-            <field name="commission_scope">product_invoiced</field>
-            <field name="commission_policy_date_start">invoice_due_date</field>
-            <field name="commission_policy_date_end">last_payment_date</field>
-            <field name="commission_salesman_policy">on_invoice</field>
-            <field name="commission_baremo_policy">onMatrix</field>
+            <field name="scope">product_invoiced</field>
+            <field name="policy_date_start">invoice_due_date</field>
+            <field name="policy_date_end">last_payment_date</field>
+            <field name="salesman_policy">on_invoice</field>
+            <field name="baremo_policy">onMatrix</field>
             <field name="baremo_id" ref="baremo_book_01"/>
             <field name="user_ids" eval="[(4, ref('base.user_root'))]"/>
         </record>

@@ -1,31 +1,5 @@
 # coding: utf-8
 
-"""Definition of the module testing cases (unittest)
-"""
-
-###############################################################################
-#    Module Writen to OpenERP, Open Source Management Solution
-#    Copyright (C) Vauxoo (<http://www.vauxoo.com>).
-#    All Rights Reserved
-###############################################################################
-#    Credits:
-#    Coded by: Humberto Arocha <hbto@vauxoo.com>
-#    Planified by: Humberto Arocha <hbto@vauxoo.com>
-#    Audited by: Humberto Arocha <hbto@vauxoo.com>
-###############################################################################
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU Affero General Public License as published
-#    by the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU Affero General Public License for more details.
-#
-#    You should have received a copy of the GNU Affero General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-###############################################################################
 import time
 from datetime import date, datetime, timedelta
 from odoo.tests.common import TransactionCase
@@ -251,7 +225,7 @@ class TestCommission(TransactionCase):
         prod_brw = self.env.ref('product.product_product_4')
 
         price_ids = self.php_model.search(
-            [('product_id', '=', prod_brw.product_tmpl_id.id)])
+            [('product_id', '=', prod_brw.id)])
 
         self.assertEquals(
             len(price_ids) > 0, True,
@@ -265,7 +239,7 @@ class TestCommission(TransactionCase):
             self.cp_brw.state, 'draft',
             'Commission Should be in State "Draft"')
 
-        self.cp_brw.commission_scope = 'product_invoiced'
+        self.cp_brw.scope = 'product_invoiced'
 
         self.cp_brw.prepare()
         self.assertEquals(

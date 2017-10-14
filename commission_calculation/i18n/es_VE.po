@@ -457,7 +457,7 @@ msgstr "Aqui se muestran todos los productos y sus respectivas comisiones"
 
 #. module: commission_calculation
 #: field:commission.payment,sale_noids:0
-msgid "Articulos sin asociacion"
+msgid "Articles without association"
 msgstr "Artículos sin asociación"
 
 #. module: commission_calculation
@@ -501,12 +501,12 @@ msgid "Baremo"
 msgstr "Baremo"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_baremo_policy:0
+#: selection:commission.payment,baremo_policy:0
 msgid "Baremo Matrix"
 msgstr "Matriz Baremo"
 
 #. module: commission_calculation
-#: field:commission.payment,commission_baremo_policy:0
+#: field:commission.payment,baremo_policy:0
 msgid "Baremo Policy"
 msgstr "Política de Baremo"
 
@@ -604,8 +604,8 @@ msgid "Comm. Days"
 msgstr "Días Com."
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_baremo_policy:0
-#: selection:commission.payment,commission_salesman_policy:0
+#: selection:commission.payment,baremo_policy:0
+#: selection:commission.payment,salesman_policy:0
 msgid "Commercial Entity"
 msgstr "Entidad Comercial"
 
@@ -679,7 +679,7 @@ msgid "Companies"
 msgstr "Compañías"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_baremo_policy:0
+#: selection:commission.payment,baremo_policy:0
 #: field:commission.payment,company_id:0
 #: field:commission.salesman,company_id:0
 msgid "Company"
@@ -760,7 +760,7 @@ msgid "Date"
 msgstr "Fecha"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_policy_date_end:0
+#: selection:commission.payment,policy_date_end:0
 msgid "Date of Payment"
 msgstr "Fecha de Pago"
 
@@ -791,7 +791,7 @@ msgid "Descripcion de Articulo"
 msgstr "Descripción de Artículo"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_baremo_policy:0
+#: selection:commission.payment,baremo_policy:0
 msgid "Document"
 msgstr "Documento"
 
@@ -811,7 +811,7 @@ msgid "Dsct. (%)"
 msgstr "Dcto. (%)"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_policy_date_start:0
+#: selection:commission.payment,policy_date_start:0
 msgid "Due Date"
 msgstr "Fecha de Vencimiento"
 
@@ -826,7 +826,7 @@ msgid "END DATE"
 msgstr "FECHA FINAL"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_policy_date_start:0
+#: selection:commission.payment,policy_date_start:0
 msgid "Emission Date"
 msgstr "Fecha Emisión"
 
@@ -837,7 +837,7 @@ msgid "End Date"
 msgstr "Fecha Final"
 
 #. module: commission_calculation
-#: field:commission.payment,commission_policy_date_end:0
+#: field:commission.payment,policy_date_end:0
 msgid "End Date Computation Policy"
 msgstr "Política de Cálculo de Fecha Final"
 
@@ -956,7 +956,7 @@ msgid "In Progress"
 msgstr "En Progreso"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_salesman_policy:0
+#: selection:commission.payment,salesman_policy:0
 #: model:ir.model,name:commission_calculation.model_account_invoice
 msgid "Invoice"
 msgstr "Factura"
@@ -982,7 +982,7 @@ msgid "Invoice. Comm."
 msgstr "Com. Factura"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_scope:0
+#: selection:commission.payment,scope:0
 msgid "Invoiced Products "
 msgstr "Productos Facturados "
 
@@ -1028,7 +1028,7 @@ msgid "Last Payment Date"
 msgstr "Fecha de Último Pago"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_policy_date_end:0
+#: selection:commission.payment,policy_date_end:0
 msgid "Last Payment on Invoice"
 msgstr "Último Pago en Factura"
 
@@ -1132,8 +1132,8 @@ msgstr "Ƥagos Parciales"
 
 #. module: commission_calculation
 #: field:commission.lines,partner_id:0
-#: selection:commission.payment,commission_baremo_policy:0
-#: selection:commission.payment,commission_salesman_policy:0
+#: selection:commission.payment,baremo_policy:0
+#: selection:commission.payment,salesman_policy:0
 msgid "Partner"
 msgstr "Partner"
 
@@ -1184,7 +1184,7 @@ msgstr "Producto"
 
 #. module: commission_calculation
 #: field:commission.payment,noprice_ids:0
-msgid "Productos sin precio de lista historico"
+msgid "Products without price of historic's list"
 msgstr "Productos sin precio de lista histórico"
 
 #. module: commission_calculation
@@ -1226,13 +1226,13 @@ msgid "Salesman"
 msgstr "Vendedor"
 
 #. module: commission_calculation
-#: field:commission.payment,commission_salesman_policy:0
+#: field:commission.payment,salesman_policy:0
 msgid "Salesman Policy"
 msgstr "Política de Vendedor"
 
 #. module: commission_calculation
 #: view:commission.payment:commission_calculation.commission_payment_form
-#: selection:commission.payment,commission_baremo_policy:0
+#: selection:commission.payment,baremo_policy:0
 #: field:commission.payment,user_ids:0
 msgid "Salespeople"
 msgstr "Vendedores"
@@ -1266,7 +1266,7 @@ msgid "Salespeople from"
 msgstr "Vendedores en"
 
 #. module: commission_calculation
-#: field:commission.payment,commission_scope:0
+#: field:commission.payment,scope:0
 msgid "Scope"
 msgstr "Abarca"
 
@@ -1282,7 +1282,7 @@ msgid "Start Date"
 msgstr "Fecha de Inicio"
 
 #. module: commission_calculation
-#: field:commission.payment,commission_policy_date_start:0
+#: field:commission.payment,policy_date_start:0
 msgid "Start Date Computation Policy"
 msgstr "Política de Cálculo para Fecha de Inicio"
 
@@ -1389,7 +1389,7 @@ msgid "Vouchers afectados en esta comision"
 msgstr "Vouchers afectados en esta comisión"
 
 #. module: commission_calculation
-#: selection:commission.payment,commission_scope:0
+#: selection:commission.payment,scope:0
 msgid "Whole Invoice"
 msgstr "Factura Completa"
 

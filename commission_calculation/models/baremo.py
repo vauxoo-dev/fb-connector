@@ -1,47 +1,41 @@
 # coding: utf-8
-##############################################################################
+############################################################################
+#    Module Writen For Odoo, Open Source Management Solution
 #
-#    OpenERP, Open Source Management Solution
-#    Copyright (C) 2004-2009 Tiny SPRL (<http://tiny.be>). All Rights Reserved
-#    nhomar.hernandez@netquatro.com
-#
-#    This program is free software: you can redistribute it and/or modify
-#    it under the terms of the GNU General Public License as published by
-#    the Free Software Foundation, either version 3 of the License, or
-#    (at your option) any later version.
-#
-#    This program is distributed in the hope that it will be useful,
-#    but WITHOUT ANY WARRANTY; without even the implied warranty of
-#    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-#    GNU General Public License for more details.
-#
-#    You should have received a copy of the GNU General Public License
-#    along with this program.  If not, see <http://www.gnu.org/licenses/>.
-#
-##############################################################################
-from odoo import fields, models, api
+#    Copyright (c) 2010 Vauxoo - http://www.vauxoo.com
+#    All Rights Reserved.
+#    info Vauxoo (info@vauxoo.com)
+#    coded by: Humberto Arocha <hbto@vauxoo.com>
+#              Nhomar Hernandez <nhomar@vauxoo.com>
+#              Yanina Aular <yanina.aular@vauxoo.com>
+############################################################################
+
+from odoo import fields, models, api, _
 from odoo.addons import decimal_precision as dp
+from odoo.exceptions import ValidationError
 
 
 class BaremoMatrix(models.Model):
-
-    """
-    OpenERP Model : baremo matrix
-    """
 
     _name = 'baremo.matrix'
 
     baremo_id = fields.Many2one(
         'baremo.book', 'Bareme', required=True)
     user_id = fields.Many2one(
-        'res.users', 'Salesman', required=True)
+        'res.users', 'Salesman')
     product_id = fields.Many2one(
         'product.product', 'Product', required=True)
 
-    # _sql_constraints = [
-    #     ('baremo_permutation_unique',
-    #      'unique(user_id, product_id)',
-    #      'Same Salesman & Product can be assigned to only one Baremo')]
+    @api.constrains('user_id')
+    def _check_salesman_empty(self):
+        for line in self:
+            if not line.user_id and self.search([('id','!=',self.id), ('user_id','=', False)]):
+                raise ValidationError(_('A line of %s already exists for all salesman.') % line.product_id.name)
+
+    _sql_constraints = [
+        ('baremo_permutation_unique',
+         'unique(user_id, product_id)',
+         'Same Salesman & Product can be assigned to only one Baremo')]
 
 
 class BaremoBook(models.Model):
@@ -65,9 +59,6 @@ class BaremoBook(models.Model):
 
 class Baremo(models.Model):
 
-    """OpenERP Model : baremo
-    """
-
     _name = 'baremo'
     _order = "number asc"
 
@@ -85,9 +76,6 @@ class Baremo(models.Model):
 
 
 class BaremoDiscount(models.Model):
-
-    """OpenERP Model : baremo_discount
-    """
 
     _name = 'baremo.discount'
     _order = "porc_disc asc"

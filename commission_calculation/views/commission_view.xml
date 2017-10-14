@@ -1,5 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
-<openerp>
+<odoo>
     <data>
 <!-- Salesman Commission Main Menu-->
 
@@ -8,7 +8,7 @@
             <field name="name">Salespeople Commissions</field>
             <field name="res_model">commission.salesman</field>
             <field name="view_type">form</field>
-            <field name="view_mode">graph,tree,form</field>
+            <field name="view_mode">tree,graph,form</field>
             <field name="domain">[('commission_id','=',context.get('active_id',False))]</field>
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
@@ -81,7 +81,7 @@
             <field name="name">Commissions on Products</field>
             <field name="res_model">commission.lines</field>
             <field name="view_type">form</field>
-            <field name="view_mode">graph,tree</field>
+            <field name="view_mode">tree,graph</field>
             <field name="domain">[('commission_id','=',context.get('active_id',False)),('product_id', '!=', False)]</field>
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
@@ -98,7 +98,7 @@
             <field name="name">Commissions on Invoices</field>
             <field name="res_model">commission.lines</field>
             <field name="view_type">form</field>
-            <field name="view_mode">graph,tree</field>
+            <field name="view_mode">tree,graph</field>
             <field name="domain">[('commission_id','=',context.get('active_id',False)),('product_id', '=', False)]</field>
             <field name="help" type="html">
               <p class="oe_view_nocontent_create">
@@ -122,6 +122,12 @@
                         <button name="prepare" states="open" string="Prepare" type="object"/>
                         <button name="action_draft" states="open" string="Set to Draft" type="object"/>
                         <button name="action_draft" states="done" string="Set to Draft" type="object" groups="commission_calculation.group_comm_payment_manager"/>
+                        <button
+                            name="action_view_fixlines"
+                            string="Fix Commissions"
+                            attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}"
+                            type="object"
+                            />
                         <field
                             name="state"
                             widget="statusbar"
@@ -130,7 +136,7 @@
                             />
                     </header>
                     <sheet>
-                        <div class="oe_title oe_left">
+                        <div class="oe_title">
                             <div class="oe_edit_only">
                                 <label for="name"/>
                             </div>
@@ -168,7 +174,7 @@
                                 class="oe_inline oe_stat_button"
                                 type="action"
                                 name="%(commission_calculation.comm_line_product_ids_all_act)d"
-                                attrs="{'invisible':['|',('state','=','draft'),('commission_scope','!=','product_invoiced')]}"
+                                attrs="{'invisible':['|',('state','=','draft'),('scope','!=','product_invoiced')]}"
                                 icon="fa-strikethrough"
                                 >
                             </button>
@@ -177,7 +183,7 @@
                                 class="oe_inline oe_stat_button"
                                 type="action"
                                 name="%(commission_calculation.comm_line_invoice_ids_all_act)d"
-                                attrs="{'invisible':['|',('state','=','draft'),('commission_scope','!=','whole_invoice')]}"
+                                attrs="{'invisible':['|',('state','=','draft'),('scope','!=','whole_invoice')]}"
                                 icon="fa-strikethrough"
                                 >
                             </button>
@@ -202,14 +208,6 @@
                             </button>
 
                             <button
-                                name="action_view_fixlines"
-                                attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}"
-                                string="Fix Commissions"
-                                type="object"
-                                class="oe_inline oe_stat_button"
-                                icon="fa-wrench"
-                                />
-                            <button
                                 name="action_recompute"
                                 attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}"
                                 string="Recompute"
@@ -218,6 +216,12 @@
                                 icon="fa-pencil-square-o"
                                 />
                         </div>
+                        <group col="4" colspan="4">
+                            <group col="2" colspan="4">
+                                <label for="template_id"/>
+                                <field name="template_id" nolabel="1"/>
+                            </group>
+                        </group>
                         <group col="4" colspan="2">
                             <group col="2" colspan="2">
                                 <label for="date_start"/>
@@ -229,13 +233,13 @@
                                     required='1'
                                     />
                                 <field
-                                    name="commission_policy_date_start"
+                                    name="policy_date_start"
                                     widget="radio"
                                     string='Computation begins on'
                                     required='1'
                                     />
                                 <field
-                                    name="commission_salesman_policy"
+                                    name="salesman_policy"
                                     widget="radio"
                                     string="Salespeople from"
                                     required='1'
@@ -245,19 +249,19 @@
                                 <label for="date_stop"/>
                                 <field name="date_stop" nolabel="1"/>
                                 <field
-                                    name="commission_scope"
+                                    name="scope"
                                     widget="radio"
                                     string="Compute on"
                                     required='1'
                                     />
                                 <field
-                                    name="commission_policy_date_end"
+                                    name="policy_date_end"
                                     widget="radio"
                                     string='Computation ends on'
                                     required='1'
                                     />
                                 <field
-                                    name="commission_baremo_policy"
+                                    name="baremo_policy"
                                     widget="radio"
                                     string='Baremo from'
                                     required='1'
@@ -267,27 +271,27 @@
                                 <label
                                     for="baremo_id"
                                     string="Baremo to be used if not Baremo set on Company:"
-                                    attrs="{'invisible':[('commission_baremo_policy','!=','onCompany')]}"
+                                    attrs="{'invisible':[('baremo_policy','!=','onCompany')]}"
                                     />
                                 <label
                                     for="baremo_id"
                                     string="Baremo to be used if not Baremo set on Partner:"
-                                    attrs="{'invisible':[('commission_baremo_policy','!=','onPartner')]}"
+                                    attrs="{'invisible':[('baremo_policy','!=','onPartner')]}"
                                     />
                                 <label
                                     for="baremo_id"
                                     string="Baremo to be used if not Baremo set on Commercial Entity:"
-                                    attrs="{'invisible':[('commission_baremo_policy','!=','onAccountingPartner')]}"
+                                    attrs="{'invisible':[('baremo_policy','!=','onAccountingPartner')]}"
                                     />
                                 <label
                                     for="baremo_id"
                                     string="Baremo to be used if not policy set on Salespeople:"
-                                    attrs="{'invisible':[('commission_baremo_policy','!=','onUser')]}"
+                                    attrs="{'invisible':[('baremo_policy','!=','onUser')]}"
                                     />
                                 <label
                                     for="baremo_id"
                                     string="This baremo is the only one to be used on this Document:"
-                                    attrs="{'invisible':[('commission_baremo_policy','!=','onCommission')]}"
+                                    attrs="{'invisible':[('baremo_policy','!=','onCommission')]}"
                                     />
                                 <field colspan="2" name="baremo_id" nolabel="1"/>
                             </group>
@@ -300,8 +304,8 @@
                                     <field name="unknown_salespeople"/>
                                 </group>
                                 <group col="2" colspan="2">
-                                    <field name="user_ids" nolabel="1">
-                                        <tree edit='false' create='false' delete='false' >
+                                    <field name="user_ids" nolabel="1" options="{'no_create': True}">
+                                        <tree>
                                             <field name="name" string="Asesor"/>
                                         </tree>
                                     </field>
@@ -436,7 +440,7 @@
                             </page>
                             <page
                                 string="Products w/o PriceList"
-                                attrs="{'invisible':[('commission_scope','!=','product_invoiced')]}"
+                                attrs="{'invisible':[('scope','!=','product_invoiced')]}"
                                 >
                                 <field name="noprice_ids" nolabel="1">
                                     <tree edit='false' create='false' delete='false' >
@@ -448,7 +452,7 @@
                             </page>
                             <page
                                 string="Item w/o Products"
-                                attrs="{'invisible':[('commission_scope','!=','product_invoiced')]}"
+                                attrs="{'invisible':[('scope','!=','product_invoiced')]}"
                                 >
                                 <field name="sale_noids" nolabel="1">
                                     <tree edit='false' create='false' delete='false' >
@@ -646,4 +650,4 @@
             </field>
         </record>
     </data>
-</openerp>
+</odoo>

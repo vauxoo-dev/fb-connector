@@ -18,9 +18,19 @@ class TestHistoricalPrice(TransactionCase):
                                                'list_price': 25,
                                                'standard_price': 15})
         # Checking if the historical was created correctly
-        self.product_id.product_tmpl_id._compute_historical_price()
+        self.product_id._compute_historical_price()
+
+        action = self.env.ref("commission_calculation.action_rule_issue_close")
+        action = action.with_context({
+            'active_model': 'product.product',
+            '__action_done': {},
+            'active_id': self.product_id.id,
+            'active_ids': [self.product_id.id],
+        })
+        action._process(self.product_id)
+
         h_price = self.h_price.search([
-            ('product_id', '=', self.product_id.product_tmpl_id.id)])
+            ('product_id', '=', self.product_id.id)])
         h_cost = self.h_cost.search([('product_id', '=', self.product_id.id)])
         self.assertTrue(h_price and h_cost,
                         "The historical were not created correctly")
@@ -40,10 +50,20 @@ class TestHistoricalPrice(TransactionCase):
         time.sleep(2)
         self.product_id.write({'list_price': 40, 'standard_price': 18})
         # Checking if the historical was changed correctly
-        self.product_id.product_tmpl_id._compute_historical_price()
+        self.product_id._compute_historical_price()
+
+        action = self.env.ref("commission_calculation.action_rule_issue_close")
+        action = action.with_context({
+            'active_model': 'product.product',
+            '__action_done': {},
+            'active_id': self.product_id.id,
+            'active_ids': [self.product_id.id],
+        })
+        action._process(self.product_id)
+
         h_price = self.h_price.search(
-            [('product_id', '=', self.product_id.product_tmpl_id.id)],
-            order='name desc', limit=1)
+            [('product_id', '=', self.product_id.id)],
+            order='datetime desc', limit=1)
         h_cost = self.h_cost.search([('product_id', '=', self.product_id.id)],
                                     order='datetime desc', limit=1)
 
