@@ -51,7 +51,7 @@ class ProductProduct(models.Model):
     cost_historical = fields.Float(
         compute=_get_historical_cost,
         string=' Latest Cost',
-        digits_compute=dp.get_precision('Cost_Historical'),
+        digits=dp.get_precision('Cost_Historical'),
         help="Latest Recorded Historical Cost")
 
 

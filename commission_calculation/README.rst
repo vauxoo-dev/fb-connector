@@ -1,4 +1,5 @@
 Salespeople Commission based on Payments
 ========================================
 
-TODO: Add module description
+Compute the commissions for salesman that based on payments on invoices, it
+can be fully configurable considering a lot of options.

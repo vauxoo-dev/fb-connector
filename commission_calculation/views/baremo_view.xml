@@ -1,7 +1,5 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <data>
-
     <record model="ir.ui.view" id="view_baremo_book_form">
         <field name="name">baremo.book.form</field>
         <field name="model">baremo.book</field>
@@ -269,27 +267,4 @@
         <field name="view_id" ref="view_baremo_matrix_form"/>
         <field name="act_window_id" ref="commission_baremo_matrix_act"/>
     </record>
-
-    <record model="ir.ui.view" id="view_product_baremo_tree">
-        <field name="name">product.product.baremo.tree</field>
-        <field name="model">product.product</field>
-        <field name="inherit_id" ref="product.product_normal_form_view" />
-        <field name="arch" type="xml">
-            <xpath expr="//group[@name='sale']" position="after">
-                <group string="Baremo" name="baremo" colspan='4'>
-                    <label string='On this Product these Baremes will be used when Commission Payment on these Salesmen are computed on Invoiced Products and option Matrix Bareme is selected'/>
-                    <field
-                        name="matrix_ids"
-                        nolabel="1"
-                        colspan="6">
-                        <tree editable='top'>
-                            <field name="baremo_id"/>
-                            <field name="user_id"/>
-                        </tree>
-                    </field>
-                </group>
-            </xpath>
-        </field>
-    </record>
-    </data>
 </odoo>

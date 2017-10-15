@@ -20,8 +20,7 @@ class CommissionAbstract(models.AbstractModel):
         ('partial_payment', 'Partial Payments'),
         ('fully_paid_invoice', 'Fully Paid Invoices'),
     ],
-        string='Basis', required=True,
-        track_visibility='onchange',
+        string='Basis', required=True, track_visibility='onchange',
         help="* Fully Paid Invoices: Sales commissions will be paid when the "
         "invoice is fully paid.\n"
         "* Partial Payments: Sales commissions will "
@@ -34,8 +33,7 @@ class CommissionAbstract(models.AbstractModel):
         ('whole_invoice', 'Whole Invoice'),
         ('product_invoiced', 'Invoiced Products'),
     ],
-        string='Scope', required=False,
-        track_visibility='onchange',
+        string='Scope', required=False, track_visibility='onchange',
         help="* Full invoice: Commission payment based on invoice. "
         "The commission is calculated on the subtotal of the invoice, "
         "not including taxes. \n"
@@ -50,8 +48,7 @@ class CommissionAbstract(models.AbstractModel):
         ('invoice_emission_date', 'Emission Date'),
         ('invoice_due_date', 'Due Date'),
     ],
-        string='Start Date Computation Policy', required=False,
-        track_visibility='onchange',
+        required=False, track_visibility='onchange',
         help="* Date of emission: The commission payment calculation begins "
         "on the date of emission of the invoice. That is, from the date of "
         "emission of the invoice, begins the count of days to know what "
@@ -82,8 +79,7 @@ class CommissionAbstract(models.AbstractModel):
         ('last_payment_date', 'Last Payment on Invoice'),
         ('date_on_payment', 'Date of Payment'),
     ],
-        string='End Date Computation Policy', required=False,
-        track_visibility='onchange',
+        required=False, track_visibility='onchange',
         help="* Last payment on invoice: The commission will be "
         "calculated based on the date of the last payment "
         "(ie the date on which the invoice is paid in full). "
@@ -109,8 +105,7 @@ class CommissionAbstract(models.AbstractModel):
         ('on_invoice', 'Invoice'),
         ('on_invoiced_partner', 'Partner'),
         ('on_accounting_partner', 'Commercial Entity')],
-        string='Salesman Policy', required=False,
-        track_visibility='onchange',
+        required=False, track_visibility='onchange',
         help="* Invoice: The one on the invoice. The one that serves "
         "the person.\n"
         "* Partner: In the invoice partner tab or in the account "
@@ -130,8 +125,7 @@ class CommissionAbstract(models.AbstractModel):
         ('onMatrix', 'Baremo Matrix'),
         ('onCommission', 'Document'),
     ],
-        string='Baremo Policy', required=False,
-        track_visibility='onchange',
+        string='Baremo Policy', required=False, track_visibility='onchange',
         help="- Company: use the baremo configured in the company.\n"
         "- Partner: Use the baremo by partner, ie the baremo "
         "configured for the partner \n"
@@ -144,6 +138,6 @@ class CommissionAbstract(models.AbstractModel):
     )
 
     baremo_id = fields.Many2one(
-        'baremo.book', 'Baremo', required=True,
+        'baremo.book', required=True,
         track_visibility='onchange',
     )

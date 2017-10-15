@@ -9,20 +9,16 @@
 ############################################################################
 
 {
-    "name": "Salespeople Commission based on Payments",
+    "name": "Commission based on Payments",
     "version": "10.0.0.0.8",
     "author": "Vauxoo",
-    "category": "Generic Modules/Others",
     "website": "http://www.vauxoo.com",
     "license": "",
     "depends": [
-        "base",
-        # Product historical price
         "product",
         "decimal_precision",
         "sale",
         "base_action_rule",
-        # Commission Payment
         "account",
         "mail",
         "message_post_model",
@@ -42,12 +38,12 @@
         # Baremo
         "views/baremo_view.xml",
         # Commission Payment
+        "data/data.xml",
         "security/commission_calculation_security.xml",
         "security/ir.model.access.csv",
         "report/layouts.xml",
         "report/template.xml",
         "data/report_paperformat.xml",
-        "data/data.xml",
         "views/commission_template.xml",
         "views/commission_report.xml",
         "views/commission_view.xml",
@@ -56,4 +52,5 @@
     ],
     "installable": True,
     "auto_install": False,
+    "application": True,
 }

@@ -6,88 +6,33 @@
         <field name="arch" type="xml">
             <form>
                 <sheet>
-                    <div class="oe_title oe_left">
+                    <div class="oe_title">
                         <h1>
-                            <field name="name" default_focus="1" placeholder="Template's name" />
+                            <field name="name" default_focus="1"
+                                   placeholder="i.e: 3% based on products..." />
                         </h1>
                     </div>
-                    <group col="4" colspan="2">
-                        <group col="2" colspan="2">
-                            <field
-                                name="commission_type"
-                                widget="radio"
-                                string="Based on"
-                                required='1'
-                                />
-                            <field
-                                name="policy_date_start"
-                                widget="radio"
-                                string='Computation begins on'
-                                required='1'
-                                />
-                            <field
-                                name="salesman_policy"
-                                widget="radio"
-                                string="Salespeople from"
-                                required='1'
-                                />
+                    <group>
+                        <group string="Dates Information">
+                            <field name="policy_date_start" widget="radio" required="1"/>
+                            <field name="policy_date_end" widget="radio" required="1"/>
                         </group>
-                        <group col="2" colspan="2">
-                            <field
-                                name="scope"
-                                widget="radio"
-                                string="Compute on"
-                                required='1'
-                                />
-                            <field
-                                name="policy_date_end"
-                                widget="radio"
-                                string='Computation ends on'
-                                required='1'
-                                />
-                            <field
-                                name="baremo_policy"
-                                widget="radio"
-                                string='Baremo from'
-                                required='1'
-                                />
+                        <group string="Computation Policies">
+                            <field name="commission_type" widget="radio" required="1"/>
+                            <field name="salesman_policy" widget="radio" required="1"/>
+                            <field name="scope" widget="radio" required="1"/>
+                            <field name="baremo_policy" widget="radio" required="1"/>
                         </group>
-                        <group col="2" colspan="4">
-                            <label
-                                for="baremo_id"
-                                string="Baremo to be used if not Baremo set on Company:"
-                                attrs="{'invisible':[('baremo_policy','!=','onCompany')]}"
-                                colspan="2"
-                                />
-                            <label
-                                for="baremo_id"
-                                string="Baremo to be used if not Baremo set on Partner:"
-                                attrs="{'invisible':[('baremo_policy','!=','onPartner')]}"
-                                colspan="2"
-                                />
-                            <label
-                                for="baremo_id"
-                                string="Baremo to be used if not Baremo set on Commercial Entity:"
-                                attrs="{'invisible':[('baremo_policy','!=','onAccountingPartner')]}"
-                                colspan="2"
-                                />
-                            <label
-                                for="baremo_id"
-                                string="Baremo to be used if not policy set on Salespeople:"
-                                attrs="{'invisible':[('baremo_policy','!=','onUser')]}"
-                                colspan="2"
-                                />
-                            <label
-                                for="baremo_id"
-                                string="This baremo is the only one to be used on this Document:"
-                                attrs="{'invisible':[('baremo_policy','!=','onCommission')]}"
-                                colspan="2"
-                                />
-                            <label
-                                for="baremo_id"
-                                attrs="{'invisible':[('baremo_policy','!=','onMatrix')]}"
-                                colspan="2"
-                                />
+                    </group>
+                    <group string="Default Parameters">
+                        <group>
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Company:" attrs="{'invisible':[('baremo_policy','!=','onCompany')]}" colspan="2"/>
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Partner:" attrs="{'invisible':[('baremo_policy','!=','onPartner')]}" colspan="2"/>
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Commercial Entity:" attrs="{'invisible':[('baremo_policy','!=','onAccountingPartner')]}" colspan="2"/>
+                            <label for="baremo_id" string="Baremo to be used if not policy set on Salespeople:" attrs="{'invisible':[('baremo_policy','!=','onUser')]}" colspan="2"/>
+                            <label for="baremo_id" string="This baremo is the only one to be used on this Document:" attrs="{'invisible':[('baremo_policy','!=','onCommission')]}" colspan="2"/>
+                            <label for="baremo_id" attrs="{'invisible':[('baremo_policy','!=','onMatrix')]}" colspan="2"/>
+                            <label for="baremo_id" string="Pick the default Baremo:" attrs="{'invisible':[('baremo_policy','!=', False)]}"/>
                             <field colspan="2" name="baremo_id" nolabel="1"/>
                         </group>
                     </group>
