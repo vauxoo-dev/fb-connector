@@ -11,7 +11,7 @@
 ############################################################################
 
 from odoo import api, fields, models
-
+import time
 import odoo.addons.decimal_precision as dp
 
 
@@ -54,22 +54,23 @@ class ProductProduct(models.Model):
         digits=dp.get_precision('Cost_Historical'),
         help="Latest Recorded Historical Cost")
 
+    matrix_ids = fields.One2many(
+        'baremo.matrix', 'product_id',
+        'Baremo Matrix', copy=False,
+        help="Display all commissions of the product")
 
-class ProductHistoricPrice(models.Model):
-    _name = "product.historic.price"
-    _rec_name = 'datetime'
-    _order = "datetime desc"
-    _description = "Historical Price List"
-
-    product_id = fields.Many2one(
-        'product.product',
-        string='Product related to this Price',
-        required=True)
-    datetime = fields.Datetime(string='Date', required=True,
-                               default=fields.Datetime.now)
-    price = fields.Float(
-        string='Price', digits=dp.get_precision('Price'))
-    product_uom = fields.Many2one(
-        'product.uom', string="Supplier UoM",
-        help="""Choose here the Unit of Measure in which the prices and
-                quantities are expressed below.""")
+    @api.multi
+    def _update_historic_price(self):
+        for record in self:
+            price_obj = self.env['product.historic.price']
+            historic_price = price_obj.search(
+                [('product_id', '=', record.id)],
+                order='datetime desc',
+                limit=1)
+            if (historic_price and historic_price.price != record.list_price) \
+                    or not historic_price:
+                price_obj.create({
+                    'product_id': record.id,
+                    'datetime': time.strftime('%Y-%m-%d %H:%M:%S'),
+                    'price': record.list_price,
+                    'product_uom': record.uom_id.id})

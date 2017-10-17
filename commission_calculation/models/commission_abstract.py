@@ -18,22 +18,20 @@ class CommissionAbstract(models.AbstractModel):
 
     commission_type = fields.Selection([
         ('partial_payment', 'Partial Payments'),
-        ('fully_paid_invoice', 'Fully Paid Invoices'),
-    ],
-        string='Basis', required=True, track_visibility='onchange',
+        ('fully_paid_invoice', 'Fully Paid Invoices')],
+        default='partial_payment', string='Basis',
+        required=True, track_visibility='onchange',
         help="* Fully Paid Invoices: Sales commissions will be paid when the "
         "invoice is fully paid.\n"
         "* Partial Payments: Sales commissions will "
         "be partially paid, for each"
         " payment made to the invoice, a commission "
-        "is calculated.",
-    )
+        "is calculated.")
 
     scope = fields.Selection([
         ('whole_invoice', 'Whole Invoice'),
-        ('product_invoiced', 'Invoiced Products'),
-    ],
-        string='Scope', required=False, track_visibility='onchange',
+        ('product_invoiced', 'Invoiced Products')],
+        default='whole_invoice', string='Scope', track_visibility='onchange',
         help="* Full invoice: Commission payment based on invoice. "
         "The commission is calculated on the subtotal of the invoice, "
         "not including taxes. \n"
@@ -41,14 +39,12 @@ class CommissionAbstract(models.AbstractModel):
         "products. The commission is calculated on each line of the "
         "invoice, not including taxes. You must specify by product "
         "how much commission will be paid. \n"
-        "Note: Commissions are paid without taxes."
-    )
+        "Note: Commissions are paid without taxes.")
 
     policy_date_start = fields.Selection([
         ('invoice_emission_date', 'Emission Date'),
-        ('invoice_due_date', 'Due Date'),
-    ],
-        required=False, track_visibility='onchange',
+        ('invoice_due_date', 'Due Date')],
+        default='invoice_emission_date', track_visibility='onchange',
         help="* Date of emission: The commission payment calculation begins "
         "on the date of emission of the invoice. That is, from the date of "
         "emission of the invoice, begins the count of days to know what "
@@ -72,14 +68,12 @@ class CommissionAbstract(models.AbstractModel):
         "If the commission payment calculation is chosen from "
         "the Due Date, the vendor will get a 7% commission, since the "
         "payment date was 24 days BEFORE the expiration date. That is,"
-        " paid before 20 days. \n"
-    )
+        " paid before 20 days. \n")
 
     policy_date_end = fields.Selection([
         ('last_payment_date', 'Last Payment on Invoice'),
-        ('date_on_payment', 'Date of Payment'),
-    ],
-        required=False, track_visibility='onchange',
+        ('date_on_payment', 'Date of Payment')],
+        default='last_payment_date', track_visibility='onchange',
         help="* Last payment on invoice: The commission will be "
         "calculated based on the date of the last payment "
         "(ie the date on which the invoice is paid in full). "
@@ -98,14 +92,13 @@ class CommissionAbstract(models.AbstractModel):
         "has 7% commission, payment #2 has %5 commission and "
         "payment #3 has 1% commission. Then you would pay "
         "commission which corresponds to the percentage of "
-        "the amount of the payment."
-    )
+        "the amount of the payment.")
 
     salesman_policy = fields.Selection([
         ('on_invoice', 'Invoice'),
         ('on_invoiced_partner', 'Partner'),
         ('on_accounting_partner', 'Commercial Entity')],
-        required=False, track_visibility='onchange',
+        track_visibility='onchange',
         help="* Invoice: The one on the invoice. The one that serves "
         "the person.\n"
         "* Partner: In the invoice partner tab or in the account "
@@ -114,8 +107,7 @@ class CommissionAbstract(models.AbstractModel):
         "salesperson.\n"
         "* Commercial entity: The parent of the partner on the "
         "invoice. The customer handles the whole group. Serves "
-        "if you have a group of vendors."
-    )
+        "if you have a group of vendors.")
 
     baremo_policy = fields.Selection([
         ('onCompany', 'Company'),
@@ -123,9 +115,8 @@ class CommissionAbstract(models.AbstractModel):
         ('onAccountingPartner', 'Commercial Entity'),
         ('onUser', 'Salespeople'),
         ('onMatrix', 'Baremo Matrix'),
-        ('onCommission', 'Document'),
-    ],
-        string='Baremo Policy', required=False, track_visibility='onchange',
+        ('onCommission', 'Document')],
+        default='onCompany', string='Baremo Policy', track_visibility='onchange',
         help="- Company: use the baremo configured in the company.\n"
         "- Partner: Use the baremo by partner, ie the baremo "
         "configured for the partner \n"
@@ -134,10 +125,7 @@ class CommissionAbstract(models.AbstractModel):
         "- Vendor: Use the baremo set up for the seller.\n"
         "- Baremo matrix: Use the baremo specified. When it comes "
         "to paying commissions on product lines.\n"
-        "- Document: Select a baremo by hand for everything\n"
-    )
+        "- Document: Select a baremo by hand for everything\n")
 
     baremo_id = fields.Many2one(
-        'baremo.book', required=True,
-        track_visibility='onchange',
-    )
+        'baremo.book', required=True, track_visibility='onchange')

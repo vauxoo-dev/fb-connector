@@ -1,10 +1,11 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
     <menuitem name="ICM" id="menu_icm_root" web_icon="commission_calculation,static/description/icon.png" sequence="70"/>
-    <menuitem id="config" name="Master Data" parent="menu_icm_root" groups="commission_calculation.manager" sequence="20"/>
-    <menuitem name="Commissions" id="commission_all_mi" action="commission_payment_all_act" groups="commission_calculation.user" parent="menu_icm_root"/>
-    <menuitem id="menu_products" name="Products" parent="config" sequence="1" action="product.product_normal_action_sell"/>
-    <menuitem id="menu_baremes" name="Baremes" parent="config" action="commission_baremo_act" groups="commission_calculation.manager"/>
-    <menuitem name="Bareme Matrix" parent="config" id="menu_bareme_matrix" action="commission_baremo_matrix_act" groups="commission_calculation.manager"/>
-    <menuitem name="Templates" parent="config" id="menu_commission_template" action="commission_template_act" groups="commission_calculation.manager"/>
+    <menuitem id="config" name="Master Data" parent="menu_icm_root" groups="commission_calculation.res_groups_manager" sequence="20"/>
+    <menuitem name="Commissions" id="commission_all_mi" action="commission_payment_action" groups="commission_calculation.res_groups_user" parent="menu_icm_root"/>
+    <menuitem id="menu_product_templates" name="Products" parent="config" sequence="1" action="product.product_template_action_all"/>
+    <menuitem id="menu_products" name="Product Variants" parent="config" sequence="2" action="product.product_normal_action_sell"/>
+    <menuitem id="menu_baremes" name="Baremos" parent="config" action="baremo_book_action" groups="commission_calculation.res_groups_manager"/>
+    <menuitem name="Baremo Matrix" parent="config" id="menu_bareme_matrix" action="baremo_matrix_action" groups="commission_calculation.res_groups_manager"/>
+    <menuitem name="Templates" parent="config" id="menu_commission_template" action="commission_template_act" groups="commission_calculation.res_groups_manager"/>
 </odoo>

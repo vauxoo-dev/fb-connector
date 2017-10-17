@@ -1,130 +1,128 @@
 <?xml version="1.0" ?>
 <odoo>
-    <data noupdate="1">
-        <record id="baremo_book_01" model="baremo.book">
-            <field name="name">3% Commission No Discounts 30 days</field>
-        </record>
+    <record id="baremo_book_01" model="baremo.book">
+        <field name="name">3% Commission No Discounts 30 days</field>
+    </record>
 
-        <record id="baremo_01" model="baremo">
-            <field name="name">Up to 30 days delay in payment</field>
-            <field name="number">30</field>
-            <field name="baremo_id" ref="baremo_book_01"/>
-        </record>
+    <record id="baremo_line_01" model="baremo.line">
+        <field name="name">Up to 30 days delay in payment</field>
+        <field name="number">30</field>
+        <field name="baremo_id" ref="baremo_book_01"/>
+    </record>
 
-        <record id="baremo_discount_01" model="baremo.discount">
-            <field name="porc_com">3.0</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_01"/>
-        </record>
+    <record id="baremo_discount_01" model="baremo.discount">
+        <field name="porc_com">3.0</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_01"/>
+    </record>
 
-        <record id="baremo_02" model="baremo">
-            <field name="name">Up to 60 days delay in payment</field>
-            <field name="number">60</field>
-            <field name="baremo_id" ref="baremo_book_01"/>
-        </record>
+    <record id="baremo_line_02" model="baremo.line">
+        <field name="name">Up to 60 days delay in payment</field>
+        <field name="number">60</field>
+        <field name="baremo_id" ref="baremo_book_01"/>
+    </record>
 
-        <record id="baremo_discount_02" model="baremo.discount">
-            <field name="porc_com">1.5</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_02"/>
-        </record>
+    <record id="baremo_discount_02" model="baremo.discount">
+        <field name="porc_com">1.5</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_02"/>
+    </record>
 
-        <record id="baremo_03" model="baremo">
-            <field name="name">Up to 90 days delay in payment</field>
-            <field name="number">90</field>
-            <field name="baremo_id" ref="baremo_book_01"/>
-        </record>
+    <record id="baremo_line_03" model="baremo.line">
+        <field name="name">Up to 90 days delay in payment</field>
+        <field name="number">90</field>
+        <field name="baremo_id" ref="baremo_book_01"/>
+    </record>
 
-        <record id="baremo_discount_03" model="baremo.discount">
-            <field name="porc_com">0.75</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_03"/>
-        </record>
+    <record id="baremo_discount_03" model="baremo.discount">
+        <field name="porc_com">0.75</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_03"/>
+    </record>
 
-        <record id="baremo_book_02" model="baremo.book">
-            <field name="name">5% Commission No Discounts 30 days</field>
-        </record>
+    <record id="baremo_book_02" model="baremo.book">
+        <field name="name">5% Commission No Discounts 30 days</field>
+    </record>
 
-        <record id="baremo_01a" model="baremo">
-            <field name="name">Up to 30 days delay in payment</field>
-            <field name="number">30</field>
-            <field name="baremo_id" ref="baremo_book_02"/>
-        </record>
+    <record id="baremo_line_01a" model="baremo.line">
+        <field name="name">Up to 30 days delay in payment</field>
+        <field name="number">30</field>
+        <field name="baremo_id" ref="baremo_book_02"/>
+    </record>
 
-        <record id="baremo_discount_01a" model="baremo.discount">
-            <field name="porc_com">5.0</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_01a"/>
-        </record>
+    <record id="baremo_discount_01a" model="baremo.discount">
+        <field name="porc_com">5.0</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_01a"/>
+    </record>
 
-        <record id="baremo_02a" model="baremo">
-            <field name="name">Up to 60 days delay in payment</field>
-            <field name="number">60</field>
-            <field name="baremo_id" ref="baremo_book_02"/>
-        </record>
+    <record id="baremo_line_02a" model="baremo.line">
+        <field name="name">Up to 60 days delay in payment</field>
+        <field name="number">60</field>
+        <field name="baremo_id" ref="baremo_book_02"/>
+    </record>
 
-        <record id="baremo_discount_02a" model="baremo.discount">
-            <field name="porc_com">2.5</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_02a"/>
-        </record>
+    <record id="baremo_discount_02a" model="baremo.discount">
+        <field name="porc_com">2.5</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_02a"/>
+    </record>
 
-        <record id="baremo_03a" model="baremo">
-            <field name="name">Up to 90 days delay in payment</field>
-            <field name="number">90</field>
-            <field name="baremo_id" ref="baremo_book_02"/>
-        </record>
+    <record id="baremo_line_03a" model="baremo.line">
+        <field name="name">Up to 90 days delay in payment</field>
+        <field name="number">90</field>
+        <field name="baremo_id" ref="baremo_book_02"/>
+    </record>
 
-        <record id="baremo_discount_03a" model="baremo.discount">
-            <field name="porc_com">1.25</field>
-            <field name="porc_disc">0.0</field>
-            <field name="disc_id" ref="baremo_03a"/>
-        </record>
+    <record id="baremo_discount_03a" model="baremo.discount">
+        <field name="porc_com">1.25</field>
+        <field name="porc_disc">0.0</field>
+        <field name="disc_id" ref="baremo_line_03a"/>
+    </record>
 
-        <record id="baremo_matrix_01" model="baremo.matrix">
-            <field name="baremo_id" ref="baremo_book_02"/>
-            <field name="product_id" ref="product.product_product_4"/>
-            <field name="user_id">1</field>
-        </record>
+    <record id="baremo_matrix_01" model="baremo.matrix">
+        <field name="baremo_id" ref="baremo_book_02"/>
+        <field name="product_id" ref="product.product_product_4"/>
+        <field name="user_id">1</field>
+    </record>
 
-        <record id="product_historic_price_01" model="product.historic.price">
-            <field name="price">1500.0</field>
-            <field name="product_id" ref="product.product_product_4"/>
-            <field name="datetime" eval="time.strftime('%Y-%m') + '-01 00:00:00'"/>
-        </record>
+    <record id="product_historic_price_01" model="product.historic.price">
+        <field name="price">1500.0</field>
+        <field name="product_id" ref="product.product_product_4"/>
+        <field name="datetime" eval="time.strftime('%Y-%m') + '-01 00:00:00'"/>
+    </record>
 
-        <record id="commission_1" model="commission.payment">
-            <field name="name">Commission Concept #1</field>
-            <field name="currency_id" ref="base.EUR"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="date_start" eval="time.strftime('%Y-%m') + '-01'"/>
-            <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
-            <field name="state">draft</field>
-            <field name="commission_type">fully_paid_invoice</field>
-            <field name="scope">whole_invoice</field>
-            <field name="policy_date_start">invoice_due_date</field>
-            <field name="policy_date_end">last_payment_date</field>
-            <field name="salesman_policy">on_invoiced_partner</field>
-            <field name="baremo_policy">onCommission</field>
-            <field name="baremo_id" ref="baremo_book_01"/>
-            <field name="user_ids" eval="[(4, ref('base.user_demo'))]"/>
-        </record>
+    <record id="commission_payment_01" model="commission.payment">
+        <field name="name">Commission Concept #1</field>
+        <field name="currency_id" ref="base.EUR"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start" eval="time.strftime('%Y-%m') + '-01'"/>
+        <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
+        <field name="state">draft</field>
+        <field name="commission_type">fully_paid_invoice</field>
+        <field name="scope">whole_invoice</field>
+        <field name="policy_date_start">invoice_due_date</field>
+        <field name="policy_date_end">last_payment_date</field>
+        <field name="salesman_policy">on_invoiced_partner</field>
+        <field name="baremo_policy">onCommission</field>
+        <field name="baremo_id" ref="baremo_book_01"/>
+        <field name="user_ids" eval="[(4, ref('base.user_demo'))]"/>
+    </record>
 
-        <record id="commission_2" model="commission.payment">
-            <field name="name">Commission Concept #2 (Invoiced Products)</field>
-            <field name="currency_id" ref="base.EUR"/>
-            <field name="company_id" ref="base.main_company"/>
-            <field name="date_start" eval="time.strftime('%Y-%m') + '-01'"/>
-            <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
-            <field name="state">draft</field>
-            <field name="commission_type">fully_paid_invoice</field>
-            <field name="scope">product_invoiced</field>
-            <field name="policy_date_start">invoice_due_date</field>
-            <field name="policy_date_end">last_payment_date</field>
-            <field name="salesman_policy">on_invoice</field>
-            <field name="baremo_policy">onMatrix</field>
-            <field name="baremo_id" ref="baremo_book_01"/>
-            <field name="user_ids" eval="[(4, ref('base.user_root'))]"/>
-        </record>
-    </data>
+    <record id="commission_payment_02" model="commission.payment">
+        <field name="name">Commission Concept #2 (Invoiced Products)</field>
+        <field name="currency_id" ref="base.EUR"/>
+        <field name="company_id" ref="base.main_company"/>
+        <field name="date_start" eval="time.strftime('%Y-%m') + '-01'"/>
+        <field name="date_stop" eval="time.strftime('%Y-%m-%d')"/>
+        <field name="state">draft</field>
+        <field name="commission_type">fully_paid_invoice</field>
+        <field name="scope">product_invoiced</field>
+        <field name="policy_date_start">invoice_due_date</field>
+        <field name="policy_date_end">last_payment_date</field>
+        <field name="salesman_policy">on_invoice</field>
+        <field name="baremo_policy">onMatrix</field>
+        <field name="baremo_id" ref="baremo_book_01"/>
+        <field name="user_ids" eval="[(4, ref('base.user_root'))]"/>
+    </record>
 </odoo>

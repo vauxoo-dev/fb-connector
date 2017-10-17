@@ -1,0 +1,56 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+    <record id="baremo_line_view_form" model="ir.ui.view">
+        <field name="name">baremo.line.form</field>
+        <field name="model">baremo.line</field>
+        <field name="arch" type="xml">
+            <form string="Commission Days &amp; Discounts">
+                <sheet>
+                    <div class="oe_title oe_left" name="left">
+                        <div>
+                            <label for="name"/>
+                        </div>
+                        <h1>
+                            <field
+                                name="name"
+                                default_focus="1"
+                                placeholder="Up to 30 days"
+                                />
+                        </h1>
+                    </div>
+                    <div class="oe_right oe_button_box" style="width: 20%;" name="right">
+                        <div>
+                            <label for="number"/>
+                        </div>
+                        <h1>
+                            <field
+                                name="number"
+                                placeholder="30"
+                                />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="disc_ids" nolabel="1" colspan="6">
+                            <tree string="Commission by Discount" editable='top'>
+                                <field name="porc_disc"/>
+                                <field name="porc_com"/>
+                            </tree>
+                        </field>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="baremo_line_view_tree">
+        <field name="name">baremo.line.tree</field>
+        <field name="model">baremo.line</field>
+        <field name="arch" type="xml">
+            <tree string="Commission Days &amp; Discounts">
+                <field name="name"/>
+                <field name="number"/>
+                <field name="disc_ids"/>
+            </tree>
+        </field>
+    </record>
+</odoo>

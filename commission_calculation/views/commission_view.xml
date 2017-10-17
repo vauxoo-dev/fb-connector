@@ -1,468 +1,355 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <data>
-<!-- Salesman Commission Main Menu-->
+    <record model="ir.actions.act_window" id="commission_salesman_all_act">
+        <field name="name">Salespeople Commissions</field>
+        <field name="res_model">commission.salesman</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph,form</field>
+        <field name="domain">[('commission_id','=',context.get('active_id',False))]</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            No commissions for Salespeople have been computed
+          </p><p>
+            It could be due to the fact that there are some missing
+            parameters in computation or just this Commissions is void
+          </p>
+        </field>
+    </record>
 
-        <!-- Creating and Action to open the View LIST for the object commission.salesman -->
-        <record model="ir.actions.act_window" id="commission_salesman_all_act">
-            <field name="name">Salespeople Commissions</field>
-            <field name="res_model">commission.salesman</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,graph,form</field>
-            <field name="domain">[('commission_id','=',context.get('active_id',False))]</field>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                No commissions for Salespeople have been computed
-              </p><p>
-                It could be due to the fact that there are some missing
-                parameters in computation or just this Commissions is void
-              </p>
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="comm_line_fix_act">
+        <field name="name">Commissions on Products</field>
+        <field name="res_model">commission.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            No commissions for Products have been computed
+          </p><p>
+            It could be due to the fact that there are some missing
+            parameters in computation or just this Commissions is void
+          </p>
+        </field>
+    </record>
 
-        <!-- Creating and Action to open the View LIST for the object commission.lines to fix-->
-        <record model="ir.actions.act_window" id="comm_line_fix_act">
-            <field name="name">Commissions on Products</field>
-            <field name="res_model">commission.lines</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree</field>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                No commissions for Products have been computed
-              </p><p>
-                It could be due to the fact that there are some missing
-                parameters in computation or just this Commissions is void
-              </p>
-            </field>
-        </record>
-        <record model="ir.ui.view" id="commission_lines_fix_tree">
-            <field name="name">commission.lines.fix.tree</field>
-            <field name="model">commission.lines</field>
-            <field name="priority">20</field>
-            <field name="arch" type="xml">
-                <tree create='true' delete='true' editable='top'>
-                    <field name="name" readonly='1'/>
-                    <field name="pay_date" readonly='1'/>
-                    <field name="pay_off" readonly='1'/>
-                    <field name="partner_id" required='1' readonly='0'/>
-                    <field name="salesman_id" required='1' readonly='0'/>
-                    <field name="pay_inv" readonly='1'/>
-                    <field name="invoice_id" readonly='1'/>
-                    <field name="am_rec" readonly='1'/>
-                    <field name="inv_date" readonly='1'/>
-                    <field name="date_start" readonly='1'/>
-                    <field name="date_stop" readonly='1'/>
-                    <field name="days" readonly='1'/>
-                    <field name="inv_subtotal" readonly='1'/>
-                    <field name="product_id" readonly='1'/>
-                    <field name="price_unit" readonly='1'/>
-                    <field name="price_subtotal" readonly='1'/>
-                    <field name="price_list" readonly='1'/>
-                    <field name="price_date" readonly='1'/>
-                    <field name="rate_item" readonly='1'/>
-                    <field name="rate_number" readonly='1'/>
-                    <field name="timespan" readonly='1'/>
-                    <field name="baremo_comm" readonly='1'/>
-                    <field name="commission" sum="" readonly='1'/>
-                    <field name="commission_currency" sum="" readonly='1'/>
-                    <field name="currency_id" readonly='1'/>
-                </tree>
-            </field>
-        </record>
-        <record model="ir.actions.act_window.view" id="comm_line_fix_act_view">
-            <field name="sequence" eval="1"/>
-            <field name="view_mode">tree</field>
-            <field name="view_id" ref="commission_lines_fix_tree"/>
-            <field name="act_window_id" ref="comm_line_fix_act"/>
-        </record>
+    <record model="ir.ui.view" id="commission_lines_fix_tree">
+        <field name="name">commission.lines.fix.tree</field>
+        <field name="model">commission.lines</field>
+        <field name="priority">20</field>
+        <field name="arch" type="xml">
+            <tree create='true' delete='true' editable='top'>
+                <field name="name" readonly='1'/>
+                <field name="payment_date" readonly='1'/>
+                <field name="partner_id" required='1'/>
+                <field name="salesman_id" required='1'/>
+                <field name="invoice_payment" readonly='1'/>
+                <field name="invoice_id" readonly='1'/>
+                <field name="am_rec" readonly='1'/>
+                <field name="invoice_date" readonly='1'/>
+                <field name="date_start" readonly='1'/>
+                <field name="date_stop" readonly='1'/>
+                <field name="days" readonly='1'/>
+                <field name="inv_subtotal" readonly='1'/>
+                <field name="product_id" readonly='1'/>
+                <field name="price_unit" readonly='1'/>
+                <field name="price_subtotal" readonly='1'/>
+                <field name="price_list" readonly='1'/>
+                <field name="price_date" readonly='1'/>
+                <field name="rate_item" readonly='1'/>
+                <field name="rate_number" readonly='1'/>
+                <field name="timespan" readonly='1'/>
+                <field name="baremo" readonly='1'/>
+                <field name="commission_amount" sum="" readonly='1'/>
+                <field name="currency_amount" sum="" readonly='1'/>
+                <field name="currency_id" readonly='1' groups="base.group_multi_currency"/>
+            </tree>
+        </field>
+    </record>
+    <record model="ir.actions.act_window.view" id="comm_line_fix_act_view">
+        <field name="sequence" eval="1"/>
+        <field name="view_mode">tree</field>
+        <field name="view_id" ref="commission_lines_fix_tree"/>
+        <field name="act_window_id" ref="comm_line_fix_act"/>
+    </record>
 
-        <!-- Creating and Action to open the View LIST for the object commission.lines -->
-        <record model="ir.actions.act_window" id="comm_line_product_ids_all_act">
-            <field name="name">Commissions on Products</field>
-            <field name="res_model">commission.lines</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,graph</field>
-            <field name="domain">[('commission_id','=',context.get('active_id',False)),('product_id', '!=', False)]</field>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                No commissions for Products have been computed
-              </p><p>
-                It could be due to the fact that there are some missing
-                parameters in computation or just this Commissions is void
-              </p>
-            </field>
-        </record>
+    <record model="ir.actions.act_window" id="comm_line_invoice_ids_all_act">
+        <field name="name">Commissions on Invoices</field>
+        <field name="res_model">commission.lines</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,graph</field>
+        <field name="domain">[('commission_id','=',context.get('active_id',False))]</field>
+        <field name="help" type="html">
+          <p class="oe_view_nocontent_create">
+            No commissions for Products have been computed
+          </p><p>
+            It could be due to the fact that there are some missing
+            parameters in computation or just this Commissions is void
+          </p>
+        </field>
+    </record>
 
-        <!-- Creating and Action to open the View LIST for the object commission.lines -->
-        <record model="ir.actions.act_window" id="comm_line_invoice_ids_all_act">
-            <field name="name">Commissions on Invoices</field>
-            <field name="res_model">commission.lines</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,graph</field>
-            <field name="domain">[('commission_id','=',context.get('active_id',False)),('product_id', '=', False)]</field>
-            <field name="help" type="html">
-              <p class="oe_view_nocontent_create">
-                No commissions for Products have been computed
-              </p><p>
-                It could be due to the fact that there are some missing
-                parameters in computation or just this Commissions is void
-              </p>
-            </field>
-        </record>
-
-        <!-- View FORM Creation for the object salesman.commission.payment-->
-        <record model="ir.ui.view" id="commission_payment_form">
-            <field name="name">commission.payment.form</field>
-            <field name="model">commission.payment</field>
-            <field name="arch" type="xml">
-                <form>
-                    <header>
-                        <button name="prepare" states="draft" string="Prepare" type="object" class="oe_highlight"/>
-                        <button name="validate" states="open" string="Validate" type="object" class="oe_highlight"/>
-                        <button name="prepare" states="open" string="Prepare" type="object"/>
-                        <button name="action_draft" states="open" string="Set to Draft" type="object"/>
-                        <button name="action_draft" states="done" string="Set to Draft" type="object" groups="commission_calculation.manager"/>
-                        <button name="action_view_fixlines" string="Fix Commissions" attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}" type="object"/>
-                        <field name="state" widget="statusbar" statusbar_visible="draft,open,done" statusbar_colors='{"cancel":"red","draft":"blue"}'/>
-                    </header>
-                    <sheet>
-                        <div class="oe_button_box" name="buttons">
-                            <!--BUTTONS GO HERE-->
-                            <button string="Commissions" class="oe_stat_button" type="action" name="%(commission_calculation.commission_salesman_all_act)d" attrs="{'invisible':[('state','=','draft')]}" icon="fa-strikethrough"></button>
-                            <button string="Prod. Comm." class="oe_stat_button" type="action" name="%(commission_calculation.comm_line_product_ids_all_act)d" attrs="{'invisible':['|',('state','=','draft'),('scope','!=','product_invoiced')]}" icon="fa-strikethrough"></button>
-                            <button string="Invoice. Comm." class="oe_stat_button" type="action" name="%(commission_calculation.comm_line_invoice_ids_all_act)d" attrs="{'invisible':['|',('state','=','draft'),('scope','!=','whole_invoice')]}" icon="fa-strikethrough"></button>
-                            <button string="Invoices" class="oe_stat_button" type="object" name="action_view_invoice" attrs="{'invisible':[('state','=','draft')]}" icon="fa-book"></button>
-                            <button string="Payments" class="oe_stat_button" type="object" name="action_view_payment" attrs="{'invisible':[('state','=','draft')]}" icon="fa-money"></button>
-                            <button name="action_recompute" attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}" string="Recompute" type="object" class="oe_stat_button" icon="fa-pencil-square-o"/>
-                        </div>
-                        <div class="oe_title oe_right">
-                            <h1>
-                                <field name="total_comm" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('state','=','draft')]}"/>
-                            </h1>
-                        </div>
-                        <div class="oe_title oe_left">
-                            <h1>
-                                <field name="name" default_focus="1" placeholder="Description of the computation" />
-                                <field name="template_id" colspan="6"/>
-                            </h1>
-                        </div>
-                        <group>
-                            <group string="Dates Information">
-                                <field name="date_start"/>
-                                <field name="date_stop"/>
-                                <field name="policy_date_start" widget="radio" required='1'/>
-                                <field name="policy_date_end" widget="radio" required='1'/>
-                            </group>
-                            <group string="Computation Policies">
-                                <field name="commission_type" widget="radio" string="Based on" required='1'/>
-                                <field name="scope" widget="radio" string="Compute on" required='1'/>
-                                <field name="baremo_policy" widget="radio" string='Baremo from' required='1'/>
-                                <field name="salesman_policy" widget="radio" required='1'/>
-                            </group>
-                        </group>
-                        <group string="Default Parameters">
-                            <group col="1">
-                                <label for="baremo_id" string="Baremo to be used if not Baremo set on Company:" attrs="{'invisible':[('baremo_policy','!=','onCompany')]}"/>
-                                <label for="baremo_id" string="Baremo to be used if not Baremo set on Partner:" attrs="{'invisible':[('baremo_policy','!=','onPartner')]}"/>
-                                <label for="baremo_id" string="Baremo to be used if not Baremo set on Commercial Entity:" attrs="{'invisible':[('baremo_policy','!=','onAccountingPartner')]}"/>
-                                <label for="baremo_id" string="Baremo to be used if not policy set on Salespeople:" attrs="{'invisible':[('baremo_policy','!=','onUser')]}"/>
-                                <label for="baremo_id" string="Baremo to be used on this Document:" attrs="{'invisible':[('baremo_policy','!=','onCommission')]}"/>
-                                <label for="baremo_id" string="Pick the default Baremo:" attrs="{'invisible':[('baremo_policy','!=', False)]}"/>
-                                <field name="baremo_id" nolabel="1"/>
-                            </group>
-                            <group col="3">
-                                <field name="user_ids" options="{'no_create': True}" colspan="2" widget="many2many_tags"/>
-                                <newline/>
-                                <field name="unknown_salespeople"/>
-                            </group>
-                        </group>
-                        <notebook colspan="6" groups="base.group_no_one">
-                            <page string="Payments">
-                               <field name="aml_ids" readonly="1" nolabel="1">
-                                    <tree edit='false' create='false' delete='false' string="Journal Items">
-                                        <field name="journal_id"/>
-                                        <field name="date"/>
-                                        <field name="name"/>
-                                        <field name="ref"/>
-                                        <field name="partner_id"/>
-                                        <field name="account_id"/>
-                                        <field name="move_id"/>
-                                        <field name="rec_invoice"/>
-                                        <field name="credit" sum="Total Credit"/>
-                                        <field name="amount_currency"/>
-                                        <field name="currency_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Invoices">
-                                <field name="invoice_ids" domain="[ ('state', '=', 'paid'), ('type', '=', 'out_invoice'), ]" nolabel="1"></field>
-                            </page>
-                            <page string="by Salespeople">
-                                <field name="salesman_ids" nolabel="1" widget="one2many_list"/>
-                            </page>
-                            <page string="on Products">
-                                <field name="comm_line_product_ids" nolabel="1" widget="one2many_list">
-                                    <tree edit='false' create='false' delete='false' >
-                                        <field name="name"/>
-                                        <field name="pay_date"/>
-                                        <field name="pay_off"/>
-                                        <field name="partner_id"/>
-                                        <field name="salesman_id"/>
-                                        <field name="pay_inv"/>
-                                        <field name="invoice_id"/>
-                                        <field name="am_rec"/>
-                                        <field name="inv_date"/>
-                                        <field name="date_start"/>
-                                        <field name="date_stop"/>
-                                        <field name="days"/>
-                                        <field name="inv_subtotal"/>
-                                        <field name="product_id"/>
-                                        <field name="price_unit"/>
-                                        <field name="price_subtotal"/>
-                                        <field name="price_list"/>
-                                        <field name="price_date"/>
-                                        <field name="rate_item"/>
-                                        <field name="rate_number"/>
-                                        <field name="timespan"/>
-                                        <field name="baremo_comm"/>
-                                        <field name="commission"/>
-                                        <field name="currency_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Commissions on Invoices" invisible="1">
-                                <field name="comm_line_invoice_ids" nolabel="1" widget="one2many_list">
-                                    <tree edit='false' create='false' delete='false' >
-                                        <field name="name"/>
-                                        <field name="pay_date"/>
-                                        <field name="partner_id"/>
-                                        <field name="salesman_id"/>
-                                        <field name="pay_inv"/>
-                                        <field name="invoice_id"/>
-                                        <field name="am_rec"/>
-                                        <field name="inv_date"/>
-                                        <field name="date_start"/>
-                                        <field name="date_stop"/>
-                                        <field name="days"/>
-                                        <field name="inv_subtotal"/>
-                                        <field name="rate_item"/>
-                                        <field name="rate_number"/>
-                                        <field name="timespan"/>
-                                        <field name="baremo_comm"/>
-                                        <field name="commission"/>
-                                        <field name="currency_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Products w/o PriceList" attrs="{'invisible':[('scope','!=','product_invoiced')]}">
-                                <field name="noprice_ids" nolabel="1">
-                                    <tree edit='false' create='false' delete='false' >
-                                        <field name="invoice_num"/>
-                                        <field name="date"/>
-                                        <field name="product_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Item w/o Products" attrs="{'invisible':[('scope','!=','product_invoiced')]}">
-                                <field name="sale_noids" nolabel="1">
-                                    <tree edit='false' create='false' delete='false' >
-                                        <field name="inv_line_id"/>
-                                    </tree>
-                                </field>
-                            </page>
-                            <page string="Other Info">
-                                <group>
-                                    <field name="company_id" groups="base.group_multi_company"/>
-                                    <field name="currency_id" groups="base.group_multi_currency"/>
-                                    <field name="comm_fix" invisible="1"/>
-                                </group>
-                            </page>
-                        </notebook>
-                    </sheet>
-                    <div class="oe_chatter">
-                        <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
-                        <field name="message_ids" widget="mail_thread"/>
+    <record model="ir.ui.view" id="commission_payment_form">
+        <field name="name">commission.payment.form</field>
+        <field name="model">commission.payment</field>
+        <field name="arch" type="xml">
+            <form>
+                <header>
+                    <button name="prepare" states="draft" string="Prepare" type="object" class="oe_highlight"/>
+                    <button name="validate" states="open" string="Validate" type="object" class="oe_highlight"/>
+                    <button name="prepare" states="open" string="Prepare" type="object"/>
+                    <button name="action_draft" states="open" string="Set to Draft" type="object"/>
+                    <button name="action_draft" states="done" string="Set to Draft" type="object" groups="commission_calculation.res_groups_manager"/>
+                    <button name="action_view_fixlines" string="Fix Commissions" attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}" type="object"/>
+                    <field name="state" widget="statusbar" statusbar_visible="draft,open,done" statusbar_colors='{"cancel":"red","draft":"blue"}'/>
+                </header>
+                <sheet>
+                    <div class="oe_button_box" name="buttons">
+                        <button string="By Salesman" class="oe_stat_button" type="action" name="%(commission_calculation.commission_salesman_all_act)d" attrs="{'invisible':[('state','=','draft')]}" icon="fa-strikethrough"></button>
+                        <button string="Commissions" class="oe_stat_button" type="action" name="%(commission_calculation.comm_line_invoice_ids_all_act)d"  icon="fa-strikethrough"></button>
+                        <button string="View Invoices" class="oe_stat_button" type="object" name="action_view_invoice" attrs="{'invisible':[('state','=','draft')]}" icon="fa-book"></button>
+                        <button string="View Payments" class="oe_stat_button" type="object" name="action_view_payment" attrs="{'invisible':[('state','=','draft')]}" icon="fa-money"></button>
+                        <button name="action_recompute" attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}" string="Recompute" type="object" class="oe_stat_button" icon="fa-pencil-square-o"/>
                     </div>
-                </form>
-            </field>
-        </record>
-
-        <!-- View LIST Creation for the object salesman.commission.payment -->
-        <record model="ir.ui.view" id="commission_payment_tree">
-            <field name="name">commission.payment.tree</field>
-            <field name="model">commission.payment</field>
-            <field name="arch" type="xml">
-                <tree edit='true' create='true' delete='true'  string="Commission Payments">
-                    <field name="name"/>
-                    <field name="total_comm"/>
-                    <field name="date_start"/>
-                    <field name="date_stop"/>
-                    <field name="state"/>
-                </tree>
-            </field>
-        </record>
-
-        <!-- Creating and Action to open the View LIST for the object salesman.commission.payment -->
-        <record model="ir.actions.act_window" id="commission_payment_all_act">
-            <field name="name">Comisiones</field>
-            <field name="res_model">commission.payment</field>
-            <field name="view_type">form</field>
-            <field name="view_mode">tree,form</field>
-        </record>
-
-        <!-- Creating a menu to use the action sales_commission_payment_all_act -->
-
-        <record model="ir.ui.view" id="commission_salesman_graph">
-            <field name="name">commission.salesman.graph</field>
-            <field name="model">commission.salesman</field>
-            <field name="arch" type="xml">
-                <graph type="bar" string="Pago de Comisiones">
-                    <field name="salesman_id"/>
-                    <field name="comm_total" operator="+"/>
-                </graph>
-            </field>
-        </record>
-
-        <record model="ir.ui.view" id="commission_salesman_tree">
-            <field name="name">commission.salesman.tree</field>
-            <field name="model">commission.salesman</field>
-            <field name="arch" type="xml">
-                <tree edit='false' create='false' delete='false' string="Salespeople Commissions" colors="red:salesman_id is False">
-                    <field name="salesman_id"/>
-                    <field name="comm_total" sum="Commission Amount"/>
-                    <field name="comm_total_currency"/>
-                    <field name="currency_id"/>
-                </tree>
-            </field>
-        </record>
-
-        <record model="ir.ui.view" id="commission_salesman_form">
-            <field name="name">commission.salesman.form</field>
-            <field name="model">commission.salesman</field>
-            <field name="arch" type="xml">
-                <form string="Pago de Comisiones" version="7.0">
+                    <div class="oe_title oe_right">
+                        <h1>
+                            <field name="total" widget="monetary" options="{'currency_field': 'currency_id'}" attrs="{'invisible':[('state','=','draft')]}"/>
+                        </h1>
+                    </div>
+                    <div class="oe_title oe_left">
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="Description of the computation" />
+                            <field name="template_id" colspan="6"/>
+                        </h1>
+                    </div>
                     <group>
-                        <field name="salesman_id"/>
-                        <field name="currency_id"/>
-                        <field name="comm_total"/>
-                        <field name="comm_total_currency"/>
+                        <group string="Dates Information">
+                            <field name="date_start"/>
+                            <field name="date_stop"/>
+                            <field name="policy_date_start" widget="radio" required='1'/>
+                            <field name="policy_date_end" widget="radio" required='1'/>
+                        </group>
+                        <group string="Computation Policies">
+                            <field name="commission_type" widget="radio" string="Based on" required='1' domain='partial_payment'/>
+                            <field name="scope" widget="radio" string="Compute on" required='1'/>
+                            <field name="baremo_policy" widget="radio" string='Baremo from' required='1'/>
+                            <field name="salesman_policy" widget="radio" required='1'/>
+                        </group>
                     </group>
-                    <field name="comm_lines_ids" attrs="{'readonly':[('salesman_id','!=',False)]}">
-                        <tree create='false' delete='false'  editable='top'>
-                            <field name="name" readonly='1'/>
-                            <field name="pay_date" readonly='1'/>
-                            <field name="pay_off" readonly='1'/>
-                            <field name="partner_id" required='1' readonly='0'/>
-                            <field name="salesman_id" required='1' readonly='0'/>
-                            <field name="pay_inv" readonly='1'/>
-                            <field name="invoice_id" readonly='1'/>
-                            <field name="am_rec" readonly='1'/>
-                            <field name="inv_date" readonly='1'/>
-                            <field name="date_start" readonly='1'/>
-                            <field name="date_stop" readonly='1'/>
-                            <field name="days" readonly='1'/>
-                            <field name="inv_subtotal" readonly='1'/>
-                            <field name="product_id" readonly='1'/>
-                            <field name="price_unit" readonly='1'/>
-                            <field name="price_subtotal" readonly='1'/>
-                            <field name="price_list" readonly='1'/>
-                            <field name="price_date" readonly='1'/>
-                            <field name="rate_item" readonly='1'/>
-                            <field name="rate_number" readonly='1'/>
-                            <field name="timespan" readonly='1'/>
-                            <field name="baremo_comm" readonly='1'/>
-                            <field name="commission" sum="" readonly='1'/>
-                            <field name="commission_currency" sum="" readonly='1'/>
-                            <field name="currency_id" readonly='1'/>
-                        </tree>
-                    </field>
-                </form>
-            </field>
-        </record>
+                    <group string="Default Parameters">
+                        <group col="1">
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Company:" attrs="{'invisible':[('baremo_policy','!=','onCompany')]}"/>
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Partner:" attrs="{'invisible':[('baremo_policy','!=','onPartner')]}"/>
+                            <label for="baremo_id" string="Baremo to be used if not Baremo set on Commercial Entity:" attrs="{'invisible':[('baremo_policy','!=','onAccountingPartner')]}"/>
+                            <label for="baremo_id" string="Baremo to be used if not policy set on Salespeople:" attrs="{'invisible':[('baremo_policy','!=','onUser')]}"/>
+                            <label for="baremo_id" string="Baremo to be used on this Document:" attrs="{'invisible':[('baremo_policy','!=','onCommission')]}"/>
+                            <label for="baremo_id" string="Pick the default Baremo:" attrs="{'invisible':[('baremo_policy','!=', False)]}"/>
+                            <field name="baremo_id" nolabel="1"/>
+                        </group>
+                        <group col="3">
+                            <field name="company_id" groups="base.group_multi_company"/>
+                            <field name="currency_id" groups="base.group_multi_currency"/>
+                            <field name="comm_fix" invisible="1"/>
+                            <field name="user_ids" options="{'no_create': True}" colspan="2" widget="many2many_tags"/>
+                            <newline/>
+                            <field name="unknown_salespeople"/>
+                        </group>
+                    </group>
+                </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
+            </form>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="commission_lines_graph">
-            <field name="name">commission.lines.graph</field>
-            <field name="model">commission.lines</field>
-            <field name="arch" type="xml">
-                <graph string="Comisiones x Producto" type="bar">
-                    <field name="days"/>
-                    <field name="commission" operator="+"/>
-                </graph>
-            </field>
-        </record>
+    <record id="commission_payment_tree" model="ir.ui.view">
+        <field name="name">commission.payment.tree</field>
+        <field name="model">commission.payment</field>
+        <field name="arch" type="xml">
+            <tree edit='true' create='true' delete='true'  string="Commission Payments">
+                <field name="name"/>
+                <field name="total"/>
+                <field name="date_start"/>
+                <field name="date_stop"/>
+                <field name="state"/>
+            </tree>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="commission_lines_tree">
-            <field name="name">commission.lines.tree</field>
-            <field name="model">commission.lines</field>
-            <field name="arch" type="xml">
-                <tree edit='false' create='false' delete='false' string="All the products and their commissions">
-                    <field name="name"/>
-                    <field name="pay_date"/>
-                    <field name="pay_off"/>
-                    <field name="partner_id"/>
+    <record id="commission_payment_action" model="ir.actions.act_window">
+        <field name="name">Commissions</field>
+        <field name="res_model">commission.payment</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+    <record model="ir.ui.view" id="commission_salesman_graph">
+        <field name="name">commission.salesman.graph</field>
+        <field name="model">commission.salesman</field>
+        <field name="arch" type="xml">
+            <graph type="bar" string="Pago de Comisiones">
+                <field name="salesman_id"/>
+                <field name="total" operator="+"/>
+            </graph>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="commission_salesman_tree">
+        <field name="name">commission.salesman.tree</field>
+        <field name="model">commission.salesman</field>
+        <field name="arch" type="xml">
+            <tree edit='false' create='false' delete='false' string="Salespeople Commissions" colors="red:salesman_id is False">
+                <field name="salesman_id"/>
+                <field name="total" sum="Commission Amount"/>
+                <field name="currency_amount"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+            </tree>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="commission_salesman_form">
+        <field name="name">commission.salesman.form</field>
+        <field name="model">commission.salesman</field>
+        <field name="arch" type="xml">
+            <form string="Pago de Comisiones">
+                <group>
                     <field name="salesman_id"/>
-                    <field name="pay_inv"/>
-                    <field name="invoice_id"/>
-                    <field name="am_rec"/>
-                    <field name="inv_date"/>
-                    <field name="date_start"/>
-                    <field name="date_stop"/>
-                    <field name="days"/>
-                    <field name="inv_subtotal"/>
-                    <field name="price_unit"/>
-                    <field name="price_subtotal"/>
-                    <field name="price_list"/>
-                    <field name="price_date"/>
-                    <field name="rate_item"/>
-                    <field name="rate_number"/>
-                    <field name="timespan"/>
-                    <field name="baremo_comm"/>
-                    <field name="perc_iva"/>
-                    <field name="commission"/>
-                    <field name="commission_currency"/>
-                    <field name="currency_id"/>
-                </tree>
-            </field>
-        </record>
+                    <field name="currency_id" groups="base.group_multi_currency"/>
+                    <field name="total"/>
+                    <field name="currency_amount"/>
+                </group>
+                <field name="line_ids" attrs="{'readonly':[('salesman_id','!=',False)]}">
+                    <tree create='false' delete='false'  editable='top'>
+                        <field name="name" readonly='1'/>
+                        <field name="payment_date" readonly='1'/>
+                        <field name="partner_id" required='1' readonly='0'/>
+                        <field name="salesman_id" required='1' readonly='0'/>
+                        <field name="invoice_payment" readonly='1'/>
+                        <field name="invoice_id" readonly='1'/>
+                        <field name="am_rec" readonly='1'/>
+                        <field name="invoice_date" readonly='1'/>
+                        <field name="date_start" readonly='1'/>
+                        <field name="date_stop" readonly='1'/>
+                        <field name="days" readonly='1'/>
+                        <field name="inv_subtotal" readonly='1'/>
+                        <field name="product_id" readonly='1'/>
+                        <field name="price_unit" readonly='1'/>
+                        <field name="price_subtotal" readonly='1'/>
+                        <field name="price_list" readonly='1'/>
+                        <field name="price_date" readonly='1'/>
+                        <field name="rate_item" readonly='1'/>
+                        <field name="rate_number" readonly='1'/>
+                        <field name="timespan" readonly='1'/>
+                        <field name="baremo" readonly='1'/>
+                        <field name="commission_amount" sum="" readonly='1'/>
+                        <field name="currency_amount" sum="" readonly='1'/>
+                        <field name="currency_id" readonly='1' groups="base.group_multi_currency"/>
+                    </tree>
+                </field>
+            </form>
+        </field>
+    </record>
 
-        <record model="ir.ui.view" id="commission_lines_form">
-            <field name="name">commission.lines.form</field>
-            <field name="model">commission.lines</field>
-            <field name="arch" type="xml">
-                <form string="Pago de Comisiones" version="7.0">
-                    <field name="salesman_id"/>
-                    <field name="commission"/>
-                </form>
-            </field>
-        </record>
+    <record model="ir.ui.view" id="commission_lines_search">
+        <field name="name">commission.lines.search</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <search>
+                <filter name="line_type" string="Ok" domain="[('line_type','=','ok')]"/>
+                <filter name="line_type" string="W/o Product" domain="[('line_type','=','no_product')]"/>
+                <filter name="line_type" string="W/o Price" domain="[('line_type','=','no_price')]"/>
+                <filter name="line_type" string="Exception" domain="[('line_type','=','exception')]"/>
+                <filter string="Product" context="{'group_by':'product_id'}"/>
+                <filter string="Salespeople" context="{'group_by':'salespeople_id'}"/>
+                <filter string="Invoice" context="{'group_by':'invoice_id'}"/>
+                <filter string="Payment" context="{'group_by':'aml_id'}"/>
+                <filter string="Type" context="{'group_by':'line_type'}"/>
+            </search>
+        </field>
+    </record>
 
-        <record id="view_invoice_customer_last_payment" model="ir.ui.view">
-            <field name="name">account.invoice.customer.last_payment</field>
-            <field name="model">account.invoice</field>
-            <field name="inherit_id" ref="account.invoice_form"/>
-            <field name="arch" type="xml">
-                <xpath expr="//field[@name='move_id']" position="after">
-                    <field name="date_last_payment"/>
-                </xpath>
-            </field>
-        </record>
+    <record model="ir.ui.view" id="commission_lines_graph">
+        <field name="name">commission.lines.graph</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <graph string="Comisiones x Producto" type="bar">
+                <field name="days"/>
+                <field name="commission_amount" operator="+"/>
+            </graph>
+        </field>
+    </record>
 
-        <record id="action_account_moves_all_tree" model="ir.actions.act_window">
-            <field name="name">Journal Items</field>
-            <field name="res_model">account.move.line</field>
-            <field name="context">{}</field>
-            <field name="view_id" ref="account.view_move_line_tree"/>
-        </record>
+    <record model="ir.ui.view" id="commission_lines_tree">
+        <field name="name">commission.lines.tree</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <tree edit='false' create='false' delete='false' string="All the products and their commissions">
+                <field name="name"/>
+                <field name="payment_date"/>
+                <field name="partner_id"/>
+                <field name="salesman_id"/>
+                <field name="invoice_payment"/>
+                <field name="invoice_id"/>
+                <field name="am_rec"/>
+                <field name="invoice_date"/>
+                <field name="date_start"/>
+                <field name="date_stop"/>
+                <field name="days"/>
+                <field name="inv_subtotal"/>
+                <field name="product_id"/>
+                <field name="price_unit"/>
+                <field name="price_subtotal"/>
+                <field name="price_list"/>
+                <field name="price_date"/>
+                <field name="rate_item"/>
+                <field name="rate_number"/>
+                <field name="timespan"/>
+                <field name="baremo"/>
+                <field name="perc_iva"/>
+                <field name="commission_amount"/>
+                <field name="currency_amount"/>
+                <field name="currency_id" groups="base.group_multi_currency"/>
+            </tree>
+        </field>
+    </record>
 
-        <record id="res_company_view_comm_tax" model="ir.ui.view">
-            <field name="name">res.company.view.comm_tax</field>
-            <field name="inherit_id" ref="commission_calculation.res_company_view_baremo"/>
-            <field name="model">res.company</field>
-            <field name="arch" type="xml">
-                <xpath expr="//group[@name='baremo_grp']" position="inside">
-                    <field name="comm_tax"/>
-                </xpath>
-            </field>
-        </record>
-    </data>
+    <record model="ir.ui.view" id="commission_lines_form">
+        <field name="name">commission.lines.form</field>
+        <field name="model">commission.lines</field>
+        <field name="arch" type="xml">
+            <form string="Pago de Comisiones">
+                <field name="salesman_id"/>
+                <field name="commission_amount"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="view_invoice_customer_last_payment" model="ir.ui.view">
+        <field name="name">account.invoice.customer.last_payment</field>
+        <field name="model">account.invoice</field>
+        <field name="inherit_id" ref="account.invoice_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//field[@name='move_id']" position="after">
+                <field name="date_last_payment"/>
+            </xpath>
+        </field>
+    </record>
+
+    <record id="action_account_moves_all_tree" model="ir.actions.act_window">
+        <field name="name">Journal Items</field>
+        <field name="res_model">account.move.line</field>
+        <field name="context">{}</field>
+        <field name="view_id" ref="account.view_move_line_tree"/>
+    </record>
+
+    <record id="res_company_view_tax" model="ir.ui.view">
+        <field name="name">res.company.view.tax</field>
+        <field name="inherit_id" ref="commission_calculation.res_company_view_baremo"/>
+        <field name="model">res.company</field>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='baremo_grp']" position="inside">
+                <field name="tax"/>
+            </xpath>
+        </field>
+    </record>
 </odoo>

@@ -11,7 +11,6 @@
 
 from odoo import api, fields, models
 
-# TODO the query does not including the reconcile_partial, please add it
 QUERY_REC_AML = '''
 SELECT aml_id, id
 FROM
@@ -43,7 +42,6 @@ WHERE
     (p_reconcile_id = i_reconcile_id)
 '''
 
-# TODO the query does not including the reconcile_partial, please add it
 QUERY_REC_INVOICE = '''
 SELECT id, invoice_id
 FROM
@@ -199,47 +197,41 @@ class AccountMoveLine(models.Model):
         for rself in rec_selfs:
             if self.id == rself.id:
                 return date_last_payment
-            date_last_payment = rself.date if rself.date > date_last_payment \
+            date_last_payment = rself.date if not date_last_payment or rself.date > date_last_payment \
                 else date_last_payment
         return date_last_payment
 
     @api.depends('full_reconcile_id', 'matched_debit_ids',
                  'matched_credit_ids', 'move_id.ref')
     def _compute_date_last_payment(self):
-        for aml_brw in self._get_aml_related_date():
-            aml_brw.date_last_payment = \
-                aml_brw._date_last_payment()
+        for aml in self._get_aml_related_date():
+            aml.date_last_payment = \
+                aml._date_last_payment()
 
     @api.model
     def _get_aml_related_date(self):
-        res = self.env['account.move.line']
         receivable = self.env.ref('account.data_account_type_receivable')
-        for aml_brw in self:
-            if aml_brw.account_id.user_type_id != receivable:
-                continue
-            if aml_brw.journal_id.type not in ('bank', 'cash'):
-                continue
-            if aml_brw.credit == 0.0:
-                continue
-            if aml_brw.rec_aml:
-                res += aml_brw.rec_aml
-            res += aml_brw
+        amls = self.filtered(
+            lambda aml: aml.account_id.user_type_id == receivable and
+                        aml.journal_id.type in ('bank', 'cash') and
+                        aml.credit != 0.0 and
+                        aml.rec_aml and
+                        not aml.paid_comm)
+        res = amls + amls.filtered(
+            lambda aml: not aml.paid_comm).mapped('rec_aml')
         return res
 
-    paid_comm = fields.Boolean('Paid Commission?', default=False)
+    paid_comm = fields.Boolean('Paid Commission?')
     rec_invoice = fields.Many2one(
         "account.invoice",
         compute='_compute_reconciling_invoice',
         search='_search_rec_invoice',
-        string='Reconciling Invoice',
-    )
+        string='Reconciling Invoice')
     rec_aml = fields.Many2one(
         "account.move.line",
         compute='_compute_reconciling_aml',
         search='_search_rec_aml',
-        string='Reconciling Journal Item',
-    )
+        string='Reconciling Journal Item')
     date_last_payment = fields.Date(
         compute='_compute_date_last_payment',
-        string='Last Payment Date',
-    )
+        string='Last Payment Date')

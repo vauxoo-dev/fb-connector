@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding: utf-8
 ############################################################################
 #    Module Writen For Odoo, Open Source Management Solution
 #
@@ -6,18 +6,16 @@
 #    All Rights Reserved.
 #    info Vauxoo (info@vauxoo.com)
 #    coded by: Yanina Aular <yanina.aular@vauxoo.com>
-#    audited by: Humberto Arocha <hbto@vauxoo.com>
 ############################################################################
 
 from odoo import fields, models
 
 
-class CommissionTemplate(models.Model):
+class ResUsers(models.Model):
 
-    _name = 'commission.template'
-    _inherit = 'commission.abstract'
+    _inherit = "res.users"
 
-    name = fields.Char(
-        'Template\'s name', required=True,
-        track_visibility='onchange',
-        help="Commission template's name")
+    matrix_ids = fields.One2many(
+        'baremo.matrix', 'user_id',
+        'Baremo Matrix', copy=False,
+        help="Display all commissions of the user")

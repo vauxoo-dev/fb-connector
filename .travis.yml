@@ -1,7 +1,7 @@
 language: python
 
 python:
-  - "2.7"
+  - "3.4"
 
 dist: trusty
 sudo: false
@@ -36,7 +36,7 @@ before_install:
 
 env:
   global:
-  - LINT_CHECK=0 TESTS="0" VERSION="10.0" ODOO_REPO="odoo/odoo"
+  - LINT_CHECK=0 TESTS="0" VERSION="11.0" ODOO_REPO="odoo/odoo"
   - secure: "EG6TofH3CiZKZmSHLDOHsMVSbYYMSXUO2XewjlWGgnqYsFkfpzos5d/0f6Yoty30pJkEj67SA1u9UJk9EDAxJSIpWcho18cmCSIOvaJfge58yhB/YbHUDRBy2rT47ertlrgc1vodfPXHi+Q30O3pxTwlZibGhL6tt694ce39rpE="
 
   matrix:

@@ -16,7 +16,7 @@
         <field name="name">product.historical.price.form</field>
         <field name="model">product.historic.price</field>
         <field name="arch" type="xml">
-            <form string="Historical List Price" version="7.0">
+            <form string="Historical List Price">
                 <field name="datetime"/>
                 <field name="price"/>
                 <field name="product_uom"/>
@@ -30,7 +30,7 @@
         <field name="inherit_id" ref="product.product_normal_form_view"/>
         <field name="arch" type="xml">
             <xpath expr="//page[last()]" position="after">
-                <page string="Commisions" groups="commission_calculation.manager">
+                <page string="Commisions" groups="commission_calculation.res_groups_manager">
                     <group string="Historical Cost and Price" groups="base.group_no_one">
                         <group string="Costs" name="costs">
                             <field name="cost_historical"/>

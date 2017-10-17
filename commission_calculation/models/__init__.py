@@ -10,8 +10,12 @@
 
 from . import commission_abstract
 from . import commission_template
-from . import product
+from . import product_product
+from . import product_historic_price
 from . import baremo
 from . import commission
 from . import account_move_line
 from . import account_invoice
+from . import res_company
+from . import res_partner
+from . import res_users

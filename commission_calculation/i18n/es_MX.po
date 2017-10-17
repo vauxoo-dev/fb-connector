@@ -152,7 +152,7 @@ msgstr "Baremo"
 #: view:baremo.book:commission_calculation.view_baremo_book_form
 #: view:baremo.matrix:commission_calculation.view_baremo_matrix_form
 #: view:baremo.matrix:commission_calculation.view_baremo_matrix_tree
-#: model:ir.actions.act_window,name:commission_calculation.commission_baremo_matrix_act
+#: model:ir.actions.act_window,name:commission_calculation.baremo_matrix_action
 #: model:ir.ui.menu,name:commission_calculation.menu_bareme_matrix_tree
 msgid "Bareme Matrix"
 msgstr "Matriz de Baremos"
@@ -221,7 +221,6 @@ msgstr "Configuraciones de Comisiones"
 
 #. module: commission_calculation
 #: view:commission_calculation.commission_calculation.view_baremo_form
-#: view:baremo.discount:commission_calculation.view_baremo_discount_form
 msgid "Commission by Discount"
 msgstr "Comisión por Descuento"
 
@@ -585,7 +584,7 @@ msgid "Comision por productos"
 msgstr "Comisión por productos"
 
 #. module: commission_calculation
-#: model:ir.actions.act_window,name:commission_calculation.commission_payment_all_act
+#: model:ir.actions.act_window,name:commission_calculation.commission_payment_action
 msgid "Comisiones"
 msgstr "Comisiones"
 
@@ -616,16 +615,10 @@ msgid "Commision Payment / User"
 msgstr "Usuario / Pago de Comisiones"
 
 #. module: commission_calculation
-#: field:commission.voucher,commission_id:0
-msgid "Commission"
-msgstr "Comisión"
-
-#. module: commission_calculation
 #: field:commission.invoice,commission:0
 #: field:commission.lines,commission:0
 #: view:commission.salesman:commission_calculation.commission_salesman_tree
 #: field:commission.salesman,comm_total:0
-#: field:commission.voucher,commission:0
 msgid "Commission Amount"
 msgstr "Monto de Comisión"
 
@@ -703,7 +696,6 @@ msgstr "Calcular con"
 #: field:commission.payment,create_uid:0
 #: field:commission.sale.noid,create_uid:0
 #: field:commission.salesman,create_uid:0
-#: field:commission.voucher,create_uid:0
 msgid "Created by"
 msgstr "Creado por"
 
@@ -714,7 +706,6 @@ msgstr "Creado por"
 #: field:commission.payment,create_date:0
 #: field:commission.sale.noid,create_date:0
 #: field:commission.salesman,create_date:0
-#: field:commission.voucher,create_date:0
 msgid "Created on"
 msgstr "Creado el"
 
@@ -751,7 +742,6 @@ msgstr "FECHA VENCIMIENTO"
 
 #. module: commission_calculation
 #: field:commission.noprice,date:0
-#: field:commission.voucher,date:0
 msgid "Date"
 msgstr "Fecha"
 
@@ -777,7 +767,7 @@ msgid "Date of the last message posted on the record."
 msgstr "Fecha del último mensaje escrito en el documento."
 
 #. module: commission_calculation
-#: field:res.company,comm_tax:0
+#: field:res.company,tax:0
 msgid "Default Tax for Commissions"
 msgstr "Impuesto predeterminado en las Comisiones"
 
@@ -867,7 +857,6 @@ msgstr "Factura"
 
 #. module: commission_calculation
 #: field:commission.payment,comm_invoice_ids:0
-#: field:commission.voucher,comm_invoice_ids:0
 msgid "Facturas afectadas en esta comision"
 msgstr "Facturas afectadas en esta comisión"
 
@@ -906,7 +895,6 @@ msgstr ""
 #: field:commission.payment,id:0
 #: field:commission.sale.noid,id:0
 #: field:commission.salesman,id:0
-#: field:commission.voucher,id:0
 #: field:report.commission_calculation.comm_salespeople_template,id:0
 msgid "ID"
 msgstr "ID"
@@ -968,7 +956,7 @@ msgid "Invoice Date"
 msgstr "Fecha Factura"
 
 #. module: commission_calculation
-#: field:commission.noprice,invoice_num:0
+#: field:commission.noprice,invoice_number:0
 msgid "Invoice Number"
 msgstr "Número de Factura"
 
@@ -1000,7 +988,6 @@ msgstr "Artículo sin Productos"
 
 #. module: commission_calculation
 #: field:commission.lines,am_id:0
-#: field:commission.voucher,am_id:0
 msgid "Journal Entry"
 msgstr "Asiento Contable"
 
@@ -1035,7 +1022,6 @@ msgstr "Último Pago en Factura"
 #: field:commission.payment,write_uid:0
 #: field:commission.sale.noid,write_uid:0
 #: field:commission.salesman,write_uid:0
-#: field:commission.voucher,write_uid:0
 msgid "Last Updated by"
 msgstr "Última Actualización por"
 
@@ -1046,7 +1032,6 @@ msgstr "Última Actualización por"
 #: field:commission.payment,write_date:0
 #: field:commission.sale.noid,write_date:0
 #: field:commission.salesman,write_date:0
-#: field:commission.voucher,write_date:0
 msgid "Last Updated on"
 msgstr "Última Actualización el"
 
@@ -1217,7 +1202,6 @@ msgstr "FECHA INICIO"
 #. module: commission_calculation
 #: field:commission.lines,salesman_id:0
 #: field:commission.salesman,salesman_id:0
-#: field:commission.voucher,comm_sale_id:0
 msgid "Salesman"
 msgstr "Vendedor"
 
@@ -1363,26 +1347,6 @@ msgstr "Ver Facturas"
 #: view:commission.payment:commission_calculation.commission_payment_form
 msgid "View Payments"
 msgstr "Ver Pagos"
-
-#. module: commission_calculation
-#: field:commission.invoice,comm_voucher_id:0
-msgid "Voucher"
-msgstr "Comprobante"
-
-#. module: commission_calculation
-#: field:commission.lines,comm_voucher_id:0
-msgid "Voucher Commission"
-msgstr "Comprobante de Comisión"
-
-#. module: commission_calculation
-#: field:commission.salesman,comm_voucher_ids:0
-msgid "Vouchers Affected in this commission"
-msgstr "Comprobantes Afectados en esta comisión"
-
-#. module: commission_calculation
-#: field:commission.payment,comm_voucher_ids:0
-msgid "Vouchers afectados en esta comision"
-msgstr "Vouchers afectados en esta comisión"
 
 #. module: commission_calculation
 #: selection:commission.payment,scope:0

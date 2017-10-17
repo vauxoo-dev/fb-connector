@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <record id="icm" model="ir.module.category">
+    <record id="ir_module_category_icm" model="ir.module.category">
         <field name="name">ICM</field>
         <field name="sequence">100</field>
     </record>

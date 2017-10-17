@@ -1,0 +1,33 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="res_users_view_baremo" model="ir.ui.view">
+        <field name="name">res.users.view.baremo</field>
+        <field name="model">res.users</field>
+        <field name="inherit_id" ref="base.view_users_form"/>
+        <field name="arch" type="xml">
+            <xpath expr="//group[@name='messaging']" position="after">
+                <group string="Baremo" name="baremo" colspan='4'>
+                    <group colspan='4'>
+                        <label string='Bareme to be used when selected Bareme from Salesman on Commission Payment'/>
+                    </group>
+                    <newline/>
+                    <field name="baremo_id"/>
+                    <group colspan='4'>
+                        <label string='On this Salesman these Baremes will be used when these products are present on Invoices and option Matrix Bareme on Commission Payment is selected'/>
+                    </group>
+                    <field
+                        name="matrix_ids"
+                        nolabel="1"
+                        colspan="6">
+                        <tree editable='top'>
+                            <field name="baremo_id"/>
+                            <field name="product_id"/>
+                        </tree>
+                    </field>
+                </group>
+            </xpath>
+        </field>
+    </record>
+
+</odoo>

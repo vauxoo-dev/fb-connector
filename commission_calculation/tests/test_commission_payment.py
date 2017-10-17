@@ -2,10 +2,10 @@
 
 import time
 from datetime import date, datetime, timedelta
-from odoo.tests.common import TransactionCase
+from .common import Common
 
 
-class TestCommission(TransactionCase):
+class TestCommission(Common):
 
     """Tests for Commissions (commission.payment)
     """
@@ -28,21 +28,20 @@ class TestCommission(TransactionCase):
         account_sale_id = self.ref('commission_calculation.a_recv')
         account_bnk_id = self.ref('commission_calculation.bnk')
 
-        self.invoice_id = self.env.ref('commission_calculation.invoice_1')
-        company_id.currency_id = self.invoice_id.currency_id
-        self.invoice_id.action_invoice_open()
-        self.invoice_id.pay_and_reconcile(self.journal_bank_id,
-                                          self.invoice_id.amount_total)
+        company_id.currency_id = self.invoice_1.currency_id
+        self.invoice_1.action_invoice_open()
+        self.invoice_1.pay_and_reconcile(self.journal_bank_id,
+                                         self.invoice_1.amount_total)
 
-        self.cp_brw = self.env.ref('commission_calculation.commission_1')
+        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
 
-        date_last_payment = self.invoice_id.date_last_payment
+        date_last_payment = self.invoice_1.date_last_payment
         date_last_payment = datetime.strptime(date_last_payment, "%Y-%m-%d")
         datestop_date = date_last_payment + timedelta(days=1)
         datestop = datetime.strftime(datestop_date, "%Y-%m-%d")
-        self.cp_brw.date_stop = datestop
+        self.commission_payment.date_stop = datestop
 
-        self.cp_brw.prepare()
+        self.commission_payment.prepare()
 
         vals = {
             'date': time.strftime(
@@ -93,205 +92,206 @@ class TestCommission(TransactionCase):
     def test_basic_commission(self):
         demo_id = self.env.ref('base.user_demo')
 
-        self.cp_brw.action_view_payment()
-        self.cp_brw.action_view_invoice()
+        self.commission_payment.action_view_payment()
+        self.commission_payment.action_view_invoice()
         self.assertEquals(
-            self.cp_brw.total_comm, 660,
+            self.commission_payment.total, 660,
             'Commission should be 660')
 
-        self.assertEquals(self.cp_brw.state, 'open',
+        self.assertEquals(self.commission_payment.state, 'open',
                           'Commission Should be in State "Open"')
 
-        self.assertEquals(len(self.cp_brw.salesman_ids) > 0, True,
+        self.assertEquals(len(self.commission_payment.salesman_ids) > 0, True,
                           'There should be at least one computation')
-        for cs_brw in self.cp_brw.salesman_ids:
-            if not cs_brw.salesman_id:
+        for commission in self.commission_payment.salesman_ids:
+            if not commission.salesman_id:
                 continue
-            self.assertEquals(cs_brw.salesman_id, demo_id,
+            self.assertEquals(commission.salesman_id, demo_id,
                               'Salesman shall be "Demo User"')
-            self.assertEquals(cs_brw.comm_total, 660.00,
+            self.assertEquals(commission.total, 660.00,
                               'Wrong Quantity on commission')
 
-        self.cp_brw.validate()
+        self.commission_payment.validate()
         self.assertEquals(
-            self.cp_brw.state, 'done',
+            self.commission_payment.state, 'done',
             'Commission Should be in State "Done"')
 
-        self.cp_brw.action_draft()
+        self.commission_payment.action_draft()
         self.assertEquals(
-            self.cp_brw.state, 'draft',
+            self.commission_payment.state, 'draft',
             'Commission Should be in State "Draft"')
 
         return True
 
     def test_fix_commission(self):
-        self.cp_brw = self.env.ref('commission_calculation.commission_1')
+        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
 
-        invoice_2 = self.env.ref('commission_calculation.invoice_2')
-        invoice_2.action_invoice_open()
-        invoice_2.date_due = invoice_2.date_invoice
-        invoice_2.pay_and_reconcile(self.journal_bank_id)
+        self.invoice_2.action_invoice_open()
+        self.invoice_2.date_due = self.invoice_2.date_invoice
+        self.invoice_2.pay_and_reconcile(self.journal_bank_id)
 
         self.assertEquals(
-            self.cp_brw.total_comm, 660,
+            self.commission_payment.total, 660,
             'Commission should be 660')
-        self.cp_brw.action_draft()
+        self.commission_payment.action_draft()
         self.assertEquals(
-            self.cp_brw.comm_fix, False,
+            self.commission_payment.comm_fix, False,
             'There should be no Commission to Fix')
-        self.cp_brw.unknown_salespeople = True
-        self.cp_brw.prepare()
-        self.cp_brw.action_view_fixlines()
+        self.commission_payment.unknown_salespeople = True
+        self.commission_payment.prepare()
+        self.commission_payment.action_view_fixlines()
         self.assertEquals(
-            self.cp_brw.comm_fix, True,
+            self.commission_payment.comm_fix, True,
             'There should be Commissions to Fix')
         self.assertNotEquals(
-            self.cp_brw.total_comm, 660,
+            self.commission_payment.total, 660,
             'Commission should not be 660')
 
         no_salesman = [
             comm
-            for comm in self.cp_brw.comm_line_ids
+            for comm in self.commission_payment.line_ids
             if not comm.salesman_id
         ]
 
         salesman_id = self.ref('base.user_demo')
-        for cl_brw in no_salesman:
-            cl_brw.salesman_id = salesman_id
+        for commission_line in no_salesman:
+            commission_line.salesman_id = salesman_id
 
-        self.cp_brw.action_recompute()
+        self.commission_payment.action_recompute()
         self.assertEquals(
-            self.cp_brw.comm_fix, False,
+            self.commission_payment.comm_fix, False,
             'There should be no Commission to Fix')
 
-        self.cp_brw.validate()
+        self.commission_payment.validate()
         self.assertEquals(
-            self.cp_brw.state, 'done',
+            self.commission_payment.state, 'done',
             'Commission Should be in State "Done"')
 
         return True
 
     def test_aml_commission(self):
-        self.cp_brw.action_draft()
+        self.commission_payment.action_draft()
 
         month = str((date.today().month % 12) + 1)
-        self.cp_brw.date_start = time.strftime('%Y') + '-' + month + '-01'
-        self.cp_brw.date_stop = time.strftime('%Y') + '-' + month + '-28'
+        self.commission_payment.date_start = time.strftime('%Y') + '-' + month + '-01'
+        self.commission_payment.date_stop = time.strftime('%Y') + '-' + month + '-28'
 
-        self.cp_brw.unknown_salespeople = True
+        self.commission_payment.unknown_salespeople = True
 
         aml_ids = self.aml_rec_debit + self.aml_rec_credit
         aml_ids.reconcile()
 
-        self.cp_brw.prepare()
+        self.commission_payment.prepare()
 
         self.assertEquals(
-            self.cp_brw.comm_fix, True,
+            self.commission_payment.comm_fix, True,
             'There should be Commissions to Fix')
         self.assertEquals(
-            self.cp_brw.total_comm, 0,
+            self.commission_payment.total, 0,
             'Commission should be 0')
 
         no_salesman = [
             comm
-            for comm in self.cp_brw.comm_line_ids
+            for comm in self.commission_payment.line_ids
             if not comm.salesman_id
         ]
 
         salesman_id = self.ref('base.user_demo')
         partner_id = self.ref('base.res_partner_12')
-        for cl_brw in no_salesman:
-            cl_brw.salesman_id = salesman_id
-            cl_brw.partner_id = partner_id
+        for commission_line in no_salesman:
+            commission_line.salesman_id = salesman_id
+            commission_line.partner_id = partner_id
 
-        self.cp_brw.action_recompute()
+        self.commission_payment.action_recompute()
 
         self.assertEquals(
-            self.cp_brw.total_comm, 30,
+            self.commission_payment.total, 30,
             'Commission should be 30')
 
         self.assertEquals(
-            self.cp_brw.comm_fix, False,
+            self.commission_payment.comm_fix, False,
             'There should be no Commission to Fix')
 
-        self.cp_brw.validate()
+        self.commission_payment.validate()
         self.assertEquals(
-            self.cp_brw.state, 'done',
+            self.commission_payment.state, 'done',
             'Commission Should be in State "Done"')
 
         return True
 
     def test_product_commission(self):
-        prod_brw = self.env.ref('product.product_product_4')
+        product = self.env.ref('product.product_product_4')
 
         price_ids = self.php_model.search(
-            [('product_id', '=', prod_brw.id)])
+            [('product_id', '=', product.id)])
 
         self.assertEquals(
             len(price_ids) > 0, True,
             'There should historical prices on product %s' %
-            prod_brw.name)
+            product.name)
 
-        self.cp_brw = self.env.ref('commission_calculation.commission_1')
+        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
 
-        self.cp_brw.action_draft()
+        self.commission_payment.action_draft()
         self.assertEquals(
-            self.cp_brw.state, 'draft',
+            self.commission_payment.state, 'draft',
             'Commission Should be in State "Draft"')
 
-        self.cp_brw.scope = 'product_invoiced'
+        self.commission_payment.scope = 'product_invoiced'
 
-        self.cp_brw.prepare()
+        self.commission_payment.prepare()
         self.assertEquals(
-            self.cp_brw.state, 'open',
+            self.commission_payment.state, 'open',
             'Commission Should be in State "Open"')
         self.assertEquals(
-            self.cp_brw.total_comm, 300,
+            self.commission_payment.total, 300,
             'Commission should be 300')
 
-        self.cp_brw.validate()
+        self.commission_payment.validate()
         self.assertEquals(
-            self.cp_brw.state, 'done',
+            self.commission_payment.state, 'done',
             'Commission Should be in State "Done"')
 
         return True
 
     def test_partial_payment_commission(self):
-        self.cp_brw.action_draft()
-        self.cp_brw.commission_type = 'partial_payment'
-        self.cp_brw.prepare()
+        self.commission_payment.action_draft()
+        self.commission_payment.commission_type = 'partial_payment'
+        self.commission_payment.prepare()
         self.assertEquals(
-            self.cp_brw.total_comm, 660,
+            self.commission_payment.total, 660,
             'Commission should be 660')
         return True
 
     def test_matrix_commission(self):
-        self.cp_brw_2 = self.env.ref('commission_calculation.commission_2')
+        self.commission_payment_2 = self.env.ref('commission_calculation.commission_payment_02')
 
-        invoice_2 = self.env.ref('commission_calculation.invoice_2')
-        invoice_2.action_invoice_open()
-        invoice_2.pay_and_reconcile(self.journal_bank_id)
+        self.invoice_2.action_invoice_open()
+        self.invoice_2.pay_and_reconcile(self.journal_bank_id)
 
-        date_last_payment = invoice_2.date_last_payment
+        date_last_payment = self.invoice_2.date_last_payment
         date_last_payment = datetime.strptime(date_last_payment, "%Y-%m-%d")
         datestop_date = date_last_payment + timedelta(days=1)
         datestop = datetime.strftime(datestop_date, "%Y-%m-%d")
-        self.cp_brw_2.date_stop = datestop
+        self.commission_payment_2.date_stop = datestop
 
         self.assertEquals(
-            self.cp_brw_2.state, 'draft',
+            self.commission_payment_2.state, 'draft',
             'Commission Should be in State "Draft"')
 
-        self.cp_brw_2.prepare()
+        self.commission_payment_2.prepare()
         self.assertEquals(
-            self.cp_brw_2.state, 'open',
+            self.commission_payment_2.state, 'open',
             'Commission Should be in State "Open"')
         self.assertEquals(
-            self.cp_brw_2.salesman_ids[0].comm_voucher_ids[0].commission, 500,
+            self.commission_payment_2.salesman_ids[0].total, 500,
+            'Commission should be 500')
+        self.assertEquals(
+            self.commission_payment_2.salesman_ids[0].currency_amount, 500,
             'Commission should be 500')
 
         self.assertEquals(
-            self.cp_brw_2.total_comm, 500,
+            self.commission_payment_2.total, 500,
             'Commission should be 500')
 
         return True

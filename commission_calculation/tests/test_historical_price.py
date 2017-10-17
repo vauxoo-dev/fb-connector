@@ -20,7 +20,7 @@ class TestHistoricalPrice(TransactionCase):
         # Checking if the historical was created correctly
         self.product_id._compute_historical_price()
 
-        action = self.env.ref("commission_calculation.action_rule_issue_close")
+        action = self.env.ref("commission_calculation.base_automation_product_price")
         action = action.with_context({
             'active_model': 'product.product',
             '__action_done': {},
@@ -52,7 +52,7 @@ class TestHistoricalPrice(TransactionCase):
         # Checking if the historical was changed correctly
         self.product_id._compute_historical_price()
 
-        action = self.env.ref("commission_calculation.action_rule_issue_close")
+        action = self.env.ref("commission_calculation.base_automation_product_price")
         action = action.with_context({
             'active_model': 'product.product',
             '__action_done': {},

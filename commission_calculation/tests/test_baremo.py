@@ -16,8 +16,8 @@ class TestBaremo(TransactionCase):
 
     def test_basic_baremo(self):
         baremo_id = self.env.ref('commission_calculation.baremo_book_01')
-        company_brw = self.env.ref('base.main_company')
-        company_brw.baremo_id = baremo_id
-        self.assertEquals(baremo_id, company_brw.baremo_id)
-        self.assertEquals(baremo_id, company_brw.partner_id.baremo_id)
+        company = self.env.ref('base.main_company')
+        company.baremo_id = baremo_id
+        self.assertEquals(baremo_id, company.baremo_id)
+        self.assertEquals(baremo_id, company.partner_id.baremo_id)
         return True

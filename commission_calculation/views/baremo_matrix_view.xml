@@ -1,0 +1,50 @@
+<?xml version='1.0' encoding='utf-8'?>
+<odoo>
+
+    <record id="baremo_matrix_view_tree" model="ir.ui.view">
+        <field name="name">baremo.matrix.tree</field>
+        <field name="model">baremo.matrix</field>
+        <field name="arch" type="xml">
+            <tree string="Baremo Matrix">
+                <field name="baremo_id"/>
+                <field name="user_id"/>
+                <field name="product_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="baremo_matrix_view_form" model="ir.ui.view">
+        <field name="name">baremo.matrix.form</field>
+        <field name="model">baremo.matrix</field>
+        <field name="arch" type="xml">
+            <form string="Baremo Matrix">
+                <sheet>
+                    <div class="oe_title oe_left" style="width: 100%;">
+                        <div class="oe_edit_only">
+                            <label for="baremo_id"/>
+                        </div>
+                        <h1 style="width: 100%;">
+                            <field
+                                name="baremo_id"
+                                default_focus="1"
+                                placeholder="Select a Baremo"
+                                />
+                        </h1>
+                    </div>
+                    <group>
+                        <field name="user_id"/>
+                        <field name="product_id"/>
+                    </group>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="baremo_matrix_action" model="ir.actions.act_window">
+        <field name="name">Baremo Matrix</field>
+        <field name="res_model">baremo.matrix</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+    </record>
+
+</odoo>
