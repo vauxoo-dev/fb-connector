@@ -13,11 +13,13 @@
 from odoo import fields, models, api, _
 from odoo.addons import decimal_precision as dp
 from odoo.exceptions import ValidationError
+from odoo.tools.safe_eval import safe_eval
 
 
 class BaremoBook(models.Model):
 
     _name = 'baremo.book'
+    _inherit = ['mail.thread', 'mail.activity.mixin']
 
     name = fields.Char('Baremo Description', required=True)
     bar_ids = fields.One2many(
@@ -25,6 +27,17 @@ class BaremoBook(models.Model):
     matrix_ids = fields.One2many(
         'baremo.matrix', 'baremo_id',
         'Baremo Matrix', copy=False)
+
+    @api.multi
+    def action_view_matrix(self):
+        self.ensure_one()
+        result = self.env.ref(
+            'commission_calculation.baremo_matrix_action2').read()[0]
+        result['domain'] = [('baremo_id', 'in', [self.id])]
+        ctx = safe_eval(result['context'])
+        ctx.update({'default_baremo_id': self.id})
+        result['context'] = ctx
+        return result
 
 
 class BaremoLine(models.Model):

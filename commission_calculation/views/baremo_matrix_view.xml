@@ -4,12 +4,37 @@
     <record id="baremo_matrix_view_tree" model="ir.ui.view">
         <field name="name">baremo.matrix.tree</field>
         <field name="model">baremo.matrix</field>
+        <field name="priority">16</field>
         <field name="arch" type="xml">
             <tree string="Baremo Matrix">
                 <field name="baremo_id"/>
                 <field name="user_id"/>
                 <field name="product_id"/>
             </tree>
+        </field>
+    </record>
+
+    <record id="baremo_matrix_view_tree2" model="ir.ui.view">
+        <field name="name">baremo.matrix.tree2</field>
+        <field name="model">baremo.matrix</field>
+        <field name="priority">100</field>
+        <field name="arch" type="xml">
+            <tree string="Baremo Matrix" editable="top">
+                <field name="baremo_id" invisible="1"/>
+                <field name="user_id"/>
+                <field name="product_id"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="baremo_matrix_view_search" model="ir.ui.view">
+        <field name="name">baremo.matrix.search</field>
+        <field name="model">baremo.matrix</field>
+        <field name="arch" type="xml">
+            <search>
+                <field name="user_id"/>
+                <field name="product_id"/>
+            </search>
         </field>
     </record>
 
@@ -45,6 +70,14 @@
         <field name="res_model">baremo.matrix</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
+    </record>
+
+    <record id="baremo_matrix_action2" model="ir.actions.act_window">
+        <field name="name">Baremo Matrix</field>
+        <field name="res_model">baremo.matrix</field>
+        <field name="view_type">form</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="baremo_matrix_view_tree2"/>
     </record>
 
 </odoo>

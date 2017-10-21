@@ -39,8 +39,7 @@ def t_time(date):
 class CommissionPayment(models.Model):
 
     _name = 'commission.payment'
-    _inherit = ['mail.thread', 'commission.abstract']
-    _description = __doc__
+    _inherit = ['mail.thread', 'mail.activity.mixin', 'commission.abstract']
 
     @api.onchange("template_id")
     def _onchange_commission_template(self):
@@ -55,11 +54,7 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _get_default_company(self):
-        company_id = self.env['res.users']._get_company()
-        if not company_id:
-            raise UserError(
-                _('There is no default company for the current user!'))
-        return company_id
+        return self.env['res.users']._get_company()
 
     name = fields.Char(
         'Concept', required=True,

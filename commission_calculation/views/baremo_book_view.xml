@@ -6,28 +6,26 @@
         <field name="arch" type="xml">
             <form string="Baremos">
                 <sheet>
-                    <div class="oe_title oe_left" style="width: 100%;">
-                        <div class="oe_edit_only">
-                            <label for="name"/>
-                        </div>
-                        <h1 style="width: 100%;">
-                            <field
-                                name="name"
-                                default_focus="1"
-                                placeholder="3% Commission at 30 days w/o Disc." />
+                    <div class="oe_button_box" name="buttons">
+                        <button name="action_view_matrix"
+                                string="Matrix Salesman vs Products"
+                                type="object" class="oe_stat_button"
+                                icon="fa-users"/>
+                    </div>
+                    <div class="oe_title">
+                        <label for="name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" default_focus="1" placeholder="3% Commission at 30 days w/o Disc." />
                         </h1>
                     </div>
                     <group>
                         <field name="bar_ids" nolabel="1" colspan="6"/>
                     </group>
-                    <group string='Bareme Matrix'>
-                        <label string='For these Partners &amp; Products this Bareme will be used'/>
-                        <newline/>
-                        <label string='On Commission Payment this Bareme can be used with other options'/>
-                        <field
-                            name="matrix_ids"
-                            nolabel="1"
-                            colspan="6">
+                    <p groups="base.group_no_one">For these Salesman &amp; Products
+                        this Bareme will be used On Commission Payment this
+                        bareme can be used with other options above.</p>
+                    <group string='Bareme Matrix' groups="base.group_no_one">
+                        <field name="matrix_ids" nolabel="1">
                             <tree editable='top'>
                                 <field name="user_id"/>
                                 <field name="product_id"/>
@@ -35,6 +33,11 @@
                         </field>
                     </group>
                 </sheet>
+                <div class="oe_chatter">
+                    <field name="message_follower_ids" widget="mail_followers" groups="base.group_user"/>
+                    <field name="activity_ids" widget="mail_activity"/>
+                    <field name="message_ids" widget="mail_thread"/>
+                </div>
             </form>
         </field>
     </record>
