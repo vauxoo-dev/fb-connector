@@ -447,33 +447,30 @@ class CommissionPayment(models.Model):
     @api.model
     def _compute_commission_policy_baremo(self, pay_id, partner_id=None,
                                           salesman_id=None):
-        partner_id = partner_id or None
         rp_obj = self.env['res.partner']
         comm_rec = self
         aml_rec = pay_id
-        res = None
         if comm_rec.baremo_policy == 'onCompany':
             partner_id = comm_rec.company_id.partner_id
+            res = partner_id.baremo_id
         elif comm_rec.baremo_policy == 'onPartner':
             if aml_rec.rec_invoice:
                 partner_id = partner_id or aml_rec.rec_invoice.partner_id
             else:
                 partner_id = partner_id or aml_rec.rec_aml.partner_id
+            res = partner_id.baremo_id
         elif comm_rec.baremo_policy == 'onAccountingPartner':
             if aml_rec.rec_invoice:
                 partner_id = partner_id or aml_rec.rec_invoice.partner_id
             else:
                 partner_id = partner_id or aml_rec.rec_aml.partner_id
             partner_id = rp_obj._find_accounting_partner(partner_id)
+            res = partner_id.baremo_id
         elif comm_rec.baremo_policy == 'onUser':
             partner_id = self._compute_salesman_policy(
                 pay_id, salesman_id=salesman_id).partner_id
-        elif comm_rec.baremo_policy == 'onCommission':
-            res = comm_rec.baremo_id
-        # Fall back to baremo in Commission
-        if partner_id:
             res = partner_id.baremo_id
-        else:
+        elif comm_rec.baremo_policy == 'onCommission':
             res = comm_rec.baremo_id
         return res
 
@@ -499,8 +496,7 @@ class CommissionPayment(models.Model):
         policy_date_end = \
             self._compute_commission_policy_end_date(aml_rec)
 
-        # Si esta aqui dentro es porque esta linea tiene una id valida
-        # de una factura.
+        # If it is here it is because it has a valid invoice
         inv_rec = aml_rec.rec_invoice
         baremo_policy = comm_rec.baremo_policy
         # /!\ NOTE: Retrieve here the fallback commission baremo policy
@@ -522,16 +518,13 @@ class CommissionPayment(models.Model):
             perc_iva = (sum([tax.amount for tax in
                                 inv_lin.invoice_line_tax_ids]) * 100
                         if inv_lin.invoice_line_tax_ids else 0.0)
-            # Si esta aqui es porque hay un producto asociado
+            # If it is here is because it has an associated product
             prod_id = inv_lin.product_id.id
 
-            # se obtienen las listas de precio, vienen ordenadas
-            # por defecto, de acuerdo al objeto product.historic de
-            # mayor a menor fecha
+            # looking for the historical price (using its ordering criteria)
             price_ids = prod_prices.search(
                 [('product_id', '=', prod_id)])
-            # Buscar Precio Historico de Venta de este producto @
-            # la fecha de facturacion
+            # look for the historical price
             no_price = True
 
             for prod_prices_rec in price_ids:
@@ -548,13 +541,10 @@ class CommissionPayment(models.Model):
                 no_price = False
 
             if not no_price:
-                # Determinar cuanto fue el
-                # descuento en este producto en
-                # aquel momento de la venta
+                # Get the actual discount in the invoice.
                 if abs((inv_lin.price_subtotal / inv_lin.quantity) -
                         inv_lin.price_unit) > 0.05:
-                    # con esto se asegura que no se esta pasando
-                    # por alto el descuento en linea
+                    # with this we ensure we are not passing by the discount
                     price_unit = round((inv_lin.price_subtotal /
                                         inv_lin.quantity), 2)
                 else:
@@ -582,9 +572,9 @@ class CommissionPayment(models.Model):
                 bardctdsc = commission_params['bardctdsc']
                 emission_days = commission_params['emission_days']
 
-                #############################################
-                # CALCULO DE COMISION POR LINEA DE PRODUCTO #
-                #############################################
+                ###############################
+                # Computation by product_line #
+                ###############################
 
                 penbxlinea = aml_rec.credit * (
                     inv_lin.price_subtotal /
@@ -609,7 +599,6 @@ class CommissionPayment(models.Model):
                 else:
                     currency_amount = comm_line
 
-                # Generar las lineas de comision por cada producto
                 line_ids.create({
                     'commission_id': comm_rec.id,
                     'aml_id': aml_rec.id,
@@ -645,13 +634,9 @@ class CommissionPayment(models.Model):
                     })
 
             else:
-                # Se genera un lista de tuplas con las lineas,
-                # productos y sus correspondientes fechas en las
-                # cuales no aparece precio de lista, luego al final
-                # se escriben los valores en la correspondiente
-                # bitacora para su inspeccion. ~ #~ print 'No hubo
-                # precio de lista para la fecha estipulada, hay que
-                # generar el precio en este producto \n'
+                # If we do not have a price to compare to we mark the line to
+                #  audit what to do, no change the invoice is an important part
+                # on the process.
                 line_ids.create({
                     'name': inv_lin.name,
                     'commission_id': comm_rec.id,
@@ -660,11 +645,9 @@ class CommissionPayment(models.Model):
                     'line_type': 'no_price',
                     })
 
-        # cuando una linea no tiene product_id asociado se
-        # escribe en una tabla para alertar al operador sobre
-        # esta parte no llego a un acuerdo de si se podria
-        # permitir al operador cambiar las lineas de la factura
-        # puesto que es un asunto muy delicado.
+        # Marking the line as "no_product" in order to know the ones to review
+        # the fact of the delicated processs of change an invoice line we
+        # prefer simply inform.
         for inv_lin in inv_rec.invoice_line_ids.filtered(lambda line: not line.product_id):
             line_ids.create({
                 'name': inv_lin.name,
@@ -697,14 +680,13 @@ class CommissionPayment(models.Model):
         policy_date_end = \
             self._compute_commission_policy_end_date(aml)
 
-        # Si esta aqui dentro es porque esta linea tiene una id valida
-        # de una factura.
+        # If it is here it is because this actually have an invoice
         invoice = aml.matched_debit_ids.debit_move_id.filtered(
             lambda a: a.journal_id.type == 'sale').invoice_id
 
-        # DETERMINAR EL PORCENTAJE DE IVA EN LA FACTUR (perc_iva)
-        # =======================================================
-        # =======================================================
+        # Get the VAT percentage (perc_iva)
+        # =================================
+        # =================================
         perc_iva = (invoice.amount_total / invoice.amount_untaxed - 1) * 100
 
         commission_policy_baremo = \
@@ -720,9 +702,9 @@ class CommissionPayment(models.Model):
         bardctdsc = commission_params['bardctdsc']
         emission_days = commission_params['emission_days']
 
-        ###################################
-        # CALCULO DE COMISION POR FACTURA #
-        ###################################
+        #################################
+        # Compute Commission by Invoice #
+        #################################
 
         penbxlinea = aml.credit
         fact_sup = 1 - 0.0 / 100 - 0.0 / 100
@@ -740,7 +722,6 @@ class CommissionPayment(models.Model):
         else:
             currency_amount = comm_line
 
-        # Generar las lineas de comision por cada factura
         line_ids.create({
             'commission_id': commission.id,
             'aml_id': aml.id,
@@ -801,7 +782,6 @@ class CommissionPayment(models.Model):
         bardctdsc = commission_params['bardctdsc']
         emission_days = commission_params['emission_days']
 
-        # Generar las lineas de comision por cada factura
         line_ids.create({
             'commission_id': commission.id,
             'aml_id': aml.id,
@@ -845,11 +825,9 @@ class CommissionPayment(models.Model):
 
             payment_ids = self.env['account.move.line']
             uninvoice_payment_ids = self.env['account.move.line']
-            # Read each Journal Entry Line
-            for aml in commission.aml_ids.filtered(
-                    lambda a: not a.paid_comm):
+            for aml in commission.aml_ids.filtered(lambda a: not a.paid_comm):
 
-                # Verificar si esta linea tiene factura
+                # Verify if the aml as an invoice
                 if not aml.matched_debit_ids.debit_move_id.filtered(
                         lambda a: a.journal_id.type == 'sale').invoice_id:
                     # TODO: Here we have to deal with the lines that comes from
@@ -860,13 +838,10 @@ class CommissionPayment(models.Model):
                 payment_ids |= aml
 
             for pay_id in payment_ids:
-                # se procede con la preparacion de las comisiones.
                 commission._compute_commission_payment(pay_id)
 
             for aml_id in uninvoice_payment_ids:
-                # se procede con la preparacion de las comisiones.
                 commission._compute_commission_payment_on_aml(aml_id)
-
         return True
 
     @api.multi
@@ -875,8 +850,7 @@ class CommissionPayment(models.Model):
         comm_line_obj = self.env['commission.lines']
         invoice_affected_ids = self.env['commission.invoice']
 
-        # se procede a agrupar las comisiones por
-        # vendedor para mayor facilidad de uso
+        # We group by salesman here to be used easiest
 
         cl_fields = ['id', 'salesman_id', 'currency_id', 'commission_amount',
                      'currency_amount', 'invoice_id', 'salespeople_id']
@@ -886,9 +860,8 @@ class CommissionPayment(models.Model):
             commission.salesman_ids.unlink()
             commission.invoice_affected_ids.unlink()
 
-            # recoge todos los vendedores y suma el total de sus comisiones
-            sale_comm = {}
-            # ordena en un arbol todas las lineas de comisiones de producto
+            # Pick all salesman and sum all their commissions
+            # Order in a tree all the commissions lines
             cl_ids = commission.line_ids.filtered(
                 lambda comm: comm.line_type in ('ok', 'exception')).read(
                     cl_fields, load=None)
@@ -944,32 +917,16 @@ class CommissionPayment(models.Model):
 
     @api.multi
     def prepare(self):
-        """Este metodo recorre los elementos de lineas de asiento y verifica al
-        menos tres (3) caracteristicas primordiales para continuar con los
-        mismos: estas caracteristicas son:
-        - journal_id.type in ('cash', 'bank'): quiere decir que la linea es de
-        un deposito bancario (aqui aun no se ha considerado el trato que se le
-        da a los cheques devueltos).
-        - state == 'valid' : quiere decir que la linea ya se ha contabilizado y
-        que esta cuadrado el asiento, condicion necesaria pero no suficiente.
-        - paid_comm: que la linea aun no se ha considerado para una comision.
-
-        Si estas tres (3) condiciones se cumplen entonces se puede proceder a
-        realizar la revision de las lineas de pago.
-
-
-        @param cr: cursor to database
-        @param uid: id of current user
-        @param ids: list of record ids to be process
-        @param context: context arguments, like lang, time zone
-
-        @return: return a result
+        """Prepare the commission lines and basically do 3 things:
+        
+        - journal_id.type in ('cash', 'bank'): which means just money on banks.
+        - state == 'valid' : which means the line is actually valid.
+        - paid_comm: it has not been taken for another commission before.
         """
         if self.baremo_policy == 'onMatrix' and \
                 self.scope != 'product_invoiced':
             raise UserError(
                 _('Baremo on Matrix only applies on Invoiced Products'))
-        # Desvincular lineas existentes, si las hubiere
         self.clear()
         if self.commission_type == 'partial_payment':
             self._prepare_based_on_payments()
@@ -1021,7 +978,6 @@ class CommissionPayment(models.Model):
     def validate(self):
         """When validate we mark explicitly the payments related to this
         commission as paid_comm.
-        :return:
         """
         self.ensure_one()
         payments = self.aml_ids.filtered('paid_comm')
@@ -1164,9 +1120,9 @@ class CommissionLines(models.Model):
             bardctdsc = commission_params['bardctdsc']
             emission_days = commission_params['emission_days']
 
-            ###############################
-            # CALCULO DE COMISION POR AML #
-            ###############################
+            ######################
+            # Actual computation #
+            ######################
 
             # Right now I have not figure out a way to know how much was taxed
             perc_iva = commission.company_id.tax
