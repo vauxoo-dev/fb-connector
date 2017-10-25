@@ -98,7 +98,7 @@
                     <button name="validate" states="open" string="Validate" type="object" class="oe_highlight"/>
                     <button name="prepare" states="open" string="Prepare" type="object"/>
                     <button name="action_draft" states="open" string="Set to Draft" type="object"/>
-                    <button name="action_draft" states="done" string="Set to Draft" type="object" groups="commission_calculation.res_groups_manager"/>
+                    <button name="action_draft_from_done" states="done" string="Set to Draft" type="object" groups="commission_calculation.res_groups_manager"/>
                     <button name="action_view_fixlines" string="Fix Commissions" attrs="{'invisible':['|',('comm_fix','=',False),('state','=','draft')]}" type="object"/>
                     <field name="state" widget="statusbar" statusbar_visible="draft,open,done" statusbar_colors='{"cancel":"red","draft":"blue"}'/>
                 </header>

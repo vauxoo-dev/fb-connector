@@ -918,7 +918,7 @@ class CommissionPayment(models.Model):
     @api.multi
     def prepare(self):
         """Prepare the commission lines and basically do 3 things:
-        
+
         - journal_id.type in ('cash', 'bank'): which means just money on banks.
         - state == 'valid' : which means the line is actually valid.
         - paid_comm: it has not been taken for another commission before.
@@ -956,10 +956,15 @@ class CommissionPayment(models.Model):
         self._post_processing()
         return True
 
+    @api.multi
+    def action_draft_from_done(self):
+        self.aml_ids.write({'paid_comm': False})
+        self.action_draft()
+
+    @api.multi
     def action_draft(self):
         self.clear()
         self.write({'state': 'draft', 'total': 0.0})
-        self.aml_ids.write({'paid_comm': False})
         return True
 
     def clear(self):
