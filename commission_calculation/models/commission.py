@@ -170,7 +170,7 @@ class CommissionPayment(models.Model):
         # compute the number of payments to display
         cl_ids = self.line_ids.filtered(lambda line: not line.salesman_id)._ids
         # choose the view_mode accordingly
-        result['domain'] = "[('id','in',%s)]" % cl_ids
+        result['domain'] = [('id','in', cl_ids)]
         result['name'] = result['display_name'] = 'Fix commissions'
         return result
 
