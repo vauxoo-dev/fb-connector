@@ -7,8 +7,6 @@ commission_lines_user,commission.lines.user,model_commission_lines,commission_ca
 commission_lines_manager,commission.lines.manager,model_commission_lines,commission_calculation.res_groups_manager,1,1,1,1
 commission_salesman_user,commission.salesman.user,model_commission_salesman,commission_calculation.res_groups_user,1,0,0,0
 commission_salesman_manager,commission.salesman.manager,model_commission_salesman,commission_calculation.res_groups_manager,1,1,1,1
-commission_invoice_user,commission.invoice.user,model_commission_invoice,commission_calculation.res_groups_user,1,0,0,0
-commission_invoice_manager,commission.invoice.manager,model_commission_invoice,commission_calculation.res_groups_manager,1,1,1,1
 baremo_user,baremo,model_baremo_line,commission_calculation.res_groups_user,1,0,0,0
 baremo_discount_user,baremo.discount,model_baremo_discount,commission_calculation.res_groups_user,1,0,0,0
 baremo_book_user,baremo.book,model_baremo_book,commission_calculation.res_groups_user,1,0,0,0

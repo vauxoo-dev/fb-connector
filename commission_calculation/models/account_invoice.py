@@ -32,5 +32,6 @@ class AccountInvoice(models.Model):
                 invoice._date_last_payment()
 
     date_last_payment = fields.Date(
+        store=True,
         compute='_compute_date_last_payment',
         string='Last Payment Date')

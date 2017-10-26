@@ -115,7 +115,7 @@ class CommissionAbstract(models.AbstractModel):
         ('onAccountingPartner', 'Commercial Entity'),
         ('onUser', 'Salespeople'),
         ('onMatrix', 'Baremo Matrix'),
-        ('onCommission', 'Document')],
+        ('onCommission', 'This Document')],
         default='onCompany', string='Baremo Policy', track_visibility='onchange',
         help="- Company: use the baremo configured in the company.\n"
         "- Partner: Use the baremo by partner, ie the baremo "
@@ -125,7 +125,7 @@ class CommissionAbstract(models.AbstractModel):
         "- Vendor: Use the baremo set up for the seller.\n"
         "- Baremo matrix: Use the baremo specified. When it comes "
         "to paying commissions on product lines.\n"
-        "- Document: Select a baremo by hand for everything\n")
+        "- This Document: Select a baremo by hand for everything\n")
 
     baremo_id = fields.Many2one(
         'baremo.book', required=True, track_visibility='onchange')
