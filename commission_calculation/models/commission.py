@@ -170,7 +170,7 @@ class CommissionPayment(models.Model):
         # compute the number of payments to display
         cl_ids = self.line_ids.filtered(lambda line: not line.salesman_id)._ids
         # choose the view_mode accordingly
-        result['domain'] = [('id','in', cl_ids)]
+        result['domain'] = [('id', 'in', cl_ids)]
         result['name'] = result['display_name'] = 'Fix commissions'
         return result
 
@@ -185,7 +185,7 @@ class CommissionPayment(models.Model):
         result = self.env.ref(
             'commission_calculation.action_account_moves_all_tree').read()[0]
         # choose the view_mode accordingly
-        result['domain'] = json.dumps([('id', 'in', self.aml_ids._ids)])
+        result['domain'] = [('id', 'in', self.aml_ids._ids)]
         return result
 
     @api.multi
@@ -198,7 +198,7 @@ class CommissionPayment(models.Model):
         # choose the view_mode accordingly
         invoice_ids = self.line_ids.filtered(
             lambda l: l.line_type == 'ok').mapped('invoice_id')._ids
-        result['domain'] = json.dumps([('id', 'in', invoice_ids)])
+        result['domain'] = [('id', 'in', invoice_ids)]
         return result
 
     @api.multi
