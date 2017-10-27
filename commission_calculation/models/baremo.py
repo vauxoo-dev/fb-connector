@@ -65,10 +65,22 @@ class BaremoMatrix(models.Model):
 
     @api.constrains('user_id')
     def _check_salesman_empty(self):
+        """ A line with empty user is a general rule which
+        indicates that the rule of that product applies to all
+        salesman. This method avoids to create two o more general
+        rules apply to a same product in all baremo matrixes.
+        """
         for line in self:
-            if not line.user_id and self.search([('id', '!=', self.id), ('user_id', '=', False)]):
-                raise ValidationError(_('A line of %s already exists for all salesman.') % line.product_id.name)
+            if not line.user_id and self.search(
+                [('product_id', '!=', self.product_id.id),
+                 ('user_id', '=', False)]):
+                raise ValidationError(
+                    _('A line of %s already exists for all salesman.')
+                    % line.product_id.name)
 
+    # Just this constraints avoid create two o more rules apply to
+    # a same product and user and not take into account when the user
+    # is empty.
     _sql_constraints = [
         ('baremo_permutation_unique',
          'unique(user_id, product_id)',
