@@ -244,6 +244,23 @@ class CommissionPayment(models.Model):
         return True
 
     @api.model
+    def _get_params(self, aml):
+        res = {}
+        res['salesman'] = self._compute_salesman_policy(aml)
+        res['policy_date_start'] = \
+            self._compute_commission_policy_start_date(aml)
+        res['policy_date_end'] = \
+            self._compute_commission_policy_end_date(aml)
+        commission_policy_baremo = \
+            self._compute_commission_policy_baremo(aml)
+        commission_params = self._compute_commission_rate(
+            res['policy_date_start'],
+            res['policy_date_start'], dcto=0.0,
+            baremo=commission_policy_baremo)
+        res.update(commission_params)
+        return res
+
+    @api.model
     def _compute_commission_rate(self, payment_date, invoice_date,
                                  dcto=0.0, baremo=None):
         # Determinar dias entre la emision de la factura del producto y el pago
@@ -378,16 +395,13 @@ class CommissionPayment(models.Model):
         res = []
         prod_prices = self.env['product.historic.price']
 
-        # Retrieve Partner's Salesman
-        salesman = self._compute_salesman_policy(pay_id)
+        params = self._get_params(pay_id)
+        salesman = params['salesman']
+        policy_date_start = params['policy_date_start']
+        policy_date_end = params['policy_date_end']
+
         # If it is here it is because it has a valid invoice
         inv_rec = pay_id.rec_invoice
-
-        policy_date_start = \
-            self._compute_commission_policy_start_date(pay_id)
-
-        policy_date_end = \
-            self._compute_commission_policy_end_date(pay_id)
 
         # /!\ NOTE: Retrieve here the fallback commission baremo policy
         if self.baremo_policy != 'onMatrix':
@@ -549,36 +563,22 @@ class CommissionPayment(models.Model):
     @api.model
     def _compute_commission_payment_on_invoice(self, aml):
         res = []
-
-        # Retrieve Partner's Salesman
-        salesman = self._compute_salesman_policy(aml)
+        params = self._get_params(aml)
+        salesman = params['salesman']
+        policy_date_start = params['policy_date_start']
+        policy_date_end = params['policy_date_end']
+        bar_day = params['bar_day']
+        bar_dcto_comm = params['bar_dcto_comm']
+        bardctdsc = params['bardctdsc']
+        emission_days = params['emission_days']
 
         # If it is here it is because this actually have an invoice
         invoice = aml.rec_invoice
-
-        policy_date_start = \
-            self._compute_commission_policy_start_date(aml)
-
-        policy_date_end = \
-            self._compute_commission_policy_end_date(aml)
 
         # Get the VAT percentage (perc_iva)
         # =================================
         # =================================
         perc_iva = (invoice.amount_total / invoice.amount_untaxed - 1) * 100
-
-        commission_policy_baremo = \
-            self._compute_commission_policy_baremo(aml)
-
-        commission_params = self._compute_commission_rate(
-            policy_date_end,
-            policy_date_start, dcto=0.0,
-            baremo=commission_policy_baremo)
-
-        bar_day = commission_params['bar_day']
-        bar_dcto_comm = commission_params['bar_dcto_comm']
-        bardctdsc = commission_params['bardctdsc']
-        emission_days = commission_params['emission_days']
 
         #################################
         # Compute Commission by Invoice #
@@ -632,24 +632,14 @@ class CommissionPayment(models.Model):
 
         res = []
 
-        policy_date_start = \
-            self._compute_commission_policy_start_date(aml)
-
-        policy_date_end = \
-            self._compute_commission_policy_end_date(aml)
-
-        commission_policy_baremo = \
-            self._compute_commission_policy_baremo(aml)
-
-        commission_params = self._compute_commission_rate(
-            policy_date_end,
-            policy_date_start, dcto=0.0,
-            baremo=commission_policy_baremo)
-
-        bar_day = commission_params['bar_day']
-        bar_dcto_comm = commission_params['bar_dcto_comm']
-        bardctdsc = commission_params['bardctdsc']
-        emission_days = commission_params['emission_days']
+        params = self._get_params(aml)
+        salesman = params['salesman']
+        policy_date_start = params['policy_date_start']
+        policy_date_end = params['policy_date_end']
+        bar_day = params['bar_day']
+        bar_dcto_comm = params['bar_dcto_comm']
+        bardctdsc = params['bardctdsc']
+        emission_days = params['emission_days']
 
         res.append({
             'commission_id': self.id,
@@ -776,7 +766,6 @@ class CommissionPayment(models.Model):
         self.clear()
         self._prepare_aml()
         res = self._compute_commission_payment()
-        # /!\ NOTE: Create the commission lines
         self._create_lines(res)
         self._post_processing()
         self.write({'state': 'open'})
@@ -924,29 +913,14 @@ class CommissionLines(models.Model):
             commission = commission_line.commission_id
 
             aml = commission_line.aml_id
-            if not aml.credit:
-                return True
 
-            policy_date_start = \
-                commission._compute_commission_policy_start_date(aml)
-
-            policy_date_end = \
-                commission._compute_commission_policy_end_date(aml)
-
-            commission_policy_baremo = \
-                commission._compute_commission_policy_baremo(
-                    aml, partner_id=commission_line.partner_id,
-                    salesman_id=commission_line.salesman_id)
-
-            commission_params = commission._compute_commission_rate(
-                policy_date_end,
-                policy_date_start, dcto=0.0,
-                baremo=commission_policy_baremo)
-
-            bar_day = commission_params['bar_day']
-            bar_dcto_comm = commission_params['bar_dcto_comm']
-            bardctdsc = commission_params['bardctdsc']
-            emission_days = commission_params['emission_days']
+            params = commission._get_params(aml)
+            policy_date_start = params['policy_date_start']
+            policy_date_end = params['policy_date_end']
+            bar_day = params['bar_day']
+            bar_dcto_comm = params['bar_dcto_comm']
+            bardctdsc = params['bardctdsc']
+            emission_days = params['emission_days']
 
             ######################
             # Actual computation #
