@@ -153,9 +153,9 @@ class TestCommission(Common):
             .write({'salesman_id': salesman_id})
 
         self.commission_payment.action_recompute()
-        self.assertNotEquals(
-            self.commission_payment.total, 660,
-            'Commission should not be 660')
+        self.assertEquals(
+            self.commission_payment.total, 675,
+            'Commission should not be 675')
         self.assertEquals(
             self.commission_payment.comm_fix, False,
             'There should be no Commission to Fix')
