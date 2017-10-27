@@ -12,7 +12,6 @@
 
 from __future__ import division
 import datetime
-import json
 import logging
 
 from odoo import _, fields, models, api
@@ -376,8 +375,8 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _compute_commission_payment_on_invoice_line(self, pay_id):
+        res = []
         prod_prices = self.env['product.historic.price']
-        line_ids = self.env['commission.lines']
 
         # Retrieve Partner's Salesman
         salesman = self._compute_salesman_policy(pay_id)
@@ -487,7 +486,7 @@ class CommissionPayment(models.Model):
                 else:
                     currency_amount = comm_line
 
-                line_ids.create({
+                res.append({
                     'commission_id': self.id,
                     'aml_id': pay_id.id,
                     'am_rec': inv_rec.move_id.id,
@@ -525,7 +524,7 @@ class CommissionPayment(models.Model):
                 # If we do not have a price to compare to we mark the line to
                 #  audit what to do, no change the invoice is an important part
                 # on the process.
-                line_ids.create({
+                res.append({
                     'name': inv_lin.name,
                     'commission_id': self.id,
                     'product_id': inv_lin.product_id.id,
@@ -539,17 +538,17 @@ class CommissionPayment(models.Model):
         # prefer simply inform.
         for inv_lin in inv_rec.invoice_line_ids\
                 .filtered(lambda line: not line.product_id):
-            line_ids.create({
+            res.append({
                 'name': inv_lin.name,
                 'invoice_id': inv_rec.id,
                 'commission_id': self.id,
                 'line_type': 'no_product',
                 'aml_id': pay_id.id})
-        return True
+        return res
 
     @api.model
     def _compute_commission_payment_on_invoice(self, aml):
-        line_ids = self.env['commission.lines']
+        res = []
 
         # Retrieve Partner's Salesman
         salesman = self._compute_salesman_policy(aml)
@@ -600,7 +599,7 @@ class CommissionPayment(models.Model):
         elif aml.currency_id and not aml.amount_currency:
             return True
 
-        line_ids.create({
+        res.append({
             'commission_id': self.id,
             'aml_id': aml.id,
             'am_rec': invoice.move_id.id,
@@ -626,12 +625,12 @@ class CommissionPayment(models.Model):
             'line_type': 'ok',
         })
 
-        return True
+        return res
 
     @api.model
     def _compute_commission_payment_on_aml(self, aml):
 
-        line_ids = self.env['commission.lines']
+        res = []
 
         policy_date_start = \
             self._compute_commission_policy_start_date(aml)
@@ -652,7 +651,7 @@ class CommissionPayment(models.Model):
         bardctdsc = commission_params['bardctdsc']
         emission_days = commission_params['emission_days']
 
-        line_ids.create({
+        res.append({
             'commission_id': self.id,
             'aml_id': aml.id,
             'am_rec': aml.rec_aml.move_id.id,
@@ -678,27 +677,28 @@ class CommissionPayment(models.Model):
             'line_type': 'ok',
             })
 
-        return True
+        return res
 
     @api.model
     def _compute_commission_payment(self):
+        res = []
         salesman_aml_ids = self.aml_ids.filtered(self._check_salesman_policy)
         if self.scope == 'product_invoiced':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                self._compute_commission_payment_on_invoice_line(aml)
+                res.extend(self._compute_commission_payment_on_invoice_line(aml))
         elif self.scope == 'whole_invoice':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                self._compute_commission_payment_on_invoice(aml)
+                res.extend(self._compute_commission_payment_on_invoice(aml))
         for aml in salesman_aml_ids.filtered(lambda l: not l.rec_invoice):
-            self._compute_commission_payment_on_aml(aml)
+            res.extend(self._compute_commission_payment_on_aml(aml))
 
         if not self.unknown_salespeople:
-            return True
+            return res
         # Recording aml with unknown salesman
         for aml in self.aml_ids.filtered(
                 lambda l: not self._compute_salesman_policy(l)):
-            self._compute_commission_payment_on_aml(aml)
-        return True
+            res.extend(self._compute_commission_payment_on_aml(aml))
+        return res
 
     @api.multi
     def _post_processing(self):
@@ -757,6 +757,11 @@ class CommissionPayment(models.Model):
         return True
 
     @api.multi
+    def _create_lines(self, res):
+        self.ensure_one()
+        self.write({'line_ids': [(0, 0, l) for l in res]})
+
+    @api.multi
     def prepare(self):
         """Prepare the commission lines and basically do 3 things:
 
@@ -770,7 +775,9 @@ class CommissionPayment(models.Model):
                 _('Baremo on Matrix only applies on Invoiced Products'))
         self.clear()
         self._prepare_aml()
-        self._compute_commission_payment()
+        res = self._compute_commission_payment()
+        # /!\ NOTE: Create the commission lines
+        self._create_lines(res)
         self._post_processing()
         self.write({'state': 'open'})
         return True
@@ -909,6 +916,8 @@ class CommissionLines(models.Model):
         [('no_product', 'W/o Product'), ('no_price', 'W/o Price'),
          ('exception', 'Exception'), ('ok', 'Ok')], default='ok')
 
+    # This method can be the one we can actually use to compute the value of
+    # each line to fetch the commissions
     @api.multi
     def _recompute_commission(self):
         for commission_line in self:
