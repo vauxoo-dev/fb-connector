@@ -263,50 +263,32 @@ class CommissionPayment(models.Model):
     @api.model
     def _compute_commission_rate(self, payment_date, invoice_date,
                                  dcto=0.0, baremo=None):
-        # Determinar dias entre la emision de la factura del producto y el pago
-        # del mismo
         payment_date = datetime.datetime.strptime(payment_date, '%Y-%m-%d')
         invoice_date = datetime.datetime.strptime(invoice_date, '%Y-%m-%d')
         emission_days = (payment_date - invoice_date).days
 
-        # Teniendose dias y descuento por producto se procede a buscar en el
-        # baremo el correspondiente valor de comision para el producto en
-        # cuestion. se entra con el numero de dias
+        res = dict(
+            bar_day=0.0,
+            bar_dcto_comm=0.0,
+            bardctdsc=0.0,
+            emission_days=emission_days)
 
-        # Esta busqueda devuelve los dias ordenadados de menor a mayor dia, de
-        # acuerdo con lo estipulado que se ordenaria en el modulo baremo
         bar_day_ids = baremo.bar_ids if baremo else self.baremo_id.bar_ids
 
-        no_days = no_dcto = True
-        # Se busca que el baremo tenga un rango que cubra a emision_days
         day_id = bar_day_ids.filtered(
-            lambda day_number: emission_days <= day_number.number)[0]
-        if day_id:
-            bar_day = day_id.number
-            no_days = False
-            no_dcto = True
-            # Se busca que el baremo tenga un rango para el valor de
-            # descuento en producto
-            for dcto_id in day_id.disc_ids\
-                    .filtered(lambda disc: dcto <= disc.porc_disc):
-                bardctdsc = dcto_id.porc_disc
-                bar_dcto_comm = dcto_id.porc_com
-                no_dcto = False
+            lambda day_number: emission_days <= day_number.number)
+        if not day_id:
+            return res
 
-        if (not no_days) and no_dcto:
-            bar_dcto_comm = bardctdsc = 0.0
-        # Si emission_days no es cubierto por ningun rango del baremo diremos
-        # entonces que la comision es cero (0) %
-        elif no_days and no_dcto:
-            # Diremos que los dias de baremo es menos uno (-1) cuando los dias
-            # de emision no esten dentro del rango del baremo
-            bar_day = bardctdsc = bar_dcto_comm = 0.0
+        day_id = day_id[0]
+        dcto_id = day_id.disc_ids.filtered(lambda disc: dcto <= disc.porc_disc)
+        if not dcto_id:
+            res['bar_day'] = day_id.number
+            return res
 
-        res = dict(
-            bar_day=bar_day,
-            bar_dcto_comm=bar_dcto_comm,
-            bardctdsc=bardctdsc,
-            emission_days=emission_days)
+        res['bardctdsc'] = dcto_id[0].porc_disc
+        res['bar_dcto_comm'] = dcto_id[0].porc_com
+
         return res
 
     @api.model
@@ -633,7 +615,6 @@ class CommissionPayment(models.Model):
         res = []
 
         params = self._get_params(aml)
-        salesman = params['salesman']
         policy_date_start = params['policy_date_start']
         policy_date_end = params['policy_date_end']
         bar_day = params['bar_day']
@@ -675,7 +656,8 @@ class CommissionPayment(models.Model):
         salesman_aml_ids = self.aml_ids.filtered(self._check_salesman_policy)
         if self.scope == 'product_invoiced':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                res.extend(self._compute_commission_payment_on_invoice_line(aml))
+                res.extend(
+                    self._compute_commission_payment_on_invoice_line(aml))
         elif self.scope == 'whole_invoice':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
                 res.extend(self._compute_commission_payment_on_invoice(aml))
