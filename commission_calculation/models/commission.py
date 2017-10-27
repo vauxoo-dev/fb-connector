@@ -275,48 +275,47 @@ class CommissionPayment(models.Model):
     def _get_salesman_policy(self, pay_id):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
-        rp_obj = self.env['res.partner']
+        user = self.env['res.users']
         if self.salesman_policy == 'on_invoice':
-            return rec_invoice.user_id if rec_invoice else \
+            user = rec_invoice.user_id if rec_invoice else \
                 rec_aml.partner_id.user_id
         elif self.salesman_policy == 'on_invoiced_partner':
-            return rec_invoice.partner_id.user_id if \
+            user = rec_invoice.partner_id.user_id if \
                 rec_invoice else rec_aml.partner_id.user_id
         elif self.salesman_policy == 'on_accounting_partner':
             partner = rec_invoice.partner_id if \
                 rec_invoice else rec_aml.partner_id
-            return rp_obj._find_accounting_partner(partner).user_id
-        return self.env['res.users']
+            user = partner.commercial_entity_partner.user_id
+        return user
 
     @api.model
     def _get_policy_baremo(
             self, pay_id, partner_id=None, product_id=None, salesman_id=None):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
-        rp_obj = self.env['res.partner']
+        baremo = self.env['baremo.book']
         if self.baremo_policy == 'onCompany':
-            return self.company_id.partner_id.baremo_id
+            baremo = self.company_id.partner_id.baremo_id
         elif self.baremo_policy == 'onPartner':
             partner_id = partner_id if partner_id else \
                 (rec_invoice.partner_id if rec_invoice else rec_aml.partner_id)
-            return partner_id.baremo_id
+            baremo = partner_id.baremo_id
         elif self.baremo_policy == 'onAccountingPartner':
             partner_id = partner_id if partner_id else \
                 (rec_invoice.partner_id if rec_invoice else rec_aml.partner_id)
-            partner_id = rp_obj._find_accounting_partner(partner_id)
-            return partner_id.baremo_id
+            baremo = partner_id.commercial_entity_partner.baremo_id
         elif self.baremo_policy == 'onUser':
-            return salesman_id.partner_id.baremo_id
+            baremo = salesman_id.partner_id.baremo_id
         elif self.baremo_policy == 'onCommission':
-            return self.baremo_id
+            baremo = self.baremo_id
         elif self.baremo_policy == 'onMatrix':
-            if not product_id:
-                return self.baremo_id
-            baremo = self.env['baremo.matrix'].search([
-                ('product_id', '=', product_id.id), '|',
-                ('user_id', '=', salesman_id.id),
-                ('user_id', '=', False)], order="user_id desc", limit=1)
-            return baremo.baremo_id or self.baremo_id
+            bm_obj = self.env['baremo.matrix']
+            domain = [('product_id', '=', product_id.id), '|',
+                      ('user_id', '=', salesman_id.id),
+                      ('user_id', '=', False)]
+            baremo = bm_obj.search(domain, order="user_id desc", limit=1)
+            baremo = baremo.baremo_id or self.baremo_id
+        return baremo
 
     @api.model
     def _get_discount_on_invoice_line(self, inv_lin):
