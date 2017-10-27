@@ -150,8 +150,6 @@
                             <field name="currency_id" groups="base.group_multi_currency"/>
                             <field name="comm_fix" invisible="1"/>
                             <field name="user_ids" options="{'no_create': True}" colspan="2" widget="many2many_tags"/>
-                            <newline/>
-                            <field name="unknown_salespeople"/>
                         </group>
                     </group>
                 </sheet>

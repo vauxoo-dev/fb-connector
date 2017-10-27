@@ -132,11 +132,6 @@ class CommissionPayment(models.Model):
 
     comm_fix = fields.Boolean('Fix Commissions?')
 
-    unknown_salespeople = fields.Boolean(
-        help="If true then if the salespeople in the record does not have a "
-             "clear sales person set then this will be computed as unknown if "
-             "False then this lines will not be included in the computation")
-
     @api.multi
     def action_view_fixlines(self):
         """This function returns an action that display existing Commissions of
@@ -213,10 +208,8 @@ class CommissionPayment(models.Model):
                         l.account_id.internal_type == 'receivable' and
                         not l.paid_comm)
             salesman_aml_ids = aml_ids.filtered(self._check_salesman_policy)
-            unknown_aml_ids = aml_obj
-            if self.unknown_salespeople:
-                unknown_aml_ids = aml_ids.filtered(
-                    lambda l: not self._get_salesman_policy(l))
+            unknown_aml_ids = aml_ids.filtered(
+                lambda l: not self._get_salesman_policy(l))
             aml_ids = salesman_aml_ids + unknown_aml_ids
             comm_rec.write({
                 'aml_ids': [(6, comm_rec.id, aml_ids._ids)]})
@@ -461,8 +454,6 @@ class CommissionPayment(models.Model):
         for aml in salesman_aml_ids.filtered(lambda l: not l.rec_invoice):
             res.append(self._get_payment_on_aml(aml))
 
-        if not self.unknown_salespeople:
-            return res
         # Recording aml with unknown salesman
         for aml in self.aml_ids.filtered(
                 lambda l: not self._get_salesman_policy(l)):
@@ -571,7 +562,8 @@ class CommissionPayment(models.Model):
     @api.multi
     def action_draft(self):
         self.clear()
-        self.write({'state': 'draft', 'total': 0.0})
+        self.write({'state': 'draft', 'total': 0.0,
+                    'comm_fix': False})
         return True
 
     @api.multi

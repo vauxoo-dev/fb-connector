@@ -11,8 +11,6 @@ class TestCommission(Common):
     """
 
     def setUp(self):
-        """basic method to define some basic data to be re use in all test cases.
-        """
         super(TestCommission, self).setUp()
         self.cp_model = self.env['commission.payment']
         self.php_model = self.env['product.historic.price']
@@ -33,7 +31,8 @@ class TestCommission(Common):
         self.invoice_1.pay_and_reconcile(self.journal_bank_id,
                                          self.invoice_1.amount_total)
 
-        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
+        self.commission_payment = self.env.ref(
+            'commission_calculation.commission_payment_01')
 
         date_last_payment = self.invoice_1.date_last_payment
         date_last_payment = datetime.strptime(date_last_payment, "%Y-%m-%d")
@@ -103,13 +102,13 @@ class TestCommission(Common):
 
         self.assertEquals(len(self.commission_payment.salesman_ids) > 0, True,
                           'There should be at least one computation')
-        for commission in self.commission_payment.salesman_ids:
-            if not commission.salesman_id:
-                continue
-            self.assertEquals(commission.salesman_id, demo_id,
-                              'Salesman shall be "Demo User"')
-            self.assertEquals(commission.total, 660.00,
-                              'Wrong Quantity on commission')
+
+        commissions = self.commission_payment.salesman_ids\
+            .filtered('salesman_id')
+        self.assertEquals(commissions.mapped('salesman_id'), demo_id,
+                          'Salesman shall be "Demo User"')
+        self.assertEquals(commissions.mapped('total'), [660.00],
+                          'Wrong Quantity on commission')
 
         self.commission_payment.validate()
         self.assertEquals(
@@ -124,7 +123,8 @@ class TestCommission(Common):
         return True
 
     def test_fix_commission(self):
-        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
+        self.commission_payment = self.env.ref(
+            'commission_calculation.commission_payment_01')
 
         self.invoice_2.action_invoice_open()
         self.invoice_2.date_due = self.invoice_2.date_invoice
@@ -133,11 +133,11 @@ class TestCommission(Common):
         self.assertEquals(
             self.commission_payment.total, 660,
             'Commission should be 660')
-        self.commission_payment.action_draft()
         self.assertEquals(
             self.commission_payment.comm_fix, False,
             'There should be no Commission to Fix')
-        self.commission_payment.unknown_salespeople = True
+        self.commission_payment.action_draft_from_done()
+
         self.commission_payment.prepare()
         self.commission_payment.action_view_fixlines()
         self.assertEquals(
@@ -147,15 +147,10 @@ class TestCommission(Common):
             self.commission_payment.total, 660,
             'Commission should not be 660')
 
-        no_salesman = [
-            comm
-            for comm in self.commission_payment.line_ids
-            if not comm.salesman_id
-        ]
-
         salesman_id = self.ref('base.user_demo')
-        for commission_line in no_salesman:
-            commission_line.salesman_id = salesman_id
+        self.commission_payment.line_ids\
+            .filtered(lambda line: not line.salesman_id)\
+            .write({'salesman_id': salesman_id})
 
         self.commission_payment.action_recompute()
         self.assertNotEquals(
@@ -176,10 +171,10 @@ class TestCommission(Common):
         self.commission_payment.action_draft()
 
         month = str((date.today().month % 12) + 1)
-        self.commission_payment.date_start = time.strftime('%Y') + '-' + month + '-01'
-        self.commission_payment.date_stop = time.strftime('%Y') + '-' + month + '-28'
-
-        self.commission_payment.unknown_salespeople = True
+        self.commission_payment.date_start = \
+            time.strftime('%Y') + '-' + month + '-01'
+        self.commission_payment.date_stop = \
+            time.strftime('%Y') + '-' + month + '-28'
 
         aml_ids = self.aml_rec_debit + self.aml_rec_credit
         aml_ids.reconcile()
@@ -193,17 +188,10 @@ class TestCommission(Common):
             self.commission_payment.total, 0,
             'Commission should be 0')
 
-        no_salesman = [
-            comm
-            for comm in self.commission_payment.line_ids
-            if not comm.salesman_id
-        ]
-
         salesman_id = self.ref('base.user_demo')
-        partner_id = self.ref('base.res_partner_12')
-        for commission_line in no_salesman:
-            commission_line.salesman_id = salesman_id
-            commission_line.partner_id = partner_id
+        self.commission_payment.line_ids\
+            .filtered(lambda line: not line.salesman_id)\
+            .write({'salesman_id': salesman_id})
 
         self.commission_payment.action_recompute()
 
@@ -233,7 +221,8 @@ class TestCommission(Common):
             'There should historical prices on product %s' %
             product.name)
 
-        self.commission_payment = self.env.ref('commission_calculation.commission_payment_01')
+        self.commission_payment = self.env.ref(
+            'commission_calculation.commission_payment_01')
 
         self.commission_payment.action_draft()
         self.assertEquals(
@@ -267,7 +256,8 @@ class TestCommission(Common):
         return True
 
     def test_matrix_commission(self):
-        self.commission_payment_2 = self.env.ref('commission_calculation.commission_payment_02')
+        self.commission_payment_2 = self.env.ref(
+            'commission_calculation.commission_payment_02')
 
         self.invoice_2.action_invoice_open()
         self.invoice_2.pay_and_reconcile(self.journal_bank_id)
