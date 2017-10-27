@@ -149,6 +149,35 @@ class TestCommission(Common):
         self.assertEquals(self.commission_payment.scope,
                           'product_invoiced')
 
+    def test_policy_baremo(self):
+        self.commission_payment = self.env.ref(
+            'commission_calculation.commission_payment_01')
+        self.commission_payment_2 = self.env.ref(
+            'commission_calculation.commission_payment_02')
+        baremo_1 = self.env.ref('commission_calculation.baremo_book_01')
+        baremo_2 = self.env.ref('commission_calculation.baremo_book_02')
+        main_partner = self.env.ref('base.main_company').partner_id
+
+        # onCompany
+        self.commission_payment.baremo_policy = 'onCompany'
+        self.commission_payment.prepare()
+
+        # onPartner
+        self.commission_payment.write({'baremo_policy': 'onPartner'})
+        self.commission_payment.prepare()
+
+        # onAccountingPartner
+        self.commission_payment.write({'baremo_policy': 'onAccountingPartner'})
+        self.commission_payment.prepare()
+
+        # onUser
+        self.commission_payment_2.write({'baremo_policy': 'onUser'})
+        self.commission_payment_2.prepare()
+
+        # onCommission
+        self.commission_payment.write({'baremo_policy': 'onCommission'})
+        self.commission_payment.prepare()
+
     def test_fix_commission(self):
         self.commission_payment = self.env.ref(
             'commission_calculation.commission_payment_01')

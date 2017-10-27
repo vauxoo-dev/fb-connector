@@ -285,7 +285,7 @@ class CommissionPayment(models.Model):
         elif self.salesman_policy == 'on_accounting_partner':
             partner = rec_invoice.partner_id if \
                 rec_invoice else rec_aml.partner_id
-            user = partner.commercial_entity_partner.user_id
+            user = partner.commercial_partner_id.user_id
         return user
 
     @api.model
@@ -301,9 +301,8 @@ class CommissionPayment(models.Model):
                 (rec_invoice.partner_id if rec_invoice else rec_aml.partner_id)
             baremo = partner_id.baremo_id
         elif self.baremo_policy == 'onAccountingPartner':
-            partner_id = partner_id if partner_id else \
-                (rec_invoice.partner_id if rec_invoice else rec_aml.partner_id)
-            baremo = partner_id.commercial_entity_partner.baremo_id
+            partner_id = partner_id if partner_id else rec_aml.partner_id
+            baremo = partner_id.commercial_partner_id.baremo_id
         elif self.baremo_policy == 'onUser':
             baremo = salesman_id.partner_id.baremo_id
         elif self.baremo_policy == 'onCommission':
