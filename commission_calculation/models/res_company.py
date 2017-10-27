@@ -20,22 +20,7 @@ class ResCompany(models.Model):
 
     tax = fields.Float('Default Tax for Commissions')
 
-    @api.depends('partner_id')
-    def _compute_baremo_data(self):
-        """ Read the 'baremo_id' functional field. """
-        for company in self:
-            if company.partner_id:
-                company.baremo_id = company.partner_id.baremo_id
-
-    @api.multi
-    def _inverse_baremo_data(self):
-        """ Write the 'baremo_id' functional field. """
-        for company in self:
-            if company.partner_id:
-                company.partner_id.write({'baremo_id': company.baremo_id.id})
-
     baremo_id = fields.Many2one(
         'baremo.book',
-        compute='_compute_baremo_data',
-        inverse='_inverse_baremo_data',
+        related='partner_id.baremo_id',
         string="Baremo")
