@@ -122,6 +122,33 @@ class TestCommission(Common):
 
         return True
 
+    def test_template_commission(self):
+        self.commission_payment = self.env.ref(
+            'commission_calculation.commission_payment_01')
+        baremo_1 = self.env.ref(
+            'commission_calculation.baremo_book_01')
+
+        template_obj = self.env['commission.template']
+        template = template_obj.create({
+            'name': 'Test 1',
+            'commission_type': 'partial_payment',
+            'scope': 'product_invoiced',
+            'policy_date_start': 'invoice_due_date',
+            'policy_date_end': 'date_on_payment',
+            'salesman_policy': 'on_accounting_partner',
+            'baremo_policy': 'onUser',
+            'baremo_id': baremo_1.id,
+        })
+
+        self.assertEquals(self.commission_payment.commission_type,
+                          'fully_paid_invoice')
+        self.commission_payment.template_id = template
+        self.commission_payment._onchange_commission_template()
+        self.assertEquals(self.commission_payment.commission_type,
+                          'partial_payment')
+        self.assertEquals(self.commission_payment.scope,
+                          'product_invoiced')
+
     def test_fix_commission(self):
         self.commission_payment = self.env.ref(
             'commission_calculation.commission_payment_01')
