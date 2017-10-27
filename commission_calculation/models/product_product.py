@@ -36,23 +36,6 @@ class ProductProduct(models.Model):
         help='Historical changes '
         'of the sale price of '
         'this product')
-    cost_historical_ids = fields.One2many(
-        'product.price.history',
-        'product_id',
-        'Historical Cost',
-        help='Historical changes '
-        'in the cost of this product')
-
-    @api.depends('standard_price')
-    def _get_historical_cost(self):
-        for product in self.filtered(lambda a: a.standard_price != a.cost_historical):
-            product.cost_historical = product.standard_price
-
-    cost_historical = fields.Float(
-        compute=_get_historical_cost,
-        string=' Latest Cost',
-        digits=dp.get_precision('Cost_Historical'),
-        help="Latest Recorded Historical Cost")
 
     matrix_ids = fields.One2many(
         'baremo.matrix', 'product_id',

@@ -32,16 +32,6 @@
             <xpath expr="//page[last()]" position="after">
                 <page string="Commisions" groups="commission_calculation.res_groups_manager">
                     <group string="Historical Cost and Price" groups="base.group_no_one">
-                        <group string="Costs" name="costs">
-                            <field name="cost_historical"/>
-                            <newline/>
-                            <field name="cost_historical_ids" nolabel="1" colspan="3">
-                                <tree>
-                                    <field name="datetime"/>
-                                    <field name="cost"/>
-                                </tree>
-                            </field>
-                        </group>
                         <group string="Prices" name="prices">
                             <field name="list_price_historical"/>
                             <newline/>
