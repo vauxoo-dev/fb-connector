@@ -143,7 +143,7 @@ class TestCommission(Common):
         self.assertEquals(self.commission_payment.commission_type,
                           'fully_paid_invoice')
         self.commission_payment.template_id = template
-        self.commission_payment._onchange_commission_template()
+        self.commission_payment._onchange_template()
         self.assertEquals(self.commission_payment.commission_type,
                           'partial_payment')
         self.assertEquals(self.commission_payment.scope,
