@@ -14,7 +14,7 @@
                     <field name="date_last_payment"/>
                 </xpath>
                 <xpath expr="//field[@name='blocked']" position="after">
-                    <field name="paid_comm"/>
+                    <field name="paid_comm" readonly="1"/>
                 </xpath>
             </field>
         </record>
