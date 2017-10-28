@@ -244,14 +244,17 @@ class CommissionPayment(models.Model):
         return True
 
     @api.model
-    def _get_params(self, aml):
+    def _get_params(
+            self, aml, dcto=0.0, partner_id=None, product_id=None):
         res = {}
         res['salesman'] = self._get_salesman_policy(aml)
         res['policy_date_start'] = self._get_policy_start_date(aml)
         res['policy_date_end'] = self._get_policy_end_date(aml)
-        policy_baremo = self._get_policy_baremo(aml)
+        policy_baremo = self._get_policy_baremo(
+            aml, partner_id=partner_id, product_id=product_id,
+            salesman_id=res['salesman'])
         params = self._get_rate(
-            res['policy_date_start'], res['policy_date_start'], dcto=0.0,
+            res['policy_date_start'], res['policy_date_start'], dcto=dcto,
             baremo=policy_baremo)
         res.update(params)
         return res
@@ -338,17 +341,8 @@ class CommissionPayment(models.Model):
         return self.env['res.users']
 
     @api.model
-    def _get_matrix_policy(self, product_id, salesman_id):
-        bm_obj = self.env['baremo.matrix']
-        domain = [('product_id', '=', product_id.id), '|',
-                  ('user_id', '=', salesman_id.id),
-                  ('user_id', '=', False)]
-        baremo = bm_obj.search(domain, order="user_id desc", limit=1)
-        return baremo.baremo_id or self.baremo_id
-
-    @api.model
     def _get_policy_baremo(
-            self, pay_id, partner_id=None, salesman_id=None):
+            self, pay_id, partner_id=None, product_id=None, salesman_id=None):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
         rp_obj = self.env['res.partner']
@@ -367,24 +361,21 @@ class CommissionPayment(models.Model):
             return salesman_id.partner_id.baremo_id
         elif self.baremo_policy == 'onCommission':
             return self.baremo_id
+        elif self.baremo_policy == 'onMatrix':
+            bm_obj = self.env['baremo.matrix']
+            domain = [('product_id', '=', product_id.id), '|',
+                      ('user_id', '=', salesman_id.id),
+                      ('user_id', '=', False)]
+            baremo = bm_obj.search(domain, order="user_id desc", limit=1)
+            return baremo.baremo_id or self.baremo_id
 
     @api.model
     def _get_payment_on_invoice_line(self, pay_id):
         res = []
         prod_prices = self.env['product.historic.price']
 
-        params = self._get_params(pay_id)
-        salesman = params['salesman']
-        policy_date_start = params['policy_date_start']
-        policy_date_end = params['policy_date_end']
-
         # If it is here it is because it has a valid invoice
         inv_rec = pay_id.rec_invoice
-
-        # /!\ NOTE: Retrieve here the fallback commission baremo policy
-        if self.baremo_policy != 'onMatrix':
-            policy_baremo = self._get_policy_baremo(
-                pay_id, salesman_id=salesman)
 
         # Revision de cada linea de factura (productos)
         # Verificar si tiene producto asociado
@@ -434,18 +425,11 @@ class CommissionPayment(models.Model):
                 dcto = round((list_price - price_unit) * 100 / list_price, 1) \
                     if list_price else 0.0
 
-                if self.baremo_policy == 'onMatrix':
-                    policy_baremo = \
-                        self._get_matrix_policy(
-                            inv_lin.product_id, salesman)
-
-                # CHECK: If no commission policy is passed why it retrieves
-                # values
-                params = self._get_rate(
-                    policy_date_end,
-                    policy_date_start, dcto=0.0,
-                    baremo=policy_baremo)
-
+                params = self._get_params(
+                    pay_id, dcto=dcto, product_id=inv_lin.product_id)
+                salesman = params['salesman']
+                policy_date_start = params['policy_date_start']
+                policy_date_end = params['policy_date_end']
                 bar_day = params['bar_day']
                 bar_dcto_comm = params['bar_dcto_comm']
                 bardctdsc = params['bardctdsc']
