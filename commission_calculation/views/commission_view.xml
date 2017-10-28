@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <odoo>
-    <record model="ir.actions.act_window" id="commission_salesman_all_act">
+    <record model="ir.actions.act_window" id="salesman_all_act">
         <field name="name">Salespeople Commissions</field>
         <field name="res_model">commission.salesman</field>
         <field name="view_type">form</field>
@@ -31,7 +31,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_lines_fix_tree">
+    <record model="ir.ui.view" id="lines_fix_tree">
         <field name="name">commission.lines.fix.tree</field>
         <field name="model">commission.lines</field>
         <field name="priority">20</field>
@@ -58,7 +58,7 @@
                 <field name="rate_number" readonly='1'/>
                 <field name="timespan" readonly='1'/>
                 <field name="baremo" readonly='1'/>
-                <field name="commission_amount" sum="" readonly='1'/>
+                <field name="amount" sum="" readonly='1'/>
                 <field name="currency_amount" sum="" readonly='1'/>
                 <field name="currency_id" readonly='1' groups="base.group_multi_currency"/>
             </tree>
@@ -68,7 +68,7 @@
     <record model="ir.actions.act_window.view" id="comm_line_fix_act_view">
         <field name="sequence" eval="1"/>
         <field name="view_mode">tree</field>
-        <field name="view_id" ref="commission_lines_fix_tree"/>
+        <field name="view_id" ref="lines_fix_tree"/>
         <field name="act_window_id" ref="comm_line_fix_act"/>
     </record>
 
@@ -88,7 +88,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_payment_form">
+    <record model="ir.ui.view" id="payment_form">
         <field name="name">commission.payment.form</field>
         <field name="model">commission.payment</field>
         <field name="arch" type="xml">
@@ -104,7 +104,7 @@
                 </header>
                 <sheet>
                     <div class="oe_button_box" name="buttons">
-                        <button string="By Salesman" class="oe_stat_button" type="action" name="%(commission_calculation.commission_salesman_all_act)d" attrs="{'invisible':[('state','=','draft')]}" icon="fa-strikethrough"></button>
+                        <button string="By Salesman" class="oe_stat_button" type="action" name="%(commission_calculation.salesman_all_act)d" attrs="{'invisible':[('state','=','draft')]}" icon="fa-strikethrough"></button>
                         <button string="Commissions" class="oe_stat_button" type="action" name="%(commission_calculation.comm_line_invoice_ids_all_act)d"  icon="fa-strikethrough"></button>
                         <button string="View Invoices" class="oe_stat_button" type="object" name="action_view_invoice" attrs="{'invisible':[('state','=','draft')]}" icon="fa-book"></button>
                         <button string="View Payments" class="oe_stat_button" type="object" name="action_view_payment" attrs="{'invisible':[('state','=','draft')]}" icon="fa-money"></button>
@@ -164,7 +164,7 @@
         </field>
     </record>
 
-    <record id="commission_payment_tree" model="ir.ui.view">
+    <record id="payment_tree" model="ir.ui.view">
         <field name="name">commission.payment.tree</field>
         <field name="model">commission.payment</field>
         <field name="arch" type="xml">
@@ -178,14 +178,14 @@
         </field>
     </record>
 
-    <record id="commission_payment_action" model="ir.actions.act_window">
+    <record id="payment_action" model="ir.actions.act_window">
         <field name="name">Commissions</field>
         <field name="res_model">commission.payment</field>
         <field name="view_type">form</field>
         <field name="view_mode">tree,form</field>
     </record>
 
-    <record model="ir.ui.view" id="commission_salesman_graph">
+    <record model="ir.ui.view" id="salesman_graph">
         <field name="name">commission.salesman.graph</field>
         <field name="model">commission.salesman</field>
         <field name="arch" type="xml">
@@ -196,7 +196,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_salesman_tree">
+    <record model="ir.ui.view" id="salesman_tree">
         <field name="name">commission.salesman.tree</field>
         <field name="model">commission.salesman</field>
         <field name="arch" type="xml">
@@ -209,7 +209,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_salesman_form">
+    <record model="ir.ui.view" id="salesman_form">
         <field name="name">commission.salesman.form</field>
         <field name="model">commission.salesman</field>
         <field name="arch" type="xml">
@@ -243,7 +243,7 @@
                         <field name="rate_number" readonly='1'/>
                         <field name="timespan" readonly='1'/>
                         <field name="baremo" readonly='1'/>
-                        <field name="commission_amount" sum="" readonly='1'/>
+                        <field name="amount" sum="" readonly='1'/>
                         <field name="currency_amount" sum="" readonly='1'/>
                         <field name="currency_id" readonly='1' groups="base.group_multi_currency"/>
                     </tree>
@@ -252,7 +252,7 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_lines_search">
+    <record model="ir.ui.view" id="lines_search">
         <field name="name">commission.lines.search</field>
         <field name="model">commission.lines</field>
         <field name="arch" type="xml">
@@ -270,18 +270,18 @@
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_lines_graph">
+    <record model="ir.ui.view" id="lines_graph">
         <field name="name">commission.lines.graph</field>
         <field name="model">commission.lines</field>
         <field name="arch" type="xml">
             <graph string="Comisiones x Producto" type="bar">
                 <field name="days"/>
-                <field name="commission_amount" operator="+"/>
+                <field name="amount" operator="+"/>
             </graph>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_lines_tree">
+    <record model="ir.ui.view" id="lines_tree">
         <field name="name">commission.lines.tree</field>
         <field name="model">commission.lines</field>
         <field name="arch" type="xml">
@@ -308,20 +308,20 @@
                 <field name="timespan"/>
                 <field name="baremo"/>
                 <field name="perc_iva"/>
-                <field name="commission_amount"/>
+                <field name="amount"/>
                 <field name="currency_amount"/>
                 <field name="currency_id" groups="base.group_multi_currency"/>
             </tree>
         </field>
     </record>
 
-    <record model="ir.ui.view" id="commission_lines_form">
+    <record model="ir.ui.view" id="lines_form">
         <field name="name">commission.lines.form</field>
         <field name="model">commission.lines</field>
         <field name="arch" type="xml">
             <form string="Pago de Comisiones">
                 <field name="salesman_id"/>
-                <field name="commission_amount"/>
+                <field name="amount"/>
             </form>
         </field>
     </record>

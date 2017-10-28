@@ -43,7 +43,7 @@ class CommissionPayment(models.Model):
     _inherit = ['mail.thread', 'mail.activity.mixin', 'commission.abstract']
 
     @api.onchange("template_id")
-    def _onchange_commission_template(self):
+    def _onchange_template(self):
         if self.template_id:
             self.commission_type = self.template_id.commission_type
             self.scope = self.template_id.scope
@@ -247,22 +247,18 @@ class CommissionPayment(models.Model):
     def _get_params(self, aml):
         res = {}
         res['salesman'] = self._compute_salesman_policy(aml)
-        res['policy_date_start'] = \
-            self._compute_commission_policy_start_date(aml)
-        res['policy_date_end'] = \
-            self._compute_commission_policy_end_date(aml)
-        commission_policy_baremo = \
-            self._compute_commission_policy_baremo(aml)
-        commission_params = self._compute_commission_rate(
-            res['policy_date_start'],
-            res['policy_date_start'], dcto=0.0,
-            baremo=commission_policy_baremo)
-        res.update(commission_params)
+        res['policy_date_start'] = self._compute_policy_start_date(aml)
+        res['policy_date_end'] = self._compute_policy_end_date(aml)
+        policy_baremo = self._compute_policy_baremo(aml)
+        params = self._compute_rate(
+            res['policy_date_start'], res['policy_date_start'], dcto=0.0,
+            baremo=policy_baremo)
+        res.update(params)
         return res
 
     @api.model
-    def _compute_commission_rate(self, payment_date, invoice_date,
-                                 dcto=0.0, baremo=None):
+    def _compute_rate(
+            self, payment_date, invoice_date, dcto=0.0, baremo=None):
         payment_date = datetime.datetime.strptime(payment_date, '%Y-%m-%d')
         invoice_date = datetime.datetime.strptime(invoice_date, '%Y-%m-%d')
         emission_days = (payment_date - invoice_date).days
@@ -292,7 +288,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_commission_policy_start_date(self, pay_id):
+    def _compute_policy_start_date(self, pay_id):
         comm_rec = self
         aml_rec = pay_id.matched_debit_ids.debit_move_id.filtered(
             lambda a: a.journal_id.type == 'sale')
@@ -305,7 +301,7 @@ class CommissionPayment(models.Model):
         return min(l[date_field] for l in aml_rec)
 
     @api.model
-    def _compute_commission_policy_end_date(self, pay_id):
+    def _compute_policy_end_date(self, pay_id):
         date = pay_id.date
         if self.policy_date_end == 'last_payment_date':
             date = pay_id.matched_debit_ids.debit_move_id.filtered(
@@ -316,10 +312,10 @@ class CommissionPayment(models.Model):
     @api.model
     def _check_salesman_policy(self, aml):
         salesman = self._compute_salesman_policy(aml)
-        return self._compute_commission_saleman(salesman)
+        return self._compute_saleman(salesman)
 
     @api.model
-    def _compute_commission_saleman(self, salesman):
+    def _compute_saleman(self, salesman):
         if not salesman or (salesman not in self.user_ids):
             return False
         return True
@@ -342,7 +338,7 @@ class CommissionPayment(models.Model):
         return self.env['res.users']
 
     @api.model
-    def _compute_commission_matrix_policy(self, product_id, salesman_id):
+    def _compute_matrix_policy(self, product_id, salesman_id):
         bm_obj = self.env['baremo.matrix']
         domain = [('product_id', '=', product_id.id), '|',
                   ('user_id', '=', salesman_id.id),
@@ -351,8 +347,8 @@ class CommissionPayment(models.Model):
         return baremo.baremo_id or self.baremo_id
 
     @api.model
-    def _compute_commission_policy_baremo(self, pay_id, partner_id=None,
-                                          salesman_id=None):
+    def _compute_policy_baremo(
+            self, pay_id, partner_id=None, salesman_id=None):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
         rp_obj = self.env['res.partner']
@@ -373,7 +369,7 @@ class CommissionPayment(models.Model):
             return self.baremo_id
 
     @api.model
-    def _compute_commission_payment_on_invoice_line(self, pay_id):
+    def _compute_payment_on_invoice_line(self, pay_id):
         res = []
         prod_prices = self.env['product.historic.price']
 
@@ -387,9 +383,8 @@ class CommissionPayment(models.Model):
 
         # /!\ NOTE: Retrieve here the fallback commission baremo policy
         if self.baremo_policy != 'onMatrix':
-            commission_policy_baremo = \
-                self._compute_commission_policy_baremo(pay_id,
-                                                       salesman_id=salesman)
+            policy_baremo = self._compute_policy_baremo(
+                pay_id, salesman_id=salesman)
 
         # Revision de cada linea de factura (productos)
         # Verificar si tiene producto asociado
@@ -440,21 +435,21 @@ class CommissionPayment(models.Model):
                     if list_price else 0.0
 
                 if self.baremo_policy == 'onMatrix':
-                    commission_policy_baremo = \
-                        self._compute_commission_matrix_policy(
+                    policy_baremo = \
+                        self._compute_matrix_policy(
                             inv_lin.product_id, salesman)
 
                 # CHECK: If no commission policy is passed why it retrieves
                 # values
-                commission_params = self._compute_commission_rate(
+                params = self._compute_rate(
                     policy_date_end,
                     policy_date_start, dcto=0.0,
-                    baremo=commission_policy_baremo)
+                    baremo=policy_baremo)
 
-                bar_day = commission_params['bar_day']
-                bar_dcto_comm = commission_params['bar_dcto_comm']
-                bardctdsc = commission_params['bardctdsc']
-                emission_days = commission_params['emission_days']
+                bar_day = params['bar_day']
+                bar_dcto_comm = params['bar_dcto_comm']
+                bardctdsc = params['bardctdsc']
+                emission_days = params['emission_days']
 
                 ###############################
                 # Computation by product_line #
@@ -509,7 +504,7 @@ class CommissionPayment(models.Model):
                     'rate_number': bardctdsc,
                     'timespan': bar_day,
                     'baremo': bar_dcto_comm,
-                    'commission_amount': comm_line,
+                    'amount': comm_line,
                     'currency_amount': currency_amount,
                     'currency_id': inv_rec.currency_id and
                     inv_rec.currency_id.id or
@@ -543,7 +538,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_commission_payment_on_invoice(self, aml):
+    def _compute_payment_on_invoice(self, aml):
         res = []
         params = self._get_params(aml)
         salesman = params['salesman']
@@ -600,7 +595,7 @@ class CommissionPayment(models.Model):
             'rate_number': bardctdsc,
             'timespan': bar_day,
             'baremo': bar_dcto_comm,
-            'commission_amount': comm_line,
+            'amount': comm_line,
             'currency_amount': currency_amount,
             'currency_id': invoice.currency_id and
             invoice.currency_id.id or invoice.company_id.currency_id.id,
@@ -610,7 +605,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_commission_payment_on_aml(self, aml):
+    def _compute_payment_on_aml(self, aml):
 
         res = []
 
@@ -641,7 +636,7 @@ class CommissionPayment(models.Model):
             'rate_number': bardctdsc,
             'timespan': bar_day,
             'baremo': bar_dcto_comm,
-            'commission_amount': 0.0,
+            'amount': 0.0,
             'currency_amount': None,
             'currency_id': aml.currency_id and
             aml.currency_id.id or aml.company_id.currency_id.id,
@@ -651,25 +646,25 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_commission_payment(self):
+    def _compute_payment(self):
         res = []
         salesman_aml_ids = self.aml_ids.filtered(self._check_salesman_policy)
         if self.scope == 'product_invoiced':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
                 res.extend(
-                    self._compute_commission_payment_on_invoice_line(aml))
+                    self._compute_payment_on_invoice_line(aml))
         elif self.scope == 'whole_invoice':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                res.extend(self._compute_commission_payment_on_invoice(aml))
+                res.extend(self._compute_payment_on_invoice(aml))
         for aml in salesman_aml_ids.filtered(lambda l: not l.rec_invoice):
-            res.extend(self._compute_commission_payment_on_aml(aml))
+            res.extend(self._compute_payment_on_aml(aml))
 
         if not self.unknown_salespeople:
             return res
         # Recording aml with unknown salesman
         for aml in self.aml_ids.filtered(
                 lambda l: not self._compute_salesman_policy(l)):
-            res.extend(self._compute_commission_payment_on_aml(aml))
+            res.extend(self._compute_payment_on_aml(aml))
         return res
 
     @api.multi
@@ -679,7 +674,7 @@ class CommissionPayment(models.Model):
 
         # We group by salesman here to be used easiest
 
-        cl_fields = ['id', 'salesman_id', 'currency_id', 'commission_amount',
+        cl_fields = ['id', 'salesman_id', 'currency_id', 'amount',
                      'currency_amount', 'invoice_id', 'salespeople_id']
 
         for commission in self:
@@ -700,7 +695,7 @@ class CommissionPayment(models.Model):
             sale_comm_data = cl_data_agg.to_dict()
             sale_comm_cl = cl_data_grouped.groups
 
-            sale_comm = sale_comm_data.get('commission_amount')
+            sale_comm = sale_comm_data.get('amount')
             sale_comm_curr = sale_comm_data.get('currency_amount')
             for key, value in sale_comm.items():
                 salesman_id, currency_id = key
@@ -718,7 +713,7 @@ class CommissionPayment(models.Model):
                 comm_line_reg = comm_line_obj.browse(commline_ids)
                 comm_line_reg.write({'salespeople_id': vendor_id.id})
             commission.write({
-                'total': cl_data.sum().get('commission_amount'),
+                'total': cl_data.sum().get('amount'),
                 'comm_fix': not all(
                     cl_data.groupby('salesman_id').groups.keys()),
             })
@@ -747,7 +742,7 @@ class CommissionPayment(models.Model):
                 _('Baremo on Matrix only applies on Invoiced Products'))
         self.clear()
         self._prepare_aml()
-        res = self._compute_commission_payment()
+        res = self._compute_payment()
         self._create_lines(res)
         self._post_processing()
         self.write({'state': 'open'})
@@ -875,7 +870,7 @@ class CommissionLines(models.Model):
         'B./Days', digits=dp.get_precision('Commission'))
     baremo = fields.Float(
         'B./%Comm.', digits=dp.get_precision('Commission'))
-    commission_amount = fields.Float(
+    amount = fields.Float(
         digits=dp.get_precision('Commission'),
         help="Amount on the company currency")
     currency_amount = fields.Float(
@@ -891,10 +886,10 @@ class CommissionLines(models.Model):
     # each line to fetch the commissions
     @api.multi
     def _recompute_commission(self):
-        for commission_line in self:
-            commission = commission_line.commission_id
+        for line in self:
+            commission = line.commission_id
 
-            aml = commission_line.aml_id
+            aml = line.aml_id
 
             params = commission._get_params(aml)
             policy_date_start = params['policy_date_start']
@@ -928,7 +923,7 @@ class CommissionLines(models.Model):
                 currency_amount = comm_line
 
             # Generar las lineas de comision por cada factura
-            commission_line.write({
+            line.write({
                 'payment_date': aml.date,
                 'invoice_payment': aml.credit,
                 'invoice_date': aml.rec_aml.date,
@@ -940,7 +935,7 @@ class CommissionLines(models.Model):
                 'rate_number': bardctdsc,
                 'timespan': bar_day,
                 'baremo': bar_dcto_comm,
-                'commission_amount': comm_line,
+                'amount': comm_line,
                 'currency_amount': currency_amount,
                 'currency_id': aml.currency_id and
                 aml.currency_id.id or
