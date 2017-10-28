@@ -11,7 +11,7 @@
 ############################################################################
 
 from __future__ import division
-from datetime import datetime, date as dt
+from datetime import datetime
 import logging
 
 from odoo import _, fields, models, api
@@ -27,14 +27,6 @@ except ImportError:
     _logger.info('account_currency_tools is declared '
                  ' from addons-vauxoo '
                  ' you will need: sudo pip install pandas')
-
-
-def t_time(date):
-    """Trims time from "%Y-%m-%d %H:%M:%S" to "%Y-%m-%d"
-    """
-    date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    date = dt(date.year, date.month, date.day)
-    return date.strftime("%Y-%m-%d")
 
 
 class CommissionPayment(models.Model):
@@ -333,116 +325,83 @@ class CommissionPayment(models.Model):
             return baremo.baremo_id or self.baremo_id
 
     @api.model
+    def _get_discount_on_invoice_line(self, inv_lin):
+        def _fetch_discount(list_price, inv_lin, price_date=False):
+            # Get the actual discount in the invoice.
+            price_unit = inv_lin.price_unit
+            if abs((inv_lin.price_subtotal / inv_lin.quantity) -
+                    inv_lin.price_unit) > 0.05:
+                price_unit = round((inv_lin.price_subtotal /
+                                    inv_lin.quantity), 2)
+
+            dct = round((list_price - price_unit) * 100 / list_price, 1) \
+                if list_price else 0.0
+            return dict(price_unit=price_unit, price_list=list_price,
+                        rate_item=dct, price_date=False)
+
+        prod_prices = self.env['product.historic.price']
+        prod_id = inv_lin.product_id.id
+        inv_rec = inv_lin.invoice_id
+
+        price_ids = prod_prices.search(
+            [('product_id', '=', prod_id),
+             ('datetime', '=', inv_rec.date_invoice)])
+
+        # If not historic, then take the lst_price from product
+        if not price_ids:
+            list_price = inv_lin.product_id.lst_price
+            return _fetch_discount(list_price, inv_lin, inv_rec.date_invoice)
+        return _fetch_discount(
+            price_ids[0].price, inv_lin, price_ids[0].datetime)
+
+    @api.model
     def _get_payment_on_invoice_line(self, pay_id):
         res = []
-        prod_prices = self.env['product.historic.price']
 
-        # If it is here it is because it has a valid invoice
         inv_rec = pay_id.rec_invoice
 
-        # Revision de cada linea de factura (productos)
-        # Verificar si tiene producto asociado
         for inv_lin in inv_rec.invoice_line_ids.filtered(
                 lambda line: line.product_id):
-
-            # DETERMINAR EL PORCENTAJE DE IVA EN LA LINEA (perc_iva)
-            # =============================================================
-            # =============================================================
-            # Determinar si la linea de la factura tiene un impuesto
-            # (perc_iva). El impuesto aplicado a una linea es igual a la
-            # suma de los impuestos se asume que todos los impuestos son
-            # porcentuales
             perc_iva = (sum([
                 tax.amount for tax in inv_lin.invoice_line_tax_ids]) * 100
                 if inv_lin.invoice_line_tax_ids else 0.0)
-            # If it is here is because it has an associated product
-            prod_id = inv_lin.product_id.id
 
-            # looking for the historical price (using its ordering criteria)
-            price_ids = prod_prices.search([('product_id', '=', prod_id)])
-            # look for the historical price
-            no_price = True
+            line = self._get_discount_on_invoice_line(inv_lin)
+            line.update(self._get_params(
+                pay_id, dcto=line['rate_item'], product_id=inv_lin.product_id))
 
-            for prod_prices_rec in price_ids:
-                if inv_rec.date_invoice >= t_time(prod_prices_rec.datetime):
-                    list_price = prod_prices_rec.price
-                    list_date = prod_prices_rec.datetime
-                    no_price = False
-                    break
+            common_factor = (
+                inv_lin.price_subtotal / inv_rec.amount_untaxed)
+            factor = line['baremo'] / (100 * (1 + perc_iva / 100))
 
-            # If not historic, then take the lst_price from product
-            if inv_lin.product_id.lst_price > 0 and no_price:
-                list_price = inv_lin.product_id.lst_price
-                list_date = self.date_start
-                no_price = False
+            penbxlinea = pay_id.credit * common_factor * factor
 
-            if not no_price:
-                # Get the actual discount in the invoice.
-                price_unit = inv_lin.price_unit
-                if abs((inv_lin.price_subtotal / inv_lin.quantity) -
-                        inv_lin.price_unit) > 0.05:
-                    # with this we ensure we are not passing by the discount
-                    price_unit = round((inv_lin.price_subtotal /
-                                        inv_lin.quantity), 2)
+            currency_amount = amount = penbxlinea
+            if pay_id.currency_id and pay_id.amount_currency:
+                currency_amount = (
+                    abs(pay_id.amount_currency) * common_factor * factor)
 
-                dcto = round((list_price - price_unit) * 100 / list_price, 1) \
-                    if list_price else 0.0
-
-                res_l = self._get_params(
-                    pay_id, dcto=dcto, product_id=inv_lin.product_id)
-
-                ###############################
-                # Computation by product_line #
-                ###############################
-
-                common_factor = (
-                    inv_lin.price_subtotal / inv_rec.amount_untaxed)
-                factor = res_l['baremo'] / (100 * (1 + perc_iva / 100))
-
-                penbxlinea = pay_id.credit * common_factor * factor
-
-                currency_amount = amount = penbxlinea
-                if pay_id.currency_id and pay_id.amount_currency:
-                    currency_amount = (
-                        abs(pay_id.amount_currency) * common_factor * factor)
-
-                res_l.update({
-                    'commission_id': self.id,
-                    'aml_id': pay_id.id,
-                    'am_rec': inv_rec.move_id.id,
-                    'name': pay_id.move_id.name or '/',
-                    'payment_date': pay_id.date,
-                    'partner_id': inv_rec.partner_id.id,
-                    'invoice_id': inv_rec.id,
-                    'invoice_payment': pay_id.credit,
-                    'invoice_date': inv_rec.date_invoice,
-                    'inv_subtotal': inv_rec.amount_untaxed,
-                    'product_id': inv_lin.product_id.id,
-                    'price_unit': price_unit,
-                    'price_subtotal': inv_lin.price_subtotal,
-                    'price_list': list_price,
-                    'price_date': list_date,
-                    'perc_iva': perc_iva,
-                    'rate_item': dcto,
-                    'amount': amount,
-                    'currency_amount': currency_amount,
-                    'currency_id': inv_rec.currency_id.id or
-                    inv_rec.company_id.currency_id.id,
-                    'line_type': 'ok',
-                    })
-                res.append(res_l)
-            else:
-                # If we do not have a price to compare to we mark the line to
-                #  audit what to do, no change the invoice is an important part
-                # on the process.
-                res.append({
-                    'name': inv_lin.name,
-                    'commission_id': self.id,
-                    'product_id': inv_lin.product_id.id,
-                    'payment_date': inv_rec.date_invoice,
-                    'invoice_id': inv_rec.id,
-                    'line_type': 'no_price',
-                    })
+            line.update({
+                'commission_id': self.id,
+                'aml_id': pay_id.id,
+                'am_rec': inv_rec.move_id.id,
+                'name': pay_id.move_id.name or '/',
+                'payment_date': pay_id.date,
+                'partner_id': inv_rec.partner_id.id,
+                'invoice_id': inv_rec.id,
+                'invoice_payment': pay_id.credit,
+                'invoice_date': inv_rec.date_invoice,
+                'inv_subtotal': inv_rec.amount_untaxed,
+                'product_id': inv_lin.product_id.id,
+                'price_subtotal': inv_lin.price_subtotal,
+                'perc_iva': perc_iva,
+                'amount': amount,
+                'currency_amount': currency_amount,
+                'currency_id': inv_rec.currency_id.id or
+                inv_rec.company_id.currency_id.id,
+                'line_type': 'ok',
+                })
+            res.append(line)
 
         # Marking the line as "no_product" in order to know the ones to review
         # the fact of the delicated processs of change an invoice line we
