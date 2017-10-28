@@ -92,7 +92,7 @@ class CommissionPayment(models.Model):
 
     line_ids = fields.One2many(
         'commission.lines', 'commission_id',
-        'Commission per products', readonly=True,
+        'Computed Commission', readonly=True,
         states={'write': [('readonly', False)]})
 
     salesman_ids = fields.One2many(
@@ -234,33 +234,33 @@ class CommissionPayment(models.Model):
     def _get_params(
             self, aml, dcto=0.0, partner_id=None, product_id=None):
         res = dict(
-            salesman=self._get_salesman_policy(aml),
-            policy_date_start=self._get_policy_start_date(aml),
-            policy_date_end=self._get_policy_end_date(aml))
+            salesman_id=self._get_salesman_policy(aml),
+            date_start=self._get_policy_start_date(aml),
+            date_stop=self._get_policy_end_date(aml))
         policy_baremo = self._get_policy_baremo(
-            aml, partner_id, product_id, res['salesman'])
+            aml, partner_id, product_id, res['salesman_id'])
 
         def fnc(date):
             return datetime.strptime(date, '%Y-%m-%d')
         res['days'] = (
-            fnc(res['policy_date_end']) - fnc(res['policy_date_start'])).days
-        params = self._get_rate(res['days'], policy_baremo, dcto)
-        res.update(params)
+            fnc(res['date_stop']) - fnc(res['date_start'])).days
+        res.update(self._get_rate(res['days'], policy_baremo, dcto))
+        res['salesman_id'] = res['salesman_id'].id
         return res
 
     @api.model
     def _get_rate(self, days, baremo, dcto=0.0):
-        res = dict(bar_day=0.0, bar_dcto_comm=0.0, bardctdsc=0.0)
+        res = dict(timespan=0.0, baremo=0.0, rate_number=0.0)
         day_id = baremo.bar_ids.filtered(lambda l: days <= l.number)
         if not day_id:
             return res
         day_id = day_id[0]
         dcto_id = day_id.disc_ids.filtered(lambda disc: dcto <= disc.porc_disc)
         if not dcto_id:
-            res['bar_day'] = day_id.number
+            res['timespan'] = day_id.number
             return res
-        res['bardctdsc'] = dcto_id[0].porc_disc
-        res['bar_dcto_comm'] = dcto_id[0].porc_com
+        res['rate_number'] = dcto_id[0].porc_disc
+        res['baremo'] = dcto_id[0].porc_com
         return res
 
     @api.model
@@ -388,58 +388,34 @@ class CommissionPayment(models.Model):
                 dcto = round((list_price - price_unit) * 100 / list_price, 1) \
                     if list_price else 0.0
 
-                params = self._get_params(
+                res_l = self._get_params(
                     pay_id, dcto=dcto, product_id=inv_lin.product_id)
-                salesman = params['salesman']
-                policy_date_start = params['policy_date_start']
-                policy_date_end = params['policy_date_end']
-                bar_day = params['bar_day']
-                bar_dcto_comm = params['bar_dcto_comm']
-                bardctdsc = params['bardctdsc']
-                days = params['days']
 
                 ###############################
                 # Computation by product_line #
                 ###############################
 
-                penbxlinea = pay_id.credit * (
-                    inv_lin.price_subtotal /
-                    inv_rec.amount_untaxed)
-                fact_sup = 1 - 0.0 / 100 - 0.0 / 100
-                fact_inf = 1 + (perc_iva / 100) * (1 - 0.0 / 100) - \
-                    0.0 / 100 - 0.0 / 100
+                common_factor = (
+                    inv_lin.price_subtotal / inv_rec.amount_untaxed)
+                factor = res_l['baremo'] / (100 * (1 + perc_iva / 100))
 
-                comm_line = penbxlinea * fact_sup * (
-                    bar_dcto_comm / 100) / fact_inf
+                penbxlinea = pay_id.credit * common_factor * factor
 
+                currency_amount = amount = penbxlinea
                 if pay_id.currency_id and pay_id.amount_currency:
-                    payxlinea_curr = pay_id.amount_currency * (
-                        inv_lin.price_subtotal /
-                        inv_rec.amount_untaxed)
+                    currency_amount = (
+                        abs(pay_id.amount_currency) * common_factor * factor)
 
-                    currency_amount = (abs(payxlinea_curr) * fact_sup *
-                                       (bar_dcto_comm / 100) / fact_inf)
-                elif pay_id.currency_id and not pay_id.amount_currency:
-                    return True
-                else:
-                    currency_amount = comm_line
-
-                res.append({
+                res_l.update({
                     'commission_id': self.id,
                     'aml_id': pay_id.id,
                     'am_rec': inv_rec.move_id.id,
-                    'name':
-                    pay_id.move_id.name and
-                    pay_id.move_id.name or '/',
+                    'name': pay_id.move_id.name or '/',
                     'payment_date': pay_id.date,
                     'partner_id': inv_rec.partner_id.id,
                     'invoice_id': inv_rec.id,
-                    'salesman_id': salesman and salesman.id,
                     'invoice_payment': pay_id.credit,
                     'invoice_date': inv_rec.date_invoice,
-                    'date_start': policy_date_start,
-                    'date_stop': policy_date_end,
-                    'days': days,
                     'inv_subtotal': inv_rec.amount_untaxed,
                     'product_id': inv_lin.product_id.id,
                     'price_unit': price_unit,
@@ -448,16 +424,13 @@ class CommissionPayment(models.Model):
                     'price_date': list_date,
                     'perc_iva': perc_iva,
                     'rate_item': dcto,
-                    'rate_number': bardctdsc,
-                    'timespan': bar_day,
-                    'baremo': bar_dcto_comm,
-                    'amount': comm_line,
+                    'amount': amount,
                     'currency_amount': currency_amount,
-                    'currency_id': inv_rec.currency_id and
-                    inv_rec.currency_id.id or
+                    'currency_id': inv_rec.currency_id.id or
                     inv_rec.company_id.currency_id.id,
                     'line_type': 'ok',
                     })
+                res.append(res_l)
             else:
                 # If we do not have a price to compare to we mark the line to
                 #  audit what to do, no change the invoice is an important part
@@ -486,66 +459,34 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _get_payment_on_invoice(self, aml):
-        res = []
-        params = self._get_params(aml)
-        salesman = params['salesman']
-        policy_date_start = params['policy_date_start']
-        policy_date_end = params['policy_date_end']
-        bar_day = params['bar_day']
-        bar_dcto_comm = params['bar_dcto_comm']
-        bardctdsc = params['bardctdsc']
-        days = params['days']
+        res = self._get_params(aml)
 
-        # If it is here it is because this actually have an invoice
-        invoice = aml.rec_invoice
+        perc_iva = (
+            aml.rec_invoice.amount_total / aml.rec_invoice.amount_untaxed - 1)
 
-        # Get the VAT percentage (perc_iva)
-        # =================================
-        # =================================
-        perc_iva = (invoice.amount_total / invoice.amount_untaxed - 1) * 100
+        factor = res['baremo'] / (100 * (1 + perc_iva / 100))
 
-        #################################
-        # Compute Commission by Invoice #
-        #################################
+        amount = aml.credit * factor
 
-        penbxlinea = aml.credit
-        fact_sup = 1 - 0.0 / 100 - 0.0 / 100
-        fact_inf = 1 + (perc_iva / 100) * (1 - 0.0 / 100) - \
-            0.0 / 100 - 0.0 / 100
-
-        comm_line = penbxlinea * fact_sup * (
-            bar_dcto_comm / 100) / fact_inf
-
-        currency_amount = comm_line
+        currency_amount = amount
         if aml.currency_id and aml.amount_currency:
-            currency_amount = abs(aml.amount_currency) * fact_sup * (
-                bar_dcto_comm / 100) / fact_inf
-        elif aml.currency_id and not aml.amount_currency:
-            return True
+            currency_amount = abs(aml.amount_currency) * factor
 
-        res.append({
+        res.update({
             'commission_id': self.id,
             'aml_id': aml.id,
-            'am_rec': invoice.move_id.id,
-            'invoice_id': invoice.id,
-            'name': aml.move_id.name and aml.move_id.name or '/',
+            'am_rec': aml.rec_aml.move_id.id,
+            'invoice_id': aml.rec_invoice.id,
+            'name': aml.move_id.name or '/',
             'payment_date': aml.date,
-            'partner_id': invoice.partner_id.id,
-            'salesman_id': salesman and salesman.id,
+            'partner_id': aml.rec_invoice.partner_id.id,
             'invoice_payment': aml.credit,
-            'invoice_date': invoice.date_invoice,
-            'date_start': policy_date_start,
-            'date_stop': policy_date_end,
-            'days': days,
-            'inv_subtotal': invoice.amount_untaxed,
+            'invoice_date': aml.rec_invoice.date_invoice,
+            'inv_subtotal': aml.rec_invoice.amount_untaxed,
             'perc_iva': perc_iva,
-            'rate_number': bardctdsc,
-            'timespan': bar_day,
-            'baremo': bar_dcto_comm,
-            'amount': comm_line,
+            'amount': amount,
             'currency_amount': currency_amount,
-            'currency_id': invoice.currency_id and
-            invoice.currency_id.id or invoice.company_id.currency_id.id,
+            'currency_id': aml.rec_invoice.currency_id.id,
             'line_type': 'ok',
         })
 
@@ -553,18 +494,8 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _get_payment_on_aml(self, aml):
-
-        res = []
-
-        params = self._get_params(aml)
-        policy_date_start = params['policy_date_start']
-        policy_date_end = params['policy_date_end']
-        bar_day = params['bar_day']
-        bar_dcto_comm = params['bar_dcto_comm']
-        bardctdsc = params['bardctdsc']
-        days = params['days']
-
-        res.append({
+        res = self._get_params(aml)
+        res.update({
             'commission_id': self.id,
             'aml_id': aml.id,
             'am_rec': aml.rec_aml.move_id.id,
@@ -575,21 +506,13 @@ class CommissionPayment(models.Model):
             'salesman_id': None,
             'invoice_payment': aml.credit,
             'invoice_date': aml.rec_aml.date,
-            'date_start': policy_date_start,
-            'date_stop': policy_date_end,
-            'days': days,
             'inv_subtotal': None,
             'perc_iva': None,
-            'rate_number': bardctdsc,
-            'timespan': bar_day,
-            'baremo': bar_dcto_comm,
             'amount': 0.0,
-            'currency_amount': None,
-            'currency_id': aml.currency_id and
-            aml.currency_id.id or aml.company_id.currency_id.id,
+            'currency_amount': 0.0,
+            'currency_id': aml.currency_id.id or aml.company_id.currency_id.id,
             'line_type': 'ok',
             })
-
         return res
 
     @api.model
@@ -602,16 +525,16 @@ class CommissionPayment(models.Model):
                     self._get_payment_on_invoice_line(aml))
         elif self.scope == 'whole_invoice':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                res.extend(self._get_payment_on_invoice(aml))
+                res.append(self._get_payment_on_invoice(aml))
         for aml in salesman_aml_ids.filtered(lambda l: not l.rec_invoice):
-            res.extend(self._get_payment_on_aml(aml))
+            res.append(self._get_payment_on_aml(aml))
 
         if not self.unknown_salespeople:
             return res
         # Recording aml with unknown salesman
         for aml in self.aml_ids.filtered(
                 lambda l: not self._get_salesman_policy(l)):
-            res.extend(self._get_payment_on_aml(aml))
+            res.append(self._get_payment_on_aml(aml))
         return res
 
     @api.multi
@@ -834,60 +757,35 @@ class CommissionLines(models.Model):
     @api.multi
     def _recompute_commission(self):
         for line in self:
-            commission = line.commission_id
-
             aml = line.aml_id
 
-            params = commission._get_params(aml)
-            policy_date_start = params['policy_date_start']
-            policy_date_end = params['policy_date_end']
-            bar_day = params['bar_day']
-            bar_dcto_comm = params['bar_dcto_comm']
-            bardctdsc = params['bardctdsc']
-            days = params['days']
-
-            ######################
-            # Actual computation #
-            ######################
-
-            # Right now I have not figure out a way to know how much was taxed
-            perc_iva = commission.company_id.tax
+            res = line.commission_id._get_params(aml)
+            perc_iva = line.commission_id.company_id.tax
 
             penbxlinea = aml.credit
-            fact_sup = 1 - 0.0 / 100 - 0.0 / 100
-            fact_inf = 1 + (perc_iva / 100) * (1 - 0.0 / 100) - \
-                0.0 / 100 - 0.0 / 100
+            factor = res['baremo'] / (100 * (1 + perc_iva / 100))
 
-            comm_line = penbxlinea * fact_sup * (
-                bar_dcto_comm / 100) / fact_inf
+            amount = penbxlinea * factor
 
+            currency_amount = amount
             if aml.currency_id and aml.amount_currency:
-                currency_amount = abs(aml.amount_currency) * \
-                    fact_sup * (bar_dcto_comm / 100) / fact_inf
-            elif aml.currency_id and not aml.amount_currency:
-                return True
-            else:
-                currency_amount = comm_line
+                currency_amount = abs(aml.amount_currency) * factor
 
             # Generar las lineas de comision por cada factura
-            line.write({
+            res.update({
+                'salesman_id': line.salesman_id.id,
                 'payment_date': aml.date,
                 'invoice_payment': aml.credit,
                 'invoice_date': aml.rec_aml.date,
-                'date_start': policy_date_start,
-                'date_stop': policy_date_end,
-                'days': days,
                 'inv_subtotal': (aml.rec_aml.debit / (1 + perc_iva / 100)),
                 'perc_iva': perc_iva,
-                'rate_number': bardctdsc,
-                'timespan': bar_day,
-                'baremo': bar_dcto_comm,
-                'amount': comm_line,
+                'amount': amount,
                 'currency_amount': currency_amount,
-                'currency_id': aml.currency_id and
-                aml.currency_id.id or
+                'currency_id': aml.currency_id.id or
                 aml.company_id.currency_id.id,
             })
+            line.write(res)
+
         return True
 
 
