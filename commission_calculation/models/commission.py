@@ -282,13 +282,10 @@ class CommissionPayment(models.Model):
         return aml.rec_aml.date_maturity or aml.rec_aml.date
 
     @api.model
-    def _get_policy_end_date(self, pay_id):
-        date = pay_id.date
+    def _get_policy_end_date(self, aml):
         if self.policy_date_end == 'last_payment_date':
-            date = pay_id.matched_debit_ids.debit_move_id.filtered(
-                lambda a: a.journal_id.type == 'sale').invoice_id.\
-                date_last_payment or date
-        return date
+            return aml.rec_aml.date_last_payment or aml.date
+        return aml.date
 
     @api.model
     def _check_salesman_policy(self, aml):
