@@ -90,18 +90,6 @@ class CommissionPayment(models.Model):
         track_visibility='onchange',
         help="Total commission to paid.")
 
-    line_product_ids = fields.One2many(
-        'commission.lines', 'commission_id',
-        'Commission per products', readonly=True,
-        domain=[('product_id', '!=', False)],
-        states={'write': [('readonly', False)]})
-
-    line_invoice_ids = fields.One2many(
-        'commission.lines', 'commission_id',
-        'Commission per invoices', readonly=True,
-        domain=[('product_id', '=', False)],
-        states={'write': [('readonly', False)]})
-
     line_ids = fields.One2many(
         'commission.lines', 'commission_id',
         'Commission per products', readonly=True,
