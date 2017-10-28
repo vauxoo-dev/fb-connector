@@ -237,7 +237,7 @@ class CommissionPayment(models.Model):
             unknown_aml_ids = aml_obj
             if self.unknown_salespeople:
                 unknown_aml_ids = aml_ids.filtered(
-                    lambda l: not self._compute_salesman_policy(l))
+                    lambda l: not self._get_salesman_policy(l))
             aml_ids = salesman_aml_ids + unknown_aml_ids
             comm_rec.write({
                 'aml_ids': [(6, comm_rec.id, aml_ids._ids)]})
@@ -246,18 +246,18 @@ class CommissionPayment(models.Model):
     @api.model
     def _get_params(self, aml):
         res = {}
-        res['salesman'] = self._compute_salesman_policy(aml)
-        res['policy_date_start'] = self._compute_policy_start_date(aml)
-        res['policy_date_end'] = self._compute_policy_end_date(aml)
-        policy_baremo = self._compute_policy_baremo(aml)
-        params = self._compute_rate(
+        res['salesman'] = self._get_salesman_policy(aml)
+        res['policy_date_start'] = self._get_policy_start_date(aml)
+        res['policy_date_end'] = self._get_policy_end_date(aml)
+        policy_baremo = self._get_policy_baremo(aml)
+        params = self._get_rate(
             res['policy_date_start'], res['policy_date_start'], dcto=0.0,
             baremo=policy_baremo)
         res.update(params)
         return res
 
     @api.model
-    def _compute_rate(
+    def _get_rate(
             self, payment_date, invoice_date, dcto=0.0, baremo=None):
         payment_date = datetime.datetime.strptime(payment_date, '%Y-%m-%d')
         invoice_date = datetime.datetime.strptime(invoice_date, '%Y-%m-%d')
@@ -288,7 +288,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_policy_start_date(self, pay_id):
+    def _get_policy_start_date(self, pay_id):
         comm_rec = self
         aml_rec = pay_id.matched_debit_ids.debit_move_id.filtered(
             lambda a: a.journal_id.type == 'sale')
@@ -301,7 +301,7 @@ class CommissionPayment(models.Model):
         return min(l[date_field] for l in aml_rec)
 
     @api.model
-    def _compute_policy_end_date(self, pay_id):
+    def _get_policy_end_date(self, pay_id):
         date = pay_id.date
         if self.policy_date_end == 'last_payment_date':
             date = pay_id.matched_debit_ids.debit_move_id.filtered(
@@ -311,17 +311,17 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _check_salesman_policy(self, aml):
-        salesman = self._compute_salesman_policy(aml)
-        return self._compute_saleman(salesman)
+        salesman = self._get_salesman_policy(aml)
+        return self._get_saleman(salesman)
 
     @api.model
-    def _compute_saleman(self, salesman):
+    def _get_saleman(self, salesman):
         if not salesman or (salesman not in self.user_ids):
             return False
         return True
 
     @api.model
-    def _compute_salesman_policy(self, pay_id):
+    def _get_salesman_policy(self, pay_id):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
         rp_obj = self.env['res.partner']
@@ -338,7 +338,7 @@ class CommissionPayment(models.Model):
         return self.env['res.users']
 
     @api.model
-    def _compute_matrix_policy(self, product_id, salesman_id):
+    def _get_matrix_policy(self, product_id, salesman_id):
         bm_obj = self.env['baremo.matrix']
         domain = [('product_id', '=', product_id.id), '|',
                   ('user_id', '=', salesman_id.id),
@@ -347,7 +347,7 @@ class CommissionPayment(models.Model):
         return baremo.baremo_id or self.baremo_id
 
     @api.model
-    def _compute_policy_baremo(
+    def _get_policy_baremo(
             self, pay_id, partner_id=None, salesman_id=None):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
@@ -369,7 +369,7 @@ class CommissionPayment(models.Model):
             return self.baremo_id
 
     @api.model
-    def _compute_payment_on_invoice_line(self, pay_id):
+    def _get_payment_on_invoice_line(self, pay_id):
         res = []
         prod_prices = self.env['product.historic.price']
 
@@ -383,7 +383,7 @@ class CommissionPayment(models.Model):
 
         # /!\ NOTE: Retrieve here the fallback commission baremo policy
         if self.baremo_policy != 'onMatrix':
-            policy_baremo = self._compute_policy_baremo(
+            policy_baremo = self._get_policy_baremo(
                 pay_id, salesman_id=salesman)
 
         # Revision de cada linea de factura (productos)
@@ -436,12 +436,12 @@ class CommissionPayment(models.Model):
 
                 if self.baremo_policy == 'onMatrix':
                     policy_baremo = \
-                        self._compute_matrix_policy(
+                        self._get_matrix_policy(
                             inv_lin.product_id, salesman)
 
                 # CHECK: If no commission policy is passed why it retrieves
                 # values
-                params = self._compute_rate(
+                params = self._get_rate(
                     policy_date_end,
                     policy_date_start, dcto=0.0,
                     baremo=policy_baremo)
@@ -538,7 +538,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_payment_on_invoice(self, aml):
+    def _get_payment_on_invoice(self, aml):
         res = []
         params = self._get_params(aml)
         salesman = params['salesman']
@@ -605,7 +605,7 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_payment_on_aml(self, aml):
+    def _get_payment_on_aml(self, aml):
 
         res = []
 
@@ -646,25 +646,25 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _compute_payment(self):
+    def _get_payment(self):
         res = []
         salesman_aml_ids = self.aml_ids.filtered(self._check_salesman_policy)
         if self.scope == 'product_invoiced':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
                 res.extend(
-                    self._compute_payment_on_invoice_line(aml))
+                    self._get_payment_on_invoice_line(aml))
         elif self.scope == 'whole_invoice':
             for aml in salesman_aml_ids.filtered('rec_invoice'):
-                res.extend(self._compute_payment_on_invoice(aml))
+                res.extend(self._get_payment_on_invoice(aml))
         for aml in salesman_aml_ids.filtered(lambda l: not l.rec_invoice):
-            res.extend(self._compute_payment_on_aml(aml))
+            res.extend(self._get_payment_on_aml(aml))
 
         if not self.unknown_salespeople:
             return res
         # Recording aml with unknown salesman
         for aml in self.aml_ids.filtered(
-                lambda l: not self._compute_salesman_policy(l)):
-            res.extend(self._compute_payment_on_aml(aml))
+                lambda l: not self._get_salesman_policy(l)):
+            res.extend(self._get_payment_on_aml(aml))
         return res
 
     @api.multi
@@ -742,7 +742,7 @@ class CommissionPayment(models.Model):
                 _('Baremo on Matrix only applies on Invoiced Products'))
         self.clear()
         self._prepare_aml()
-        res = self._compute_payment()
+        res = self._get_payment()
         self._create_lines(res)
         self._post_processing()
         self.write({'state': 'open'})
