@@ -11,7 +11,7 @@
 ############################################################################
 
 from __future__ import division
-import datetime
+from datetime import datetime, date as dt
 import logging
 
 from odoo import _, fields, models, api
@@ -32,8 +32,8 @@ except ImportError:
 def t_time(date):
     """Trims time from "%Y-%m-%d %H:%M:%S" to "%Y-%m-%d"
     """
-    date = datetime.datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
-    date = datetime.date(date.year, date.month, date.day)
+    date = datetime.strptime(date, "%Y-%m-%d %H:%M:%S")
+    date = dt(date.year, date.month, date.day)
     return date.strftime("%Y-%m-%d")
 
 
@@ -146,7 +146,6 @@ class CommissionPayment(models.Model):
              "one set in the company")
 
     exchange_date = fields.Date(
-        'Exchange Date',
         help="Date of change that will be printed in the"
              " report, with respect to the currency of the"
              "company")
@@ -246,48 +245,34 @@ class CommissionPayment(models.Model):
     @api.model
     def _get_params(
             self, aml, dcto=0.0, partner_id=None, product_id=None):
-        res = {}
-        res['salesman'] = self._get_salesman_policy(aml)
-        res['policy_date_start'] = self._get_policy_start_date(aml)
-        res['policy_date_end'] = self._get_policy_end_date(aml)
+        res = dict(
+            salesman=self._get_salesman_policy(aml),
+            policy_date_start=self._get_policy_start_date(aml),
+            policy_date_end=self._get_policy_end_date(aml))
         policy_baremo = self._get_policy_baremo(
-            aml, partner_id=partner_id, product_id=product_id,
-            salesman_id=res['salesman'])
-        params = self._get_rate(
-            res['policy_date_start'], res['policy_date_start'], dcto=dcto,
-            baremo=policy_baremo)
+            aml, partner_id, product_id, res['salesman'])
+
+        def fnc(date):
+            return datetime.strptime(date, '%Y-%m-%d')
+        res['days'] = (
+            fnc(res['policy_date_end']) - fnc(res['policy_date_start'])).days
+        params = self._get_rate(res['days'], policy_baremo, dcto)
         res.update(params)
         return res
 
     @api.model
-    def _get_rate(
-            self, payment_date, invoice_date, dcto=0.0, baremo=None):
-        payment_date = datetime.datetime.strptime(payment_date, '%Y-%m-%d')
-        invoice_date = datetime.datetime.strptime(invoice_date, '%Y-%m-%d')
-        emission_days = (payment_date - invoice_date).days
-
-        res = dict(
-            bar_day=0.0,
-            bar_dcto_comm=0.0,
-            bardctdsc=0.0,
-            emission_days=emission_days)
-
-        bar_day_ids = baremo.bar_ids if baremo else self.baremo_id.bar_ids
-
-        day_id = bar_day_ids.filtered(
-            lambda day_number: emission_days <= day_number.number)
+    def _get_rate(self, days, baremo, dcto=0.0):
+        res = dict(bar_day=0.0, bar_dcto_comm=0.0, bardctdsc=0.0)
+        day_id = baremo.bar_ids.filtered(lambda l: days <= l.number)
         if not day_id:
             return res
-
         day_id = day_id[0]
         dcto_id = day_id.disc_ids.filtered(lambda disc: dcto <= disc.porc_disc)
         if not dcto_id:
             res['bar_day'] = day_id.number
             return res
-
         res['bardctdsc'] = dcto_id[0].porc_disc
         res['bar_dcto_comm'] = dcto_id[0].porc_com
-
         return res
 
     @api.model
@@ -433,7 +418,7 @@ class CommissionPayment(models.Model):
                 bar_day = params['bar_day']
                 bar_dcto_comm = params['bar_dcto_comm']
                 bardctdsc = params['bardctdsc']
-                emission_days = params['emission_days']
+                days = params['days']
 
                 ###############################
                 # Computation by product_line #
@@ -476,7 +461,7 @@ class CommissionPayment(models.Model):
                     'invoice_date': inv_rec.date_invoice,
                     'date_start': policy_date_start,
                     'date_stop': policy_date_end,
-                    'days': emission_days,
+                    'days': days,
                     'inv_subtotal': inv_rec.amount_untaxed,
                     'product_id': inv_lin.product_id.id,
                     'price_unit': price_unit,
@@ -531,7 +516,7 @@ class CommissionPayment(models.Model):
         bar_day = params['bar_day']
         bar_dcto_comm = params['bar_dcto_comm']
         bardctdsc = params['bardctdsc']
-        emission_days = params['emission_days']
+        days = params['days']
 
         # If it is here it is because this actually have an invoice
         invoice = aml.rec_invoice
@@ -573,7 +558,7 @@ class CommissionPayment(models.Model):
             'invoice_date': invoice.date_invoice,
             'date_start': policy_date_start,
             'date_stop': policy_date_end,
-            'days': emission_days,
+            'days': days,
             'inv_subtotal': invoice.amount_untaxed,
             'perc_iva': perc_iva,
             'rate_number': bardctdsc,
@@ -599,7 +584,7 @@ class CommissionPayment(models.Model):
         bar_day = params['bar_day']
         bar_dcto_comm = params['bar_dcto_comm']
         bardctdsc = params['bardctdsc']
-        emission_days = params['emission_days']
+        days = params['days']
 
         res.append({
             'commission_id': self.id,
@@ -614,7 +599,7 @@ class CommissionPayment(models.Model):
             'invoice_date': aml.rec_aml.date,
             'date_start': policy_date_start,
             'date_stop': policy_date_end,
-            'days': emission_days,
+            'days': days,
             'inv_subtotal': None,
             'perc_iva': None,
             'rate_number': bardctdsc,
@@ -881,7 +866,7 @@ class CommissionLines(models.Model):
             bar_day = params['bar_day']
             bar_dcto_comm = params['bar_dcto_comm']
             bardctdsc = params['bardctdsc']
-            emission_days = params['emission_days']
+            days = params['days']
 
             ######################
             # Actual computation #
@@ -913,7 +898,7 @@ class CommissionLines(models.Model):
                 'invoice_date': aml.rec_aml.date,
                 'date_start': policy_date_start,
                 'date_stop': policy_date_end,
-                'days': emission_days,
+                'days': days,
                 'inv_subtotal': (aml.rec_aml.debit / (1 + perc_iva / 100)),
                 'perc_iva': perc_iva,
                 'rate_number': bardctdsc,
