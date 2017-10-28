@@ -276,17 +276,10 @@ class CommissionPayment(models.Model):
         return res
 
     @api.model
-    def _get_policy_start_date(self, pay_id):
-        comm_rec = self
-        aml_rec = pay_id.matched_debit_ids.debit_move_id.filtered(
-            lambda a: a.journal_id.type == 'sale')
-        if not aml_rec:
-            return False
-        if comm_rec.policy_date_start == 'invoice_emission_date':
-            date_field = 'date'
-        elif comm_rec.policy_date_start == 'invoice_due_date':
-            date_field = 'date_maturity'
-        return min(l[date_field] for l in aml_rec)
+    def _get_policy_start_date(self, aml):
+        if self.policy_date_start == 'invoice_emission_date':
+            return aml.rec_aml.date
+        return aml.rec_aml.date_maturity or aml.rec_aml.date
 
     @api.model
     def _get_policy_end_date(self, pay_id):
