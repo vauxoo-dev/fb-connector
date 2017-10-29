@@ -317,11 +317,12 @@ class CommissionPayment(models.Model):
         elif self.baremo_policy == 'onCommission':
             return self.baremo_id
         elif self.baremo_policy == 'onMatrix':
-            bm_obj = self.env['baremo.matrix']
-            domain = [('product_id', '=', product_id.id), '|',
-                      ('user_id', '=', salesman_id.id),
-                      ('user_id', '=', False)]
-            baremo = bm_obj.search(domain, order="user_id desc", limit=1)
+            if not product_id:
+                return self.baremo_id
+            baremo = self.env['baremo.matrix'].search([
+                ('product_id', '=', product_id.id), '|',
+                ('user_id', '=', salesman_id.id),
+                ('user_id', '=', False)], order="user_id desc", limit=1)
             return baremo.baremo_id or self.baremo_id
 
     @api.model
@@ -355,6 +356,22 @@ class CommissionPayment(models.Model):
             price_ids[0].price, inv_lin, price_ids[0].datetime)
 
     @api.model
+    def _prepare_lines(self, aml):
+        return {
+            'aml_id': aml.id,
+            'am_rec': aml.move_id.id,
+            'name': aml.move_id.name or '/',
+            'payment_date': aml.date,
+            'partner_id': aml.partner_id.id,
+            'invoice_id': aml.rec_invoice.id,
+            'invoice_payment': aml.credit,
+            'invoice_date': aml.rec_invoice.date_invoice or aml.rec_aml.date,
+            'inv_subtotal': aml.rec_invoice.amount_untaxed,
+            'currency_id': aml.rec_invoice.currency_id.id or
+            aml.rec_invoice.company_id.currency_id.id,
+        }
+
+    @api.model
     def _get_payment_on_invoice_line(self, pay_id):
         res = []
 
@@ -369,6 +386,7 @@ class CommissionPayment(models.Model):
             line = self._get_discount_on_invoice_line(inv_lin)
             line.update(self._get_params(
                 pay_id, dcto=line['rate_item'], product_id=inv_lin.product_id))
+            line.update(self._prepare_lines(pay_id))
 
             common_factor = (
                 inv_lin.price_subtotal / inv_rec.amount_untaxed)
@@ -382,25 +400,13 @@ class CommissionPayment(models.Model):
                     abs(pay_id.amount_currency) * common_factor * factor)
 
             line.update({
-                'commission_id': self.id,
-                'aml_id': pay_id.id,
-                'am_rec': inv_rec.move_id.id,
-                'name': pay_id.move_id.name or '/',
-                'payment_date': pay_id.date,
-                'partner_id': inv_rec.partner_id.id,
-                'invoice_id': inv_rec.id,
-                'invoice_payment': pay_id.credit,
-                'invoice_date': inv_rec.date_invoice,
-                'inv_subtotal': inv_rec.amount_untaxed,
                 'product_id': inv_lin.product_id.id,
                 'price_subtotal': inv_lin.price_subtotal,
                 'perc_iva': perc_iva,
                 'amount': amount,
                 'currency_amount': currency_amount,
-                'currency_id': inv_rec.currency_id.id or
-                inv_rec.company_id.currency_id.id,
                 'line_type': 'ok',
-                })
+            })
             res.append(line)
 
         # Marking the line as "no_product" in order to know the ones to review
@@ -408,17 +414,18 @@ class CommissionPayment(models.Model):
         # prefer simply inform.
         for inv_lin in inv_rec.invoice_line_ids\
                 .filtered(lambda line: not line.product_id):
-            res.append({
-                'name': inv_lin.name,
-                'invoice_id': inv_rec.id,
-                'commission_id': self.id,
+            line = self._get_params(pay_id)
+            line.update(self._prepare_lines(pay_id))
+            line.update({
                 'line_type': 'no_product',
-                'aml_id': pay_id.id})
+                'price_subtotal': inv_lin.price_subtotal})
+            res.append(line)
         return res
 
     @api.model
     def _get_payment_on_invoice(self, aml):
         res = self._get_params(aml)
+        res.update(self._prepare_lines(aml))
 
         perc_iva = (
             aml.rec_invoice.amount_total / aml.rec_invoice.amount_untaxed - 1)
@@ -432,16 +439,6 @@ class CommissionPayment(models.Model):
             currency_amount = abs(aml.amount_currency) * factor
 
         res.update({
-            'commission_id': self.id,
-            'aml_id': aml.id,
-            'am_rec': aml.rec_aml.move_id.id,
-            'invoice_id': aml.rec_invoice.id,
-            'name': aml.move_id.name or '/',
-            'payment_date': aml.date,
-            'partner_id': aml.rec_invoice.partner_id.id,
-            'invoice_payment': aml.credit,
-            'invoice_date': aml.rec_invoice.date_invoice,
-            'inv_subtotal': aml.rec_invoice.amount_untaxed,
             'perc_iva': perc_iva,
             'amount': amount,
             'currency_amount': currency_amount,
@@ -454,19 +451,10 @@ class CommissionPayment(models.Model):
     @api.model
     def _get_payment_on_aml(self, aml):
         res = self._get_params(aml)
+        res.update(self._prepare_lines(aml))
         res.update({
-            'commission_id': self.id,
-            'aml_id': aml.id,
-            'am_rec': aml.rec_aml.move_id.id,
-            'invoice_id': aml.rec_aml.invoice_id.id,
-            'name': aml.move_id.name and aml.move_id.name or '/',
-            'payment_date': aml.date,
-            'partner_id': aml.partner_id.id,
             'salesman_id': None,
-            'invoice_payment': aml.credit,
-            'invoice_date': aml.rec_aml.date,
-            'inv_subtotal': None,
-            'perc_iva': None,
+            'perc_iva': 0.0,
             'amount': 0.0,
             'currency_amount': 0.0,
             'currency_id': aml.currency_id.id or aml.company_id.currency_id.id,
@@ -719,6 +707,8 @@ class CommissionLines(models.Model):
             aml = line.aml_id
 
             res = line.commission_id._get_params(aml)
+            res.update(line.commission_id._prepare_lines(aml))
+
             perc_iva = line.commission_id.company_id.tax
 
             penbxlinea = aml.credit
@@ -733,15 +723,10 @@ class CommissionLines(models.Model):
             # Generar las lineas de comision por cada factura
             res.update({
                 'salesman_id': line.salesman_id.id,
-                'payment_date': aml.date,
-                'invoice_payment': aml.credit,
-                'invoice_date': aml.rec_aml.date,
                 'inv_subtotal': (aml.rec_aml.debit / (1 + perc_iva / 100)),
                 'perc_iva': perc_iva,
                 'amount': amount,
                 'currency_amount': currency_amount,
-                'currency_id': aml.currency_id.id or
-                aml.company_id.currency_id.id,
             })
             line.write(res)
 
