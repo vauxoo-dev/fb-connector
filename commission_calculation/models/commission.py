@@ -329,14 +329,9 @@ class CommissionPayment(models.Model):
     def _get_discount_on_invoice_line(self, inv_lin):
         def _fetch_discount(list_price, inv_lin, price_date=False):
             # Get the actual discount in the invoice.
-            price_unit = inv_lin.price_unit
-            if abs((inv_lin.price_subtotal / inv_lin.quantity) -
-                    inv_lin.price_unit) > 0.05:
-                price_unit = round((inv_lin.price_subtotal /
-                                    inv_lin.quantity), 2)
-
-            dct = round((list_price - price_unit) * 100 / list_price, 1) \
-                if list_price else 0.0
+            price_unit = inv_lin.price_subtotal / inv_lin.quantity
+            currency = inv_lin.invoice_id.currency_id
+            dct = currency.round((list_price - price_unit) * 100 / list_price)
             return dict(price_unit=price_unit, price_list=list_price,
                         rate_item=dct, price_date=False)
 
