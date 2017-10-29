@@ -367,8 +367,33 @@ class CommissionPayment(models.Model):
             'invoice_payment': aml.credit,
             'invoice_date': aml.rec_invoice.date_invoice or aml.rec_aml.date,
             'inv_subtotal': aml.rec_invoice.amount_untaxed,
-            'currency_id': aml.rec_invoice.currency_id.id or
-            aml.rec_invoice.company_id.currency_id.id,
+            'currency_id': aml.currency_id.id or
+            aml.rec_invoice.currency_id.id or aml.company_id.currency_id.id,
+        }
+
+    @api.model
+    def _prepare_amount(self, aml, perc_iva, line, inv_lin=None):
+        """This method finally computes the amount of commission on the line"""
+        if not inv_lin:
+            inv_lin = self.env['account.invoice.line']
+        common_factor = (
+            inv_lin.price_subtotal / inv_lin.invoice_id.amount_untaxed
+            if inv_lin.invoice_id.amount_untaxed else 1)
+
+        factor = line['baremo'] / (100 * (1 + perc_iva / 100))
+
+        currency_amount = amount = aml.credit * common_factor * factor
+        if aml.currency_id and aml.amount_currency:
+            currency_amount = (
+                abs(aml.amount_currency) * common_factor * factor)
+
+        return {
+            'product_id': inv_lin.product_id.id,
+            'price_subtotal': inv_lin.price_subtotal,
+            'perc_iva': perc_iva,
+            'amount': amount,
+            'currency_amount': currency_amount,
+            'line_type': 'ok',
         }
 
     @api.model
@@ -387,26 +412,7 @@ class CommissionPayment(models.Model):
             line.update(self._get_params(
                 pay_id, dcto=line['rate_item'], product_id=inv_lin.product_id))
             line.update(self._prepare_lines(pay_id))
-
-            common_factor = (
-                inv_lin.price_subtotal / inv_rec.amount_untaxed)
-            factor = line['baremo'] / (100 * (1 + perc_iva / 100))
-
-            penbxlinea = pay_id.credit * common_factor * factor
-
-            currency_amount = amount = penbxlinea
-            if pay_id.currency_id and pay_id.amount_currency:
-                currency_amount = (
-                    abs(pay_id.amount_currency) * common_factor * factor)
-
-            line.update({
-                'product_id': inv_lin.product_id.id,
-                'price_subtotal': inv_lin.price_subtotal,
-                'perc_iva': perc_iva,
-                'amount': amount,
-                'currency_amount': currency_amount,
-                'line_type': 'ok',
-            })
+            line.update(self._prepare_amount(pay_id, perc_iva, line, inv_lin))
             res.append(line)
 
         # Marking the line as "no_product" in order to know the ones to review
@@ -426,26 +432,10 @@ class CommissionPayment(models.Model):
     def _get_payment_on_invoice(self, aml):
         res = self._get_params(aml)
         res.update(self._prepare_lines(aml))
-
         perc_iva = (
             aml.rec_invoice.amount_total / aml.rec_invoice.amount_untaxed - 1)
 
-        factor = res['baremo'] / (100 * (1 + perc_iva / 100))
-
-        amount = aml.credit * factor
-
-        currency_amount = amount
-        if aml.currency_id and aml.amount_currency:
-            currency_amount = abs(aml.amount_currency) * factor
-
-        res.update({
-            'perc_iva': perc_iva,
-            'amount': amount,
-            'currency_amount': currency_amount,
-            'currency_id': aml.rec_invoice.currency_id.id,
-            'line_type': 'ok',
-        })
-
+        res.update(self._prepare_amount(aml, perc_iva, res))
         return res
 
     @api.model
@@ -710,26 +700,14 @@ class CommissionLines(models.Model):
             res.update(line.commission_id._prepare_lines(aml))
 
             perc_iva = line.commission_id.company_id.tax
-
-            penbxlinea = aml.credit
-            factor = res['baremo'] / (100 * (1 + perc_iva / 100))
-
-            amount = penbxlinea * factor
-
-            currency_amount = amount
-            if aml.currency_id and aml.amount_currency:
-                currency_amount = abs(aml.amount_currency) * factor
+            res.update(line.commission_id._prepare_amount(aml, perc_iva, res))
 
             # Generar las lineas de comision por cada factura
             res.update({
                 'salesman_id': line.salesman_id.id,
                 'inv_subtotal': (aml.rec_aml.debit / (1 + perc_iva / 100)),
-                'perc_iva': perc_iva,
-                'amount': amount,
-                'currency_amount': currency_amount,
             })
             line.write(res)
-
         return True
 
 
