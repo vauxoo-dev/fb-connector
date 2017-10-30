@@ -181,14 +181,17 @@ class TestCommission(Common):
 
         # onCompany
         self.commission_payment.baremo_policy = 'onCompany'
+        self.commission_payment.policy_date_start = 'invoice_emission_date'
         self.commission_payment.prepare()
 
         # onPartner
         self.commission_payment.write({'baremo_policy': 'onPartner'})
+        self.commission_payment.policy_date_end = 'date_on_payment'
         self.commission_payment.prepare()
 
         # onAccountingPartner
         self.commission_payment.write({'baremo_policy': 'onAccountingPartner'})
+        self.commission_payment.salesman_policy = 'on_accounting_partner'
         self.commission_payment.prepare()
 
         # onUser
