@@ -293,7 +293,7 @@ class CommissionPayment(models.Model):
             self, pay_id, partner_id=None, product_id=None, salesman_id=None):
         rec_aml = pay_id.rec_aml
         rec_invoice = rec_aml.invoice_id
-        baremo = self.env['baremo.book']
+        baremo = self.baremo_id
         if self.baremo_policy == 'onCompany':
             baremo = self.company_id.partner_id.baremo_id
         elif self.baremo_policy == 'onPartner':
@@ -308,12 +308,11 @@ class CommissionPayment(models.Model):
             baremo = salesman_id.partner_id.baremo_id
         elif self.baremo_policy == 'onCommission':
             baremo = self.baremo_id
-        elif self.baremo_policy == 'onMatrix':
-            bm_obj = self.env['baremo.matrix']
-            domain = [('product_id', '=', product_id.id), '|',
-                      ('user_id', '=', salesman_id.id),
-                      ('user_id', '=', False)]
-            baremo = bm_obj.search(domain, order="user_id desc", limit=1)
+        elif self.baremo_policy == 'onMatrix' and product_id:
+            baremo = self.env['baremo.matrix'].search([
+                ('product_id', '=', product_id.id), '|',
+                ('user_id', '=', salesman_id.id),
+                ('user_id', '=', False)], order="user_id desc", limit=1)
             baremo = baremo.baremo_id or self.baremo_id
         return baremo
 
