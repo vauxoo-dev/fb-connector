@@ -2,13 +2,11 @@
 
 import time
 from datetime import date, datetime, timedelta
+from odoo.exceptions import UserError
 from .common import Common
 
 
 class TestCommission(Common):
-
-    """Tests for Commissions (commission.payment)
-    """
 
     def setUp(self):
         super(TestCommission, self).setUp()
@@ -171,14 +169,6 @@ class TestCommission(Common):
                           'product_invoiced')
 
     def test_policy_baremo(self):
-        self.commission_payment = self.env.ref(
-            'commission_calculation.commission_payment_01')
-        self.commission_payment_2 = self.env.ref(
-            'commission_calculation.commission_payment_02')
-        baremo_1 = self.env.ref('commission_calculation.baremo_book_01')
-        baremo_2 = self.env.ref('commission_calculation.baremo_book_02')
-        main_partner = self.env.ref('base.main_company').partner_id
-
         # onCompany
         self.commission_payment.baremo_policy = 'onCompany'
         self.commission_payment.policy_date_start = 'invoice_emission_date'
@@ -195,8 +185,8 @@ class TestCommission(Common):
         self.commission_payment.prepare()
 
         # onUser
-        self.commission_payment_2.write({'baremo_policy': 'onUser'})
-        self.commission_payment_2.prepare()
+        self.commission_payment.write({'baremo_policy': 'onUser'})
+        self.commission_payment.prepare()
 
         # onCommission
         self.commission_payment.write({'baremo_policy': 'onCommission'})
@@ -327,7 +317,7 @@ class TestCommission(Common):
         return True
 
     def test_partial_payment_commission(self):
-        self.commission_payment.action_draft()
+        self.commission_payment.action_draft_from_done()
         self.commission_payment.commission_type = 'partial_payment'
         self.commission_payment.prepare()
         self.assertEquals(
@@ -366,5 +356,13 @@ class TestCommission(Common):
         self.assertEquals(
             self.commission_payment_2.total, 500,
             'Commission should be 500')
+
+        self.commission_payment_2.action_draft_from_done()
+        self.commission_payment_2.baremo_policy = 'onMatrix'
+        self.commission_payment_2.scope = 'whole_invoice'
+
+        error = 'Baremo on Matrix only applies on Invoiced Products'
+        with self.assertRaisesRegexp(UserError, error):
+            self.commission_payment_2.prepare()
 
         return True
