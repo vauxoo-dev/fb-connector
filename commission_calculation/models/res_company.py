@@ -10,7 +10,7 @@
 #    audited by: Humberto Arocha <hbto@vauxoo.com>
 ############################################################################
 
-from odoo import api, fields, models
+from odoo import fields, models
 
 
 class ResCompany(models.Model):

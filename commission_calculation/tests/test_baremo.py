@@ -2,8 +2,6 @@
 
 from odoo.tests.common import TransactionCase
 from odoo.exceptions import ValidationError
-from psycopg2 import IntegrityError
-from odoo.tools.misc import mute_logger
 
 
 class TestBaremo(TransactionCase):
@@ -32,7 +30,7 @@ class TestBaremo(TransactionCase):
             'product_id': ipad.id,
         })
 
-        error = 'A line of %s already exists for all salesman.' % ipad.name
+        error = 'There are already baremos with the following settings.*'
         with self.assertRaisesRegexp(ValidationError, error):
             matrix_obj.create({
                 'baremo_id': baremo_id.id,
@@ -40,7 +38,7 @@ class TestBaremo(TransactionCase):
                 'product_id': ipad.id,
             })
 
-        with self.assertRaises(IntegrityError), mute_logger('odoo.sql_db'):
+        with self.assertRaisesRegexp(ValidationError, error):
             matrix_obj.create({
                 'baremo_id': baremo_id.id,
                 'user_id': self.ref('base.user_root'),

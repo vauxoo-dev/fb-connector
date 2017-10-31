@@ -64,7 +64,6 @@ class BaremoMatrix(models.Model):
     product_id = fields.Many2one(
         'product.product', required=True)
 
-    @api.one
     @api.constrains('user_id', 'baremo_id', 'product_id')
     def _check_salesman_empty(self):
         """ A line with empty user is a general rule which indicates that the
@@ -82,22 +81,23 @@ class BaremoMatrix(models.Model):
         databases might not follow this rule. So be careful when developing
         applications that are intended to be portable.
         """
+        self.ensure_one()
         if len(self.search([
                 ('product_id', '=', self.product_id.id),
                 ('user_id', '=', self.user_id.id)])) == 1:
             return True
         msg = _('There are already baremos with the following settings: \n')
-        for l in self.search([
+        for matrix in self.search([
                 ('product_id', '=', self.product_id.id),
                 ('user_id', '=', self.user_id.id)]) - self:
             msg += 'Product: %s, Baremo: %s, Salesman: %s\n' % (
-                l.product_id.name, l.baremo_id.name,
-                l.user_id.name or _('All Salesmen'))
+                matrix.product_id.name, matrix.baremo_id.name,
+                matrix.user_id.name or _('All Salesmen'))
         msg += _('While you are creating this one:\n')
-        for l in self:
+        for matrix in self:
             msg += 'Product: %s, Baremo: %s, Salesman: %s\n' % (
-                l.product_id.name, l.baremo_id.name,
-                l.user_id.name or _('All Salesmen'))
+                matrix.product_id.name, matrix.baremo_id.name,
+                matrix.user_id.name or _('All Salesmen'))
         raise ValidationError(msg)
 
 

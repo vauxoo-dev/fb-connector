@@ -10,8 +10,8 @@
 #              Yanina Aular <yanina.aular@vauxoo.com>
 ############################################################################
 
-from odoo import api, fields, models
 import time
+from odoo import api, fields, models
 import odoo.addons.decimal_precision as dp
 
 
@@ -21,7 +21,8 @@ class ProductProduct(models.Model):
 
     @api.depends('list_price')
     def _compute_historical_price(self):
-        for product in self.filtered(lambda a: a.list_price != a.list_price_historical):
+        for product in self.filtered(lambda a:
+                                     a.list_price != a.list_price_historical):
             product.list_price_historical = product.list_price
 
     list_price_historical = fields.Float(

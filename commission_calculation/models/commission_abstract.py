@@ -31,7 +31,7 @@ class CommissionAbstract(models.AbstractModel):
     scope = fields.Selection([
         ('whole_invoice', 'Whole Invoice'),
         ('product_invoiced', 'Invoiced Products')],
-        default='whole_invoice', string='Scope', track_visibility='onchange',
+        default='whole_invoice', track_visibility='onchange',
         help="* Full invoice: Commission payment based on invoice. "
         "The commission is calculated on the subtotal of the invoice, "
         "not including taxes. \n"
@@ -115,8 +115,8 @@ class CommissionAbstract(models.AbstractModel):
         ('onAccountingPartner', 'Commercial Entity'),
         ('onUser', 'Salespeople'),
         ('onMatrix', 'Baremo Matrix'),
-        ('onCommission', 'This Document')],
-        default='onCompany', string='Baremo Policy', track_visibility='onchange',
+        ('onCommission', 'This Document')], default='onCompany',
+        track_visibility='onchange',
         help="- Company: use the baremo configured in the company.\n"
         "- Partner: Use the baremo by partner, ie the baremo "
         "configured for the partner \n"

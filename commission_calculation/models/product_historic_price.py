@@ -10,8 +10,7 @@
 #              Yanina Aular <yanina.aular@vauxoo.com>
 ############################################################################
 
-from odoo import api, fields, models
-import time
+from odoo import fields, models
 import odoo.addons.decimal_precision as dp
 
 
@@ -28,8 +27,7 @@ class ProductHistoricPrice(models.Model):
         required=True)
     datetime = fields.Datetime(string='Date', required=True,
                                default=fields.Datetime.now)
-    price = fields.Float(
-        string='Price', digits=dp.get_precision('Price'))
+    price = fields.Float(digits=dp.get_precision('Price'))
     product_uom = fields.Many2one(
         'product.uom', string="Supplier UoM",
         help="""Choose here the Unit of Measure in which the prices and
