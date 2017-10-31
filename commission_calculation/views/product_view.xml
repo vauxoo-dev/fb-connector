@@ -41,7 +41,7 @@
                     </group>
                     <newline/>
                     <group string="Baremo" name="baremo">
-                        <label string='On this Product these Baremes will be used when Commission Payment on these Salesmen are computed on Invoiced Products and option Matrix Bareme is selected'/>
+                        <label string='On this Product these Baremes will be used when Commission Payment on these Salesmen are computed on Invoiced Products and option Matrix Bareme is selected and if Salesman if leave empty it will apply to other Salesmen'/>
                         <field
                             name="matrix_ids"
                             nolabel="1"
