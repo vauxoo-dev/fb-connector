@@ -37,7 +37,8 @@ env:
   - secure: "EG6TofH3CiZKZmSHLDOHsMVSbYYMSXUO2XewjlWGgnqYsFkfpzos5d/0f6Yoty30pJkEj67SA1u9UJk9EDAxJSIpWcho18cmCSIOvaJfge58yhB/YbHUDRBy2rT47ertlrgc1vodfPXHi+Q30O3pxTwlZibGhL6tt694ce39rpE="
 
   matrix:
-  - TESTS="1" INCLUDE="commission_calculation"
+  - LINT_CHECK="1"
+  - TESTS="1"
 
 install:
   - git clone --single-branch --depth=1 https://github.com/Vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
