@@ -29,12 +29,12 @@ class AccountMoveLine(models.Model):
     @api.depends('matched_credit_ids')
     def _compute_date_last_payment(self):
         for aml in self:
-            payments = [
-                l.date for l in
-                aml.mapped('matched_credit_ids.credit_move_id').filtered(
-                    lambda b: b.journal_id.type in ('bank', 'cash') and
-                    b.account_id.internal_type == 'receivable')]
-            aml.date_last_payment = max(payments) if payments else False
+            aml.date_last_payment = self.search([
+                ('id', 'in', aml.mapped(
+                    'matched_credit_ids.credit_move_id')._ids),
+                ('journal_id.type', 'in', ['bank', 'cash']),
+                ('account_id.internal_type', '=', 'receivable')],
+                limit=1, order='date desc').date
 
     paid_comm = fields.Boolean('Paid Commission?', readonly=True)
     rec_invoice = fields.Many2one(
