@@ -16,22 +16,16 @@ class AccountInvoice(models.Model):
 
     _inherit = "account.invoice"
 
-    @api.model
-    def _date_last_payment(self):
-        payments = [aml.date for aml in self.payment_move_line_ids.filtered(
-            lambda b: b.journal_id.type in ('bank', 'cash'))]
-        return max(payments) if payments else False
-
     @api.depends('residual', 'payment_ids')
     def _compute_date_last_payment(self):
-        invoices = self.filtered(
-            lambda a: a.type == 'out_invoice')
-        for invoice in invoices:
-            invoice.date_last_payment = \
-                invoice._date_last_payment()
+        for invoice in self.filtered(lambda a: a.type == 'out_invoice'):
+            invoice.date_last_payment = invoice.payment_move_line_ids.search([
+                ('id', 'in', invoice.payment_move_line_ids.ids),
+                ('journal_id.type', 'in', ('bank', 'cash'))],
+                limit=1, order='date desc').date
 
     date_last_payment = fields.Date(
         store=True,
         compute='_compute_date_last_payment',
         string='Last Payment Date',
-        help="Date of the last payment on the invoice")
+        help="Date of the last payment on the customer invoice")
