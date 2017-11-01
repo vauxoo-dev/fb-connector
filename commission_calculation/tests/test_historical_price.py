@@ -18,29 +18,17 @@ class TestHistoricalPrice(TransactionCase):
                                                'list_price': 25,
                                                'standard_price': 15})
         # Checking if the historical was created correctly
-        self.product_id._compute_historical_price()
-
-        action = self.env.ref(
-            "commission_calculation.base_automation_product_price")
-        action = action.with_context({
-            'active_model': 'product.product',
-            '__action_done': {},
-            'active_id': self.product_id.id,
-            'active_ids': [self.product_id.id],
-        })
-        action._process(self.product_id)
-
         h_price = self.h_price.search([
             ('product_id', '=', self.product_id.id)])
         h_cost = self.h_cost.search([('product_id', '=', self.product_id.id)])
         self.assertTrue(h_price and h_cost,
-                        "The historical were not created correctly")
+                        "The historical were not properly created")
         price = h_price.price
         cost = h_cost.cost
         self.assertTrue(price == 25,
-                        "The sale price was to saved correctly")
+                        "The sale price was properly saved")
         self.assertTrue(cost == 15,
-                        "The cost was to saved correctly")
+                        "The cost was properly saved")
 
     def test_write_product(self):
         # Updating the product
@@ -51,18 +39,6 @@ class TestHistoricalPrice(TransactionCase):
         time.sleep(2)
         self.product_id.write({'list_price': 40, 'standard_price': 18})
         # Checking if the historical was changed correctly
-        self.product_id._compute_historical_price()
-
-        action = self.env.ref(
-            "commission_calculation.base_automation_product_price")
-        action = action.with_context({
-            'active_model': 'product.product',
-            '__action_done': {},
-            'active_id': self.product_id.id,
-            'active_ids': [self.product_id.id],
-        })
-        action._process(self.product_id)
-
         h_price = self.h_price.search(
             [('product_id', '=', self.product_id.id)],
             order='datetime desc', limit=1)
@@ -74,6 +50,6 @@ class TestHistoricalPrice(TransactionCase):
         price = h_price.price
         cost = h_cost.cost
         self.assertTrue(price == 40,
-                        "The sale price was not changed correctly")
+                        "The sale price was not properly changed")
         self.assertTrue(cost == 18,
-                        "The cost was not changed correctly")
+                        "The cost was not properly changed")

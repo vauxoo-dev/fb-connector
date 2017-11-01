@@ -17,7 +17,6 @@
     "depends": [
         "account_invoicing",
         "decimal_precision",
-        "base_automation",
         "mail",
     ],
     "demo": [
@@ -27,7 +26,6 @@
     ],
     "data": [
         "data/ir_module_category.xml",
-        "data/base_automation.xml",
         "views/product_view.xml",
         "views/baremo_book_view.xml",
         "views/baremo_matrix_view.xml",

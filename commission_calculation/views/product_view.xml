@@ -33,8 +33,6 @@
                 <page string="Commisions" groups="commission_calculation.res_groups_manager">
                     <group string="Historical Cost and Price" groups="base.group_no_one">
                         <group string="Prices" name="prices">
-                            <field name="list_price_historical"/>
-                            <newline/>
                             <field name="list_price_historical_ids"
                                    nolabel="1" colspan="3"/>
                         </group>

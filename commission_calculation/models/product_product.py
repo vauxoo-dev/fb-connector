@@ -12,24 +12,12 @@
 
 import time
 from odoo import api, fields, models
-import odoo.addons.decimal_precision as dp
 
 
 class ProductProduct(models.Model):
 
     _inherit = 'product.product'
 
-    @api.depends('list_price')
-    def _compute_historical_price(self):
-        for product in self.filtered(lambda a:
-                                     a.list_price != a.list_price_historical):
-            product.list_price_historical = product.list_price
-
-    list_price_historical = fields.Float(
-        compute='_compute_historical_price',
-        string='Latest Price',
-        digits=dp.get_precision('List_Price_Historical'),
-        help="Latest Recorded Historical Value")
     list_price_historical_ids = fields.One2many(
         'product.historic.price',
         'product_id',
@@ -45,16 +33,25 @@ class ProductProduct(models.Model):
 
     @api.multi
     def _update_historic_price(self):
-        for record in self:
-            price_obj = self.env['product.historic.price']
-            historic_price = price_obj.search(
-                [('product_id', '=', record.id)],
-                order='datetime desc',
-                limit=1)
-            if (historic_price and historic_price.price != record.list_price) \
-                    or not historic_price:
-                price_obj.create({
-                    'product_id': record.id,
-                    'datetime': time.strftime('%Y-%m-%d %H:%M:%S'),
-                    'price': record.list_price,
-                    'product_uom': record.uom_id.id})
+        for product in self:
+            self.env['product.historic.price'].create({
+                'product_id': product.id,
+                'datetime': time.strftime('%Y-%m-%d %H:%M:%S'),
+                'price': product.list_price,
+                'product_uom': product.uom_id.id})
+
+    @api.model
+    def create(self, vals):
+        """Update the historical list price"""
+        product = super(ProductProduct, self.with_context(
+            create_product_product=True)).create(vals)
+        product._update_historic_price()
+        return product
+
+    @api.multi
+    def write(self, values):
+        """Update the historical list price"""
+        res = super(ProductProduct, self).write(values)
+        if 'list_price' in values:
+            self._update_historic_price()
+        return res
