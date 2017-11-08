@@ -295,16 +295,17 @@ class CommissionPayment(models.Model):
         rec_invoice = rec_aml.invoice_id
         baremo = self.baremo_id
         if self.baremo_policy == 'onCompany':
-            baremo = self.company_id.partner_id.baremo_id
+            baremo = self.company_id.partner_id.baremo_id or self.baremo_id
         elif self.baremo_policy == 'onPartner':
             partner_id = partner_id if partner_id else \
                 (rec_invoice.partner_id if rec_invoice else rec_aml.partner_id)
-            baremo = partner_id.baremo_id
+            baremo = partner_id.baremo_id or self.baremo_id
         elif self.baremo_policy == 'onAccountingPartner':
             partner_id = partner_id if partner_id else rec_aml.partner_id
-            baremo = partner_id.commercial_partner_id.baremo_id
+            baremo = partner_id.commercial_partner_id.baremo_id or \
+                self.baremo_id
         elif self.baremo_policy == 'onUser':
-            baremo = salesman_id.partner_id.baremo_id
+            baremo = salesman_id.partner_id.baremo_id or self.baremo_id
         elif self.baremo_policy == 'onCommission':
             baremo = self.baremo_id
         elif self.baremo_policy == 'onMatrix' and product_id:
