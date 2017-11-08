@@ -321,28 +321,24 @@ class CommissionPayment(models.Model):
 
     @api.model
     def _get_discount_on_invoice_line(self, inv_lin):
-        def _fetch_discount(list_price, inv_lin, price_date=False):
-            # Get the actual discount in the invoice.
+        """Get the discount in the invoice line."""
+        def _fetch_discount(inv_lin, list_price, price_date):
+            """Get the actual discount in the invoice line."""
+            # If not historic, then take the lst_price from product
+            list_price = list_price or inv_lin.product_id.lst_price
+            price_date = price_date or inv_lin.invoice_id.date_invoice
             price_unit = inv_lin.price_subtotal / inv_lin.quantity
             currency = inv_lin.invoice_id.currency_id
             dct = currency.round((list_price - price_unit) * 100 / list_price)
             return dict(price_unit=price_unit, price_list=list_price,
-                        rate_item=dct, price_date=False)
+                        rate_item=dct, price_date=price_date)
 
-        prod_prices = self.env['product.historic.price']
-        prod_id = inv_lin.product_id.id
-        inv_rec = inv_lin.invoice_id
+        price_ids = self.env['product.historic.price'].search(
+            [('product_id', '=', inv_lin.product_id.id),
+             ('datetime', '<=', inv_lin.invoice_id.date_invoice)],
+            limit=1, order="datetime desc")
 
-        price_ids = prod_prices.search(
-            [('product_id', '=', prod_id),
-             ('datetime', '=', inv_rec.date_invoice)])
-
-        # If not historic, then take the lst_price from product
-        if not price_ids:
-            list_price = inv_lin.product_id.lst_price
-            return _fetch_discount(list_price, inv_lin, inv_rec.date_invoice)
-        return _fetch_discount(
-            price_ids[0].price, inv_lin, price_ids[0].datetime)
+        return _fetch_discount(inv_lin, price_ids.price, price_ids.datetime)
 
     @api.model
     def _prepare_lines(self, aml):
