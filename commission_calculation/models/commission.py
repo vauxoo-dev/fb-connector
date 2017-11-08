@@ -236,16 +236,19 @@ class CommissionPayment(models.Model):
     @api.model
     def _get_rate(self, days, baremo, dcto=0.0):
         res = dict(timespan=0.0, baremo=0.0, rate_number=0.0)
-        day_id = baremo.bar_ids.filtered(lambda l: days <= l.number)
+        day_id = self.env['baremo.line'].search(
+            [('number', '>=', days), ('baremo_id', '=', baremo.id)],
+            limit=1, order='number asc')
         if not day_id:
             return res
-        day_id = day_id[0]
-        dcto_id = day_id.disc_ids.filtered(lambda disc: dcto <= disc.porc_disc)
+        res['timespan'] = day_id.number
+        dcto_id = self.env['baremo.discount'].search(
+            [('porc_disc', '>=', dcto), ('disc_id', '=', day_id.id)],
+            limit=1, order='porc_disc asc')
         if not dcto_id:
-            res['timespan'] = day_id.number
             return res
-        res['rate_number'] = dcto_id[0].porc_disc
-        res['baremo'] = dcto_id[0].porc_com
+        res['rate_number'] = dcto_id.porc_disc
+        res['baremo'] = dcto_id.porc_com
         return res
 
     @api.model

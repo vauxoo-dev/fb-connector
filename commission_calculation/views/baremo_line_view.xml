@@ -6,36 +6,22 @@
         <field name="arch" type="xml">
             <form string="Commission Days &amp; Discounts">
                 <sheet>
-                    <div class="oe_title oe_left" name="left">
-                        <div>
-                            <label for="name"/>
-                        </div>
-                        <h1>
-                            <field
-                                name="name"
-                                default_focus="1"
-                                placeholder="Up to 30 days"
-                                />
-                        </h1>
-                    </div>
-                    <div class="oe_right oe_button_box" style="width: 20%;" name="right">
-                        <div>
-                            <label for="number"/>
-                        </div>
-                        <h1>
-                            <field
-                                name="number"
-                                placeholder="30"
-                                />
-                        </h1>
-                    </div>
                     <group>
-                        <field name="disc_ids" nolabel="1" colspan="6">
-                            <tree string="Commission by Discount" editable='top'>
-                                <field name="porc_disc"/>
-                                <field name="porc_com"/>
-                            </tree>
-                        </field>
+                        <group>
+                            <field name="name" default_focus="1"
+                                placeholder="Up to 30 days"/>
+                            <field name="number" placeholder="30"/>
+                        </group>
+                    </group>
+                    <group>
+                        <group string="Commission by Discount" colspan="4">
+                            <field name="disc_ids" nolabel="1" colspan="6">
+                                <tree editable='top'>
+                                    <field name="porc_disc"/>
+                                    <field name="porc_com"/>
+                                </tree>
+                            </field>
+                        </group>
                     </group>
                 </sheet>
             </form>
