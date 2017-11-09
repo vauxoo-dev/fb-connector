@@ -19,12 +19,16 @@ class AccountMoveLine(models.Model):
     @api.multi
     @api.depends('matched_debit_ids')
     def _compute_reconciling_aml(self):
-        for aml in self:
-            rec_aml = aml.matched_debit_ids.debit_move_id.filtered(
-                lambda l: l.journal_id.type == 'sale' and
-                l.account_id.internal_type == 'receivable')
-            aml.rec_aml = rec_aml
-            aml.rec_invoice = rec_aml.invoice_id
+        aml_obj = self.env[self._name]
+        for aml in self.filtered(
+                lambda a: a.credit > 0 and
+                a.account_id.internal_type == 'receivable' and
+                a.journal_id.type in ['bank', 'cash']):
+            rec_aml = aml.mapped('matched_debit_ids.debit_move_id').filtered(
+                lambda l: l.journal_id.type == 'sale')
+            rec_aml = rec_aml[0] if rec_aml else aml_obj
+            aml.rec_aml = rec_aml.id
+            aml.rec_invoice = rec_aml.invoice_id.id
 
     @api.depends('matched_credit_ids')
     def _compute_date_last_payment(self):
