@@ -5,7 +5,13 @@ import logging
 _logger = logging.getLogger(__name__)
 
 
-def pre_init_hook(cr):
+def pre_init_alter_table(cr):
+    """This pre_init will create new columns in tables:
+        - account_move_line: date_last_payment, rec_aml, rec_invoice
+        - account_invoice: date_last_payment.
+    After columns have been created constraints are added in table:
+        - account_move_line: FOREIGN KEY rec_invoice & rec_aml"""
+
     _logger.info('Creating fields date_last_payment, rec_aml, rec_invoice '
                  'on account_move_line')
     cr.execute("""
@@ -35,6 +41,16 @@ def pre_init_hook(cr):
         ON DELETE SET NULL;
     """)
 
+
+def pre_init_update_table(cr):
+    """This pre_init will update the newly created columns with appropriate
+    values in the tables:
+        - account_move_line: date_last_payment, rec_aml, rec_invoice
+        - account_invoice: date_last_payment.
+    This is done at this stage because in databases with existing data
+    letting the python code do this procedure can become a time consuming
+    process for computed fields with hungry resource methods.
+        """
     _logger.info('Updating fields rec_aml on account_move_line')
     cr.execute("""
         UPDATE account_move_line aml1
@@ -118,3 +134,12 @@ def pre_init_hook(cr):
         ) AS view
         WHERE view.invoice_id = ai1.id;
     """)
+
+
+def pre_init_hook(cr):
+    """This pre_init_hook will create new columns on the existing tables and
+    will populate them with appropriate data so that installing this module in
+    database with huge amount of Entry Lines or Invoices do not become into
+    painful update"""
+    pre_init_alter_table(cr)
+    pre_init_update_table(cr)
