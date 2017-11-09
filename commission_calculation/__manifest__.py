@@ -10,7 +10,7 @@
 
 {
     "name": "Commission based on Payments",
-    "version": "11.0.0.0.8",
+    "version": "10.0.0.0.8",
     "author": "Vauxoo",
     "website": "http://www.vauxoo.com",
     "license": "",
@@ -42,4 +42,5 @@
     ],
     "installable": True,
     "auto_install": False,
+    "pre_init_hook": "pre_init_hook",
 }
