@@ -10,7 +10,7 @@
 
 {
     "name": "Commission based on Payments",
-    "version": "10.0.0.0.8",
+    "version": "11.0.0.0.8",
     "author": "Vauxoo",
     "website": "http://www.vauxoo.com",
     "license": "",
