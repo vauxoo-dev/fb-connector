@@ -119,8 +119,10 @@ class TestCommission(Common):
             'Commission Should be in State "Draft"')
 
         duplicated_commission = self.commission_payment.copy()
-        duplicated_commission.prepare()
+
         self.commission_payment.prepare()
+        duplicated_commission.prepare()
+
         self.assertEquals(
             duplicated_commission.total, 660,
             'Commission should be 660')
@@ -128,14 +130,19 @@ class TestCommission(Common):
         self.commission_payment.validate()
         duplicated_commission.validate()
 
-        msg = 'Please check these payments.*'
-        self.assertRegexpMatches(duplicated_commission.message_ids[0].body,
-                                 msg)
+        self.assertEquals(
+            self.commission_payment.state, 'done')
         self.assertEquals(
             duplicated_commission.state, 'open')
 
-        self.commission_payment.action_draft_from_done()
+        duplicated_commission.prepare()
+
+        self.assertEquals(
+            duplicated_commission.total, 0.0,
+            'Commission should be 0.0')
+
         duplicated_commission.validate()
+
         self.assertEquals(
             duplicated_commission.state, 'done')
 

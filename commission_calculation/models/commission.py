@@ -470,6 +470,7 @@ class CommissionPayment(models.Model):
         for commission in self:
             # Erasing what was previously set as Commission per Salesman
             commission.salesman_ids.unlink()
+            commission.total = 0.0
 
             # Pick all salesman and sum all their commissions
             # Order in a tree all the commissions lines
