@@ -247,9 +247,6 @@ En caso de que no se encuentre un baremo configurado dependiendo de la
 política escogida, entonces se usara el baremo por defecto configurado
 en la plantilla.
 
-Crear una plantilla
-```````````````````
-
 `Crear una plantilla <https://youtu.be/N2zyLkdii64>`_.
 
 Usar la plantilla en una comisión

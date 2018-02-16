@@ -590,7 +590,7 @@ class CommissionPayment(models.Model):
                         'this commission:') + '<br/>' + \
                 '<br/>'.join(payments.mapped('name'))
             commission.message_post(
-                subject='Not validated commissions. Wrong payments',
+                subject=_('Not validated commissions. Wrong payments'),
                 body=message)
         return True
 

@@ -129,7 +129,7 @@
                             <field name="policy_date_end" widget="radio" required='1'/>
                         </group>
                         <group string="Computation Policies">
-                            <field name="commission_type" widget="radio" string="Based on" required='1' domain='partial_payment'/>
+                            <field name="commission_type" widget="radio" string="Based on" required='1'/>
                             <field name="scope" widget="radio" string="Compute on" required='1'/>
                             <field name="baremo_policy" widget="radio" string='Baremo from' required='1'/>
                             <field name="salesman_policy" widget="radio" required='1'/>
