@@ -9,13 +9,22 @@
 ############################################################################
 
 import time
+from odoo import tools
 from odoo.tests.common import TransactionCase
+from odoo.modules.module import get_module_resource
 
 
 class Common(TransactionCase):
 
+    def _load(self, module, *args):
+        tools.convert_file(
+            self.cr, 'commission_calculation',
+            get_module_resource(module, *args), {}, 'init', False, 'test',
+            self.registry._assertion_report)
+
     def setUp(self):
         super(Common, self).setUp()
+        self._load('account', 'test', 'account_minimal_test.xml')
         self.account_obj = self.env['account.invoice']
         self.account_line_obj = self.env['account.invoice.line']
 

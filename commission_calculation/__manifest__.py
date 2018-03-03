@@ -19,8 +19,10 @@
         "decimal_precision",
         "mail",
     ],
-    "demo": [
+    "test": [
         "../account/test/account_minimal_test.xml",
+    ],
+    "demo": [
         "demo/baremo.xml",
         "demo/res_partner.xml",
     ],
