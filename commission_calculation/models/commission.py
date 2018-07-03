@@ -417,7 +417,7 @@ class CommissionPayment(models.Model):
     def _get_payment_on_invoice(self, aml):
         res = self._get_params(aml)
         res.update(self._prepare_lines(aml))
-        perc_iva = (
+        perc_iva = 100 * (
             aml.rec_invoice.amount_total / aml.rec_invoice.amount_untaxed - 1)
 
         res.update(self._prepare_amount(aml, perc_iva, res))
