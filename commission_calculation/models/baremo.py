@@ -62,7 +62,7 @@ class BaremoMatrix(models.Model):
         'baremo.book', required=True)
     user_id = fields.Many2one('res.users', 'Salesman')
     product_id = fields.Many2one(
-        'product.product', required=True)
+        'product.product', required=True, ondelete='cascade')
 
     @api.constrains('user_id', 'baremo_id', 'product_id')
     def _check_salesman_empty(self):

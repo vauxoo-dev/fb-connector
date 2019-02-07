@@ -24,7 +24,7 @@ class ProductHistoricPrice(models.Model):
     product_id = fields.Many2one(
         'product.product',
         string='Product related to this Price',
-        required=True)
+        required=True, ondelete='cascade')
     datetime = fields.Datetime(string='Date', required=True,
                                default=fields.Datetime.now)
     price = fields.Float(digits=dp.get_precision('Price'))
