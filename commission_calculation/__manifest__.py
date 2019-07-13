@@ -28,6 +28,7 @@
     ],
     "data": [
         "data/ir_module_category.xml",
+        "data/report_paperformat.xml",
         "views/product_view.xml",
         "views/baremo_book_view.xml",
         "views/baremo_matrix_view.xml",
@@ -41,6 +42,8 @@
         "views/commission_view.xml",
         "views/account_view.xml",
         "views/commission_calculation_menuitem.xml",
+        "report/salesman_template.xml",
+        "report/salesman_report.xml",
     ],
     "installable": True,
     "auto_install": False,

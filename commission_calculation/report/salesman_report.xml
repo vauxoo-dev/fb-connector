@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <report id="commission_salesman_report"
+            model="commission.salesman"
+            name="commission_calculation.salesman_report_template"
+            file="commission_calculation.salesman_report_template"
+            string="Salesman Commission Payment"
+            report_type="qweb-pdf"
+            print_report_name="(object.salesman_id and (object.salesman_id.name + ''))"
+            attachment=""/>
+
+    <record id="commission_salesman_report" model="ir.actions.report">
+        <field name="paperformat_id" ref="commission_calculation.paperformat_us_double_letter"/>
+    </record>
+</odoo>
