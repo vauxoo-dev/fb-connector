@@ -176,7 +176,6 @@ class CommissionPayment(models.Model):
 
     @api.multi
     def _prepare_aml(self):
-        import pdb;pdb.set_trace()
         aml_obj = self.env['account.move.line']
         for comm_rec in self:
             date_start = comm_rec.date_start
