@@ -162,6 +162,18 @@
         </field>
     </record>
 
+    <record model="ir.ui.view" id="commission_payment_form_allow_change_salesmen">
+        <field name="name">commission.payment.form</field>
+        <field name="inherit_id" ref="commission_calculation.commission_payment_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('commission_calculation.res_groups_oversight')])]"/>
+        <field name="model">commission.payment</field>
+        <field name="arch" type="xml">
+            <xpath expr='//button[@name="action_recompute"]' position='attributes'>
+                <attribute name="attrs">{'invisible':[('state','!=','open')]}</attribute>
+            </xpath>
+        </field>
+    </record>
+
     <record id="payment_tree" model="ir.ui.view">
         <field name="name">commission.payment.tree</field>
         <field name="model">commission.payment</field>
@@ -247,6 +259,18 @@
                     </tree>
                 </field>
             </form>
+        </field>
+    </record>
+
+    <record model="ir.ui.view" id="allow_change_salesman_form">
+        <field name="name">commission.salesman.form.allow.change</field>
+        <field name="model">commission.salesman</field>
+        <field name="inherit_id" ref="commission_calculation.salesman_form"/>
+        <field name="groups_id" eval="[(6, 0, [ref('commission_calculation.res_groups_oversight')])]"/>
+        <field name="arch" type="xml">
+            <xpath expr='//field[@name="lines_ids"]' position='attributes'>
+                <attribute name="attrs">{}</attribute>
+            </xpath>
         </field>
     </record>
 
