@@ -5,6 +5,13 @@
         <field name="category_id" ref="ir_module_category_icm"/>
     </record>
 
+    <record id="res_groups_oversight" model="res.groups">
+        <field name="name">Oversight: Can change salesmen on commissions</field>
+        <field name="implied_ids" eval="[(4, ref('res_groups_user'))]"/>
+        <field name="users" eval="[(4, ref('base.user_root'))]"/>
+        <field name="category_id" ref="ir_module_category_icm"/>
+    </record>
+
     <record id="res_groups_manager" model="res.groups">
         <field name="name">Manager: Can configure commissions</field>
         <field name="implied_ids" eval="[(4, ref('res_groups_user'))]"/>
