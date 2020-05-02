@@ -1,9 +1,5 @@
 language: python
 
-python:
-  - "3.5"
-
-dist: trusty
 sudo: false
 cache:
   apt: true
@@ -11,42 +7,33 @@ cache:
     - $HOME/.cache/pip
 
 addons:
+  postgresql: "11"
   apt:
-    sources:
-      - pov-wkhtmltopdf
     packages:
       - expect-dev
-      - python-lxml
-      - python-simplejson
-      - python-yaml
-      - wkhtmltopdf
-      - poppler-utils
-      - antiword
-      - python-beautifulsoup
-      - python-tz
-      - libgnutls26
+      - openssl
 
-# set up an X server to run wkhtmltopdf.
-before_install:
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+python:
+  - "3.5"
 
 env:
   global:
-  - LINT_CHECK=0 TESTS="0" VERSION="11.0" ODOO_REPO="odoo/odoo"
-  - secure: "EG6TofH3CiZKZmSHLDOHsMVSbYYMSXUO2XewjlWGgnqYsFkfpzos5d/0f6Yoty30pJkEj67SA1u9UJk9EDAxJSIpWcho18cmCSIOvaJfge58yhB/YbHUDRBy2rT47ertlrgc1vodfPXHi+Q30O3pxTwlZibGhL6tt694ce39rpE="
+  - TESTS="0" LINT_CHECK="0"
 
   matrix:
   - LINT_CHECK="1"
   - TESTS="1"
 
 install:
-  - git clone --single-branch --depth=1 https://github.com/Vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+  - source ${TRAVIS_BUILD_DIR}/variables.sh
+  - git clone --single-branch --depth=1 https://github.com/vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
   - export PATH=${HOME}/maintainer-quality-tools/travis:${PATH}
   - travis_install_nightly
 
 script:
+  - source ${TRAVIS_BUILD_DIR}/variables.sh
   - travis_run_tests
 
 after_success:
+  - source ${TRAVIS_BUILD_DIR}/variables.sh
   - travis_after_tests_success

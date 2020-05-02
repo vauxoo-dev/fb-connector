@@ -1,0 +1,78 @@
+image: vauxoo/odoo-80-image-shippable-auto
+stages:
+  - test
+  - test_build
+  - build
+
+variables:
+
+lint:
+  stage: test
+  tags:
+    - lint
+  variables:
+    LINT_CHECK: "1"
+    TESTS: "0"
+  script:
+    - source variables.sh
+    - git clone --depth=1 https://github.com/vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - pip3 install deployv-addon-gitlab-tools
+    - deployvcmd gitlab_tools check_keys
+    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
+    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
+    - source /usr/local/rvm/scripts/rvm
+    - travis_install_nightly
+    - travis_run_tests
+
+test:
+  stage: test
+  coverage: '/^TOTAL.*\s+(\d+\%)$/'
+  tags:
+    - odoo
+    - test
+  variables:
+    LINT_CHECK: "0"
+    TESTS: "1"
+  script:
+    - source variables.sh
+    - git clone --depth=1 https://github.com/vauxoo/maintainer-quality-tools.git -b master ${HOME}/maintainer-quality-tools
+    - export PATH=${HOME}/maintainer-quality-tools/travis:${HOME}/gitlab_tools:${PATH}
+    - pip3 install deployv-addon-gitlab-tools
+    - deployvcmd gitlab_tools check_keys
+    - source ${REPO_REQUIREMENTS}/virtualenv/python${TRAVIS_PYTHON_VERSION}/bin/activate
+    - source ${REPO_REQUIREMENTS}/virtualenv/nodejs/bin/activate
+    - source /usr/local/rvm/scripts/rvm
+    - travis_install_nightly
+    - travis_run_tests
+    - travis_after_tests_success || true
+    - coverage html --rcfile=${CI_PROJECT_DIR}/.coveragerc -d $CI_COMMIT_REF_SLUG || true
+    - coverage report -m --show-missing --rcfile=${CI_PROJECT_DIR}/.coveragerc --fail-under=${COVERAGE_MIN} || [[ $? != 2 ]]
+  artifacts:
+    paths:
+      - $CI_COMMIT_REF_SLUG
+
+publish_coverage:
+  image: quay.io/vauxoo/dockerv
+  stage: build
+  allow_failure: true
+  dependencies:
+    - test
+  script:
+    - deployvcmd gitlab_tools push_coverage
+
+  environment:
+    name: coverage
+    url: https://coverage.vauxoo.com/${CI_COMMIT_REF_SLUG}-${CI_PROJECT_NAME}
+
+build:
+  stage: build
+  image: quay.io/vauxoo/dockerv:latest
+  tags:
+    - build
+
+  script:
+    - source variables.sh
+    - deployvcmd gitlab_tools check_keys
+    - deployvcmd gitlab_tools test_images 
+
