@@ -195,6 +195,8 @@ class CommissionPayment(models.Model):
             # meaning, the `receivable items` are no longer outstanding
             elif self.commission_type == 'fully_paid_invoice':
                 args = [
+                    '&', '&', '&', '&', '&', '|',
+                    ('reconciled', '=', True),
                     ('full_reconcile_id', '!=', False),
                     ('journal_id.type', '=', 'sale'),
                     ('account_id.internal_type', '=', 'receivable'),
