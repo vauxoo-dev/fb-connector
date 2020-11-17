@@ -1,15 +1,3 @@
-# coding: utf-8
-############################################################################
-#    Module Writen For Odoo, Open Source Management Solution
-#
-#    Copyright (c) 2017 Vauxoo - http://www.vauxoo.com
-#    All Rights Reserved.
-#    info Vauxoo (info@vauxoo.com)
-#    coded by: Humberto Arocha <hbto@vauxoo.com>
-#              Yanina Aular <yanina.aular@vauxoo.com>
-#    audited by: Humberto Arocha <hbto@vauxoo.com>
-############################################################################
-
 from __future__ import division
 from datetime import datetime
 import logging

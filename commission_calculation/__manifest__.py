@@ -1,13 +1,3 @@
-# coding: utf-8
-############################################################################
-#    Module Writen For Odoo, Open Source Management Solution
-#
-#    Copyright (c) 2010 Vauxoo - http://www.vauxoo.com
-#    All Rights Reserved.
-#    info Vauxoo (info@vauxoo.com)
-#    coded by: Humberto Arocha <humberto@vauxoo.com>
-############################################################################
-
 {
     "name": "Commission based on Payments",
     "version": "11.0.0.0.8",
